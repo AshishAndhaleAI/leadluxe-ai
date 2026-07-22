@@ -1,6 +1,6 @@
 import { useState, useEffect, type ReactNode } from 'react';
 import { isSupabaseConfigured, checkDatabaseConnection } from '../../lib/supabase';
-import { Building2, AlertTriangle, Loader2, RefreshCw } from 'lucide-react';
+import { Building2, AlertTriangle, Loader2, RefreshCw, ExternalLink } from 'lucide-react';
 import { SupabaseSetup } from './SupabaseSetup';
 
 type ConnectionStatus = 'loading' | 'connected' | 'failed' | 'unconfigured';
@@ -26,7 +26,13 @@ export function DatabaseGate({ children }: DatabaseGateProps) {
         if (cancelled) return;
         setStatus(result as ConnectionStatus);
         if (result === 'failed') {
-          setErrorDetail('Supabase connection check failed. Verify that your VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables are set correctly in your Vercel project settings.');
+          const url = import.meta.env.VITE_SUPABASE_URL;
+          const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+          if (!url || !key) {
+            setErrorDetail('Environment variables missing: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY must be set in your Vercel project settings → Environment Variables.');
+          } else {
+            setErrorDetail('The Supabase server is reachable but returned an error. Verify your credentials are correct and the project is not paused.');
+          }
         }
       } catch (err: any) {
         if (cancelled) return;
@@ -48,8 +54,15 @@ export function DatabaseGate({ children }: DatabaseGateProps) {
     setErrorDetail('');
     checkDatabaseConnection()
       .then((result) => {
-        setStatus(result as ConnectionStatus);
-        if (result === 'failed') setErrorDetail('Supabase connection check failed. Verify that your VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables are set correctly in your Vercel project settings.');
+        setStatus(result as ConnectionStatus);          if (result === 'failed') {
+            const url = import.meta.env.VITE_SUPABASE_URL;
+            const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+            if (!url || !key) {
+              setErrorDetail('Environment variables missing: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY must be set in your Vercel project settings → Environment Variables.');
+            } else {
+              setErrorDetail('The Supabase server is reachable but returned an error. Verify your credentials are correct and the project is not paused.');
+            }
+          }
       })
       .catch((err: any) => {
         setStatus('failed');
@@ -116,7 +129,7 @@ export function DatabaseGate({ children }: DatabaseGateProps) {
                 {errorDetail}
               </p>
             )}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               <button
                 onClick={handleRetry}
                 className="btn-primary"
@@ -124,6 +137,15 @@ export function DatabaseGate({ children }: DatabaseGateProps) {
                 <RefreshCw className="w-4 h-4" />
                 Retry Connection
               </button>
+              <a
+                href="https://vercel.com/dashboard"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-luxury-gold-400 hover:text-luxury-gold-300 flex items-center justify-center gap-1 transition-colors"
+              >
+                <ExternalLink className="w-3 h-3" />
+                Open Vercel Dashboard → Project Settings → Environment Variables
+              </a>
             </div>
           </div>
         )}

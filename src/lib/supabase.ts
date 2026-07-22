@@ -47,11 +47,20 @@ export async function checkDatabaseConnection(): Promise<ConnectionStatus> {
   console.log('[Supabase] Health check: started');
 
   try {
-    // Ping the Supabase REST API root to verify connectivity.
-    // This is deliberately table-independent so RLS policies on individual
-    // tables do NOT affect the result.  A healthy Supabase project answers
-    // any request — even a 4xx — as long as the URL and anon key are valid.
-    const response = await fetch(`${supabaseUrl}/rest/v1/`, {
+    // 1) Quick auth check — validates the client can talk to Supabase Auth.
+    //    On a fresh deployment with no session this is a no-op but costs nothing.
+    const { error: authError } = await supabase!.auth.getSession();
+    if (authError) {
+      console.log('[Supabase] Health check: auth error —', authError.message);
+      return 'failed';
+    }
+
+    // 2) Force a real HTTP round-trip to the Supabase project to confirm the
+    //    server is reachable.  We hit the Auth user endpoint which accepts the
+    //    anon key but deliberately returns 401 "invalid JWT" — that is *fine*;
+    //    any HTTP status code proves connectivity.  Only a network-level
+    //    failure (DNS, timeout, CORS) will throw here.
+    const pingRes = await fetch(`${supabaseUrl!}/auth/v1/user`, {
       method: 'GET',
       headers: {
         apikey: supabaseAnonKey!,
@@ -59,9 +68,7 @@ export async function checkDatabaseConnection(): Promise<ConnectionStatus> {
       },
     });
 
-    // Any HTTP response (even 401, 403, 404) proves the Supabase project
-    // is reachable and the credentials are accepted.
-    console.log('[Supabase] Health check: success — HTTP', response.status);
+    console.log('[Supabase] Health check: success — HTTP', pingRes.status);
     return 'connected';
   } catch (err: any) {
     console.log('[Supabase] Health check: exception —', err?.message || err);
