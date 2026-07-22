@@ -1,10 +1,16 @@
 // ============================================================
 // Google News RSS Connector — Real public source
 // Fetches real-time real estate news from Google News RSS
+// via the LeadLuxe RSS proxy server (avoids CORS)
 // ============================================================
 
 import { memorySystem } from '../core/memory';
 import { knowledgeGraph } from '../core/knowledge-graph';
+
+/** Proxy server URL — configurable via env or default */
+const PROXY_BASE = (typeof window !== 'undefined' && (window as any).__LEADLUXE_PROXY_URL)
+  || import.meta.env?.VITE_PROXY_URL
+  || 'http://localhost:3001';
 
 export interface RawArticle {
   title: string;
@@ -57,7 +63,6 @@ const NEWSPAPER_SOURCES = [
 ];
 
 export class GoogleNewsConnector {
-  private baseUrl = 'https://news.google.com/rss/search?hl=en-IN&gl=IN';
   private lastFetchTime = 0;
   private minFetchInterval = 300000; // 5 minutes
   public name = 'Google News Connector';
@@ -67,16 +72,12 @@ export class GoogleNewsConnector {
   public lastError: string | null = null;
   public lastSuccessAt: string | null = null;
 
-  /**
-   * Check if connector can be called (respect rate limits)
-   */
+  /** Check if connector can be called (respect rate limits) */
   canFetch(): boolean {
     return Date.now() - this.lastFetchTime >= this.minFetchInterval;
   }
 
-  /**
-   * Fetch news from Google News RSS for real estate queries
-   */
+  /** Fetch news from Google News via the RSS proxy */
   async fetchAll(): Promise<NormalizedSignal[]> {
     if (!this.canFetch()) {
       console.log('[GoogleNewsConnector] Rate limited — waiting');
@@ -88,35 +89,49 @@ export class GoogleNewsConnector {
 
     for (const query of RSS_QUERIES.slice(0, 3)) { // Limit to 3 per cycle
       try {
-        const url = `${this.baseUrl}&q=${query}`;
-        console.log(`[GoogleNewsConnector] Fetching: ${url}`);
+        const proxyUrl = `${PROXY_BASE}/api/proxy/google-news?q=${query}`;
+        console.log(`[GoogleNewsConnector] Fetching via proxy: ${proxyUrl}`);
 
-        const response = await fetch(url, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            'Accept': 'application/rss+xml, application/xml, text/xml',
-          },
-        });
+        const response = await fetch(proxyUrl);
 
         if (!response.ok) {
-          console.warn(`[GoogleNewsConnector] HTTP ${response.status} for query: ${query}`);
+          const text = await response.text().catch(() => '');
+          console.warn(`[GoogleNewsConnector] Proxy HTTP ${response.status} for query: ${query} — ${text.slice(0, 100)}`);
           continue;
         }
 
-        const xml = await response.text();
-        const articles = this.parseRSS(xml);
+        const result = await response.json();
+
+        if (!result.success || !result.items) {
+          console.warn(`[GoogleNewsConnector] Proxy returned error for: ${query}`);
+          continue;
+        }
+
+        const articles: RawArticle[] = result.items.map((item: any) => ({
+          title: item.title || '',
+          url: item.link || '',
+          source: item.source || extractSource(item.link),
+          publishedAt: item.pubDate || new Date().toISOString(),
+          snippet: (item.description || item.snippet || '').slice(0, 500),
+        }));
+
         const normalized = articles
           .map(a => this.normalizeArticle(a))
-          .filter((n): n is NormalizedSignal => !!n && memorySystem.trackDiscovery({
-            sourceUrl: n.sourceUrl,
-            sourceType: 'google_news',
-            discoveredAt: new Date().toISOString(),
-            alreadyProcessed: false,
-            entitiesFound: [n.developerName || n.title],
-            hash: this.hashUrl(n.sourceUrl),
-          }));
+          .filter((n): n is NormalizedSignal => {
+            if (!n) return false;
+            const isNew = memorySystem.trackDiscovery({
+              sourceUrl: n.sourceUrl,
+              sourceType: 'google_news',
+              discoveredAt: new Date().toISOString(),
+              alreadyProcessed: false,
+              entitiesFound: [n.developerName || n.title],
+              hash: this.hashUrl(n.sourceUrl),
+            });
+            return isNew;
+          });
 
         allSignals.push(...normalized);
+        console.log(`[GoogleNewsConnector] +${normalized.length} from query "${query.slice(0, 40)}"`);
       } catch (err: any) {
         this.lastError = err.message;
         console.warn(`[GoogleNewsConnector] Error: ${err.message}`);
@@ -126,36 +141,9 @@ export class GoogleNewsConnector {
     this.totalFetched += allSignals.length;
     this.totalSignals += allSignals.length;
     this.lastSuccessAt = new Date().toISOString();
-    console.log(`[GoogleNewsConnector] Fetched ${allSignals.length} new signals`);
+    console.log(`[GoogleNewsConnector] Fetched ${allSignals.length} new signals (total: ${this.totalFetched})`);
 
     return allSignals;
-  }
-
-  private parseRSS(xml: string): RawArticle[] {
-    const articles: RawArticle[] = [];
-    const itemRegex = /<item>([\s\S]*?)<\/item>/g;
-    let match;
-
-    while ((match = itemRegex.exec(xml)) !== null) {
-      const content = match[1];
-      const title = this.extractTag(content, 'title');
-      const url = this.extractTag(content, 'link');
-      const source = this.extractSource(url);
-      const pubDate = this.extractTag(content, 'pubDate');
-      const snippet = this.extractTag(content, 'description');
-
-      if (title && url) {
-        articles.push({
-          title: this.decodeXML(title),
-          url,
-          source: source || 'Google News',
-          publishedAt: pubDate || new Date().toISOString(),
-          snippet: this.stripHTML(this.decodeXML(snippet || '')),
-        });
-      }
-    }
-
-    return articles;
   }
 
   private normalizeArticle(article: RawArticle): NormalizedSignal | null {
@@ -232,29 +220,15 @@ export class GoogleNewsConnector {
     }
     return `hash-${Math.abs(hash)}`;
   }
+}
 
-  private extractTag(xml: string, tag: string): string {
-    const regex = new RegExp(`<${tag}[^>]*><!\\[CDATA\\[(.*?)\\]\\]></${tag}>|<${tag}>(.*?)</${tag}>`, 's');
-    const match = regex.exec(xml);
-    return match?.[1] || match?.[2] || '';
-  }
-
-  private extractSource(url: string): string {
-    try {
-      const hostname = new URL(url).hostname;
-      return hostname.replace('www.', '');
-    } catch {
-      return 'Google News';
-    }
-  }
-
-  private stripHTML(html: string): string {
-    return html.replace(/<[^>]*>/g, ' ').replace(/&[^;]+;/g, ' ').replace(/\s+/g, ' ').trim();
-  }
-
-  private decodeXML(text: string): string {
-    return text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&apos;/g, "'");
+/** Extract hostname from a URL string */
+function extractSource(url: string): string {
+  try {
+    const hostname = new URL(url).hostname;
+    return hostname.replace('www.', '');
+  } catch {
+    return 'unknown';
   }
 }
 

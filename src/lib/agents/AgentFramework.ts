@@ -445,14 +445,19 @@ export class MarketIntelligenceAgent extends Agent {
 // 6. NEWS MONITORING AGENT
 // =====================
 export class NewsMonitoringAgent extends Agent {
-  private sources = [
-    'https://news.google.com/rss/search?q=real+estate+development&hl=en-IN&gl=IN',
-    'https://news.google.com/rss/search?q=real+estate+builder&hl=en-IN&gl=IN',
-    'https://news.google.com/rss/search?q=RERA+filing&hl=en-IN&gl=IN',
-    'https://news.google.com/rss/search?q=real+estate+project+launch&hl=en-IN&gl=IN',
+  private proxyBase: string;
+  private queries = [
+    'real+estate+development+India',
+    'real+estate+builder+project+launch',
+    'RERA+filing+approval',
+    'real+estate+project+launch+India',
   ];
 
-  constructor() { super('agent-news-monitoring', 'News Monitoring Agent'); }
+  constructor() {
+    super('agent-news-monitoring', 'News Monitoring Agent');
+    this.proxyBase = (typeof window !== 'undefined' && (window as any).__LEADLUXE_PROXY_URL)
+      || 'http://localhost:3001';
+  }
 
   async execute(): Promise<void> {
     this.status = 'working';
@@ -460,9 +465,9 @@ export class NewsMonitoringAgent extends Agent {
     this.runCount++;
 
     try {
-      this.log('info', `Monitoring ${this.sources.length} news sources`);
-      for (const source of this.sources) {
-        await this.fetchAndAnalyze(source);
+      this.log('info', `Monitoring ${this.queries.length} news queries via proxy`);
+      for (const query of this.queries) {
+        await this.fetchAndAnalyze(query);
       }
       this.status = 'idle';
     } catch (err: any) {
@@ -471,54 +476,42 @@ export class NewsMonitoringAgent extends Agent {
     }
   }
 
-  private async fetchAndAnalyze(url: string): Promise<void> {
+  private async fetchAndAnalyze(query: string): Promise<void> {
     try {
-      const response = await fetch(url);
-      const text = await response.text();
+      const proxyUrl = `${this.proxyBase}/api/proxy/google-news?q=${query}`;
+      this.log('info', `Fetching: ${proxyUrl}`);
 
-      // Parse RSS XML
-      const items = this.parseRSSItems(text);
-      this.log('info', `Fetched ${items.length} articles from ${url}`);
+      const response = await fetch(proxyUrl);
+      if (!response.ok) {
+        this.log('warn', `Proxy returned ${response.status} for query: ${query}`);
+        return;
+      }
+
+      const result = await response.json();
+
+      if (!result.success || !result.items) {
+        this.log('warn', `Proxy error for query: ${query}`);
+        return;
+      }
+
+      const items = result.items;
+      this.log('info', `Fetched ${items.length} articles for query: ${query.slice(0, 40)}`);
 
       for (const item of items) {
-        if (!memorySystem.isAlreadyProcessed(item.link || item.url)) {
+        if (!memorySystem.isAlreadyProcessed(item.link)) {
           this.send('agent-research', 'signal_detected', {
             type: 'news_coverage',
-            title: item.title,
-            description: item.snippet || item.description,
-            sourceUrl: item.link || item.url,
-            source: 'Google News',
+            title: item.title || '',
+            description: item.description || '',
+            sourceUrl: item.link || '',
+            source: item.source || 'Google News',
             date: item.pubDate || new Date().toISOString(),
           }, 'high');
         }
       }
     } catch (err: any) {
-      this.log('warn', `Failed to fetch ${url}: ${err.message}`);
+      this.log('warn', `Failed to fetch query ${query}: ${err.message}`);
     }
-  }
-
-  private parseRSSItems(xml: string): any[] {
-    const items: any[] = [];
-    const itemRegex = /<item>([\s\S]*?)<\/item>/g;
-    let match;
-
-    while ((match = itemRegex.exec(xml)) !== null) {
-      const itemContent = match[1];
-      const title = itemContent.match(/<title>(.*?)<\/title>/)?.[1] || '';
-      const link = itemContent.match(/<link>(.*?)<\/link>/)?.[1] || '';
-      const description = itemContent.match(/<description>(.*?)<\/description>/)?.[1] || '';
-      const pubDate = itemContent.match(/<pubDate>(.*?)<\/pubDate>/)?.[1] || '';
-
-      if (title) {
-        items.push({ title, link, description: this.stripHTML(description), pubDate });
-      }
-    }
-
-    return items;
-  }
-
-  private stripHTML(html: string): string {
-    return html.replace(/<[^>]*>/g, '').replace(/&[^;]+;/g, ' ').trim();
   }
 
   async processMessage(message: AgentMessage): Promise<void> {
