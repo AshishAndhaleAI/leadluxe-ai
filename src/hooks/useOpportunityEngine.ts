@@ -181,7 +181,13 @@ export function useOpportunityEngine(): OpportunityEngineState {
         { priority: 'medium', count: active.filter(o => o.priority === 'medium').length },
         { priority: 'low', count: active.filter(o => o.priority === 'low').length },
       ],
-      opportunitiesByStage: [],
+      opportunitiesByStage: (() => {
+        const stages = ['discovered', 'qualifying', 'analyzing', 'proposal', 'negotiation', 'closing', 'closed_won', 'closed_lost'];
+        return stages.map(stage => ({
+          stage,
+          count: active.filter(o => o.deal_stage === stage).length,
+        })).filter(s => s.count > 0);
+      })(),
       commissionForecast: [],
       topOpportunities: active.sort((a, b) => b.confidence_score - a.confidence_score).slice(0, 10),
       recentSignals: graphData.signals.slice(0, 20),

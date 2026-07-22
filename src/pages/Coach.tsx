@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Bot, MessageSquare, Sparkles, TrendingUp, Target,
-  Lightbulb, ChevronRight, ArrowRight, Zap
+  Bot, TrendingUp, Target,
+  Lightbulb
 } from 'lucide-react';
 import { DealCoachChat } from '../components/ai/DealCoachChat';
 import { useOpportunityEngine } from '../hooks/useOpportunityEngine';

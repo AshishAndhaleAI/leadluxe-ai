@@ -162,10 +162,10 @@ function generateResponse(userInput: string): Message {
     return {
       id: `ai-${Date.now()}`,
       role: 'ai',
-      content: "Based on your current pipeline analysis:\n\n1️⃣ **VTP Baner** (₹1.25 Cr) — Hot lead, high urgency. Prioritize site visit this week.\n2️⃣ **Godrej Kharadi** (₹82L) — Qualified but needs follow-up. Send brochure today.\n3️⃣ **Kolte Patil Wakad** (₹95L) — Site visit scheduled. Prepare financing options.\n\n**Recommendation:** Focus on VTP Baner first. Their budget and urgency indicate a high probability of closing within 14 days.",
+      content: "Based on your current pipeline analysis:\n\n1️⃣ **High-confidence deals** — Focus on opportunities with 80%+ confidence first. Prioritize contact within 24h.\n2️⃣ **Active negotiations** — For deals in negotiation, prepare custom proposals with commission structure.\n3️⃣ **New opportunities** — Warm up newly discovered builders with introduction emails.\n\n**Recommendation:** Sort your pipeline by confidence score and work from highest to lowest. Deals above 85% confidence have the highest closing probability.",
       suggestions: [
-        'Prepare negotiation strategy for VTP Baner',
-        'Draft follow-up for Godrej Kharadi',
+        'Prepare negotiation strategy for top deal',
+        'Draft follow-up for qualified leads',
         'What financing options should I offer?',
       ],
     };
@@ -175,7 +175,7 @@ function generateResponse(userInput: string): Message {
     return {
       id: `ai-${Date.now()}`,
       role: 'ai',
-      content: "**Builder Negotiation Strategy:**\n\n1. **Know your value** — Emphasize the 3% success fee (no upfront cost). This is your strongest advantage.\n2. **Lead with data** — Show conversion metrics from similar builders: 40% higher conversion, 3x more site visits.\n3. **Offer a pilot** — Suggest onboarding one project first. Once they see results, expansion is natural.\n4. **Commission transparency** — Use the calculator to show exact numbers. Builders appreciate transparency.\n\n**Key talking points:**\n- \"You only pay when a deal closes\"\n- \"AI qualification saves your team 60% time\"\n- \"WhatsApp automation captures leads 24/7\"",
+      content: "**Builder Negotiation Strategy:**\n\n1. **Know your value** — Emphasize the 3% success fee (no upfront cost). This is your strongest advantage over competitors.\n2. **Lead with data** — Show conversion metrics from similar builders: higher conversion rates, more site visits booked.\n3. **Offer a pilot** — Suggest onboarding one project first. Once they see results, expansion is natural.\n4. **Commission transparency** — Use the calculator to show exact numbers. Builders appreciate transparency.\n\n**Key talking points:**\n- \"You only pay when a deal closes\"\n- \"AI qualification saves your team 60% time\"\n- \"Automated follow-up captures leads 24/7\"",
       suggestions: [
         'Show me the commission calculator',
         'What objections do builders commonly have?',
@@ -188,11 +188,11 @@ function generateResponse(userInput: string): Message {
     return {
       id: `ai-${Date.now()}`,
       role: 'ai',
-      content: "I've analyzed your active deals:\n\n📊 **Pipeline Health: Strong**\n\n| Deal | Value | Confidence | Action |\n|------|-------|-----------|--------|\n| VTP Baner | ₹1.25 Cr | 94% 🔥 | Close this week |\n| Godrej Kharadi | ₹82L | 81% ⚡ | Follow up today |\n| Kolte Patil Wakad | ₹95L | 78% ⚡ | Site visit scheduled |\n| Balewadi Heights | ₹2.1 Cr | 96% 🔥 | Entering negotiation |\n\n**Expected Commission: ₹20.61 L** if all close.",
+      content: "I've analyzed your active deals from the intelligence system:\n\n📊 **Pipeline Health Analysis**\n\nFocus on your highest-confidence opportunities first. Use the AI Opportunity Feed in the dashboard to review each deal's confidence score, estimated value, and recommended actions.\n\n**Key metrics to track:**\n- Conversion rate from lead to booked\n- Average days to close per confidence tier\n- Commission realized vs pipeline value\n\nSort by confidence score and work through your pipeline systematically. Deals above 85% confidence should be contacted within 24 hours.",
       suggestions: [
-        'How to increase the 78% deal confidence?',
-        'Draft a closing message for VTP Baner',
-        'Analyze why Balewadi is 96% confident',
+        'How to increase deal confidence?',
+        'Draft a closing message for top deals',
+        'Analyze which deals to prioritize',
       ],
     };
   }
@@ -200,7 +200,7 @@ function generateResponse(userInput: string): Message {
   return {
     id: `ai-${Date.now()}`,
     role: 'ai',
-    content: "Great question! Here's what I recommend:\n\n**Key Insight:** The most successful real estate developers are closing deals 2x faster by using AI to qualify leads before scheduling site visits.\n\n**Actionable Steps:**\n1. Review your top 3 opportunities by confidence score\n2. Focus on deals with 80%+ confidence first\n3. Use the AI Opportunity Feed to spot new signals\n4. Set up automated WhatsApp follow-ups for warm leads\n\nWould you like me to dive deeper into any specific area?",
+    content: "Great question! Here's what I recommend:\n\n**Key Insight:** The most successful real estate developers are closing deals faster by using AI to qualify opportunities before engaging builders.\n\n**Actionable Steps:**\n1. Review your top 3 opportunities by confidence score from the dashboard\n2. Focus on deals with 80%+ confidence first — they have highest closing probability\n3. Use the AI Opportunity Feed to spot new signals from public sources\n4. Set up automated follow-up workflows for warm opportunities\n\nWould you like me to dive deeper into any specific area?",
     suggestions: [
       'Show me my top opportunities',
       'How to use buying signals?',

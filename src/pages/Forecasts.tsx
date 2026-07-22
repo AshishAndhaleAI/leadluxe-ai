@@ -2,13 +2,12 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  TrendingUp, IndianRupee, Target, Calendar, ArrowRight,
-  ChevronRight, Trophy, Sparkles, Percent
+  TrendingUp, IndianRupee, Target, Calendar,
+  Sparkles
 } from 'lucide-react';
 import { RevenueForecastChart } from '../components/ai/RevenueForecastChart';
 import { useOpportunityEngine } from '../hooks/useOpportunityEngine';
 import { formatIndianCurrency, formatCommission } from '../lib/format';
-import { AnimatedCounter } from '../components/ui/AnimatedCounter';
 import { KPICard } from '../components/ui/KPICard';
 import { cn } from '../lib/utils';
 import type { RevenueForecast } from '../types';
