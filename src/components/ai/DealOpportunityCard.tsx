@@ -40,8 +40,8 @@ export function DealOpportunityCard({ opportunity, onClick, index = 0 }: DealOpp
             <p className="text-sm text-gray-500">{opportunity.projectName}</p>
           </div>
         </div>
-        <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border', DEAL_STAGE_COLORS[opportunity.dealStage])}>
-          {DEAL_STAGE_LABELS[opportunity.dealStage]}
+        <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border', DEAL_STAGE_COLORS[opportunity.dealStage as keyof typeof DEAL_STAGE_COLORS])}>
+          {DEAL_STAGE_LABELS[opportunity.dealStage as keyof typeof DEAL_STAGE_LABELS]}
         </span>
       </div>
 

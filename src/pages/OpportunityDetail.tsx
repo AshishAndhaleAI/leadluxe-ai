@@ -40,7 +40,7 @@ export function OpportunityDetail() {
     );
   }
 
-  const stages: DealStage[] = ['discovered', 'qualifying', 'proposal', 'negotiation', 'closing', 'closed_won'];
+  const stages = ['discovered', 'qualifying', 'proposal', 'negotiation', 'closing', 'closed_won'] as const;
   const prospectCommission = opportunity.expectedCommission;
   const topReasons = opportunity.reasons;
   const topActions = opportunity.recommendedActions;
@@ -72,8 +72,8 @@ export function OpportunityDetail() {
                   <p className="text-sm text-gray-500">{opportunity.projectName}</p>
                 </div>
               </div>
-              <span className={cn('inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border', DEAL_STAGE_COLORS[opportunity.dealStage])}>
-                {DEAL_STAGE_LABELS[opportunity.dealStage]}
+              <span className={cn('inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border', (DEAL_STAGE_COLORS as Record<string, string>)[opportunity.dealStage])}>
+                {(DEAL_STAGE_LABELS as Record<string, string>)[opportunity.dealStage]}
               </span>
             </div>
 
@@ -218,8 +218,8 @@ export function OpportunityDetail() {
 
                   <h3 className="text-sm font-semibold text-white mt-6">Deal Timeline</h3>
                   <DealTimeline
-                    currentStage={opportunity.dealStage}
-                    stages={stages}
+                    currentStage={opportunity.dealStage as any}
+                    stages={stages as any}
                     estimatedValue={opportunity.estimatedValue}
                   />
                 </div>
@@ -259,8 +259,8 @@ export function OpportunityDetail() {
               <h3 className="text-sm font-semibold text-white">Deal Progress</h3>
             </div>
             <DealTimeline
-              currentStage={opportunity.dealStage}
-              stages={stages}
+              currentStage={opportunity.dealStage as any}
+              stages={stages as any}
             />
           </div>
 

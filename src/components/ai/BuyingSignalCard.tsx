@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import {
   FileText, Landmark, Building2, Users, Banknote, Rocket,
   Handshake, Expand, TrendingUp, Newspaper, FileCheck, HardHat,
-  ExternalLink, Clock, AlertTriangle
+  ExternalLink, Clock, AlertTriangle, Trophy
 } from 'lucide-react';
 import { cn, formatRelativeTime } from '../../lib/utils';
 import type { BuyingSignal, SignalType } from '../../types';
@@ -13,7 +13,7 @@ interface BuyingSignalCardProps {
   index?: number;
 }
 
-const SIGNAL_ICONS: Record<SignalType, typeof FileText> = {
+const SIGNAL_ICONS: Record<string, typeof FileText> = {
   rera_filing: FileText,
   government_approval: Landmark,
   land_acquisition: Building2,
@@ -26,6 +26,10 @@ const SIGNAL_ICONS: Record<SignalType, typeof FileText> = {
   news_coverage: Newspaper,
   permit_issued: FileCheck,
   construction_start: HardHat,
+  price_change: TrendingUp,
+  management_change: Users,
+  legal_update: FileCheck,
+  award_recognition: Trophy,
 };
 
 const IMPACT_COLORS = {
