@@ -1,0 +1,195 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-luxury-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-luxury-black text-white font-body antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    @apply bg-luxury-gold-500/30 text-white;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track { @apply bg-transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-gray-800 rounded-full hover:bg-gray-700; }
+
+  /* Input autofill */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: white;
+    -webkit-box-shadow: 0 0 0px 1000px #111111 inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  /* Focus ring */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-luxury-gold-500/50 ring-offset-2 ring-offset-luxury-black;
+  }
+}
+
+@layer components {
+  /* Glass card */
+  .glass-card {
+    @apply relative overflow-hidden rounded-xl border border-glass-border 
+           bg-glass-white backdrop-blur-glass shadow-glass
+           transition-all duration-300;
+  }
+  .glass-card::before {
+    content: '';
+    @apply absolute inset-0 bg-shimmer-gradient bg-[length:200%_100%] opacity-0 
+           transition-opacity duration-500;
+  }
+  .glass-card:hover::before {
+    @apply opacity-100;
+  }
+  .glass-card:hover {
+    @apply border-glass-gold shadow-glass-lg;
+  }
+
+  /* Premium card */
+  .premium-card {
+    @apply relative overflow-hidden rounded-xl border border-luxury-border 
+           bg-gradient-to-br from-luxury-surface via-luxury-gray to-luxury-dark
+           shadow-inner-glow transition-all duration-300;
+  }
+  .premium-card::before {
+    content: '';
+    @apply absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent 
+           via-luxury-gold-500/40 to-transparent opacity-0 transition-opacity duration-500;
+  }
+  .premium-card:hover::before { @apply opacity-100; }
+  .premium-card:hover {
+    @apply border-luxury-gold-500/20 shadow-lg shadow-black/30;
+  }
+
+  /* Gold button variants */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 
+           bg-luxury-gold-500 text-black rounded-lg text-sm font-semibold 
+           hover:bg-luxury-gold-600 active:scale-[0.98] 
+           transition-all duration-200 shadow-gold
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 
+           text-sm font-medium text-gray-400 rounded-lg
+           hover:text-white hover:bg-white/5 active:scale-[0.98]
+           transition-all duration-200;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 
+           border border-luxury-border rounded-lg text-sm font-medium 
+           text-gray-300 hover:text-white hover:border-gray-600 
+           active:scale-[0.98] transition-all duration-200;
+  }
+
+  /* Glass input */
+  .input-glass {
+    @apply w-full px-4 py-2.5 bg-luxury-gray border border-luxury-border 
+           rounded-lg text-sm text-white placeholder-gray-600 
+           focus:outline-none focus:border-luxury-gold-500/40 focus:ring-1 
+           focus:ring-luxury-gold-500/20 transition-all duration-200;
+  }
+
+  /* Select glass */
+  .select-glass {
+    @apply w-full px-4 py-2.5 bg-luxury-gray border border-luxury-border 
+           rounded-lg text-sm text-gray-300 appearance-none
+           focus:outline-none focus:border-luxury-gold-500/40 focus:ring-1 
+           focus:ring-luxury-gold-500/20 transition-all duration-200;
+  }
+
+  /* Skeleton loader */
+  .skeleton {
+    @apply bg-gradient-to-r from-luxury-gray via-luxury-gray-light to-luxury-gray
+           bg-[length:200%_100%] animate-shimmer rounded-lg;
+  }
+
+  /* Gradient borders */
+  .gradient-border {
+    @apply relative;
+  }
+  .gradient-border::before {
+    content: '';
+    @apply absolute -inset-[1px] rounded-xl bg-gradient-to-br 
+           from-luxury-gold-500/30 via-transparent to-luxury-gold-500/10 
+           -z-10 opacity-0 transition-opacity duration-500;
+  }
+  .gradient-border:hover::before { @apply opacity-100; }
+
+  /* Status dots */
+  .status-dot {
+    @apply w-2 h-2 rounded-full inline-block;
+  }
+  .status-dot-new { @apply bg-blue-400; }
+  .status-dot-contacted { @apply bg-purple-400; }
+  .status-dot-qualified { @apply bg-emerald-400; }
+  .status-dot-site_visit { @apply bg-amber-400; }
+  .status-dot-negotiation { @apply bg-orange-400; }
+  .status-dot-booked { @apply bg-luxury-gold-400; }
+  .status-dot-lost { @apply bg-red-400; }
+
+  /* Divider with gold */
+  .divider-gold {
+    @apply h-[1px] bg-gradient-to-r from-transparent via-luxury-gold-500/30 to-transparent;
+  }
+
+  /* Ambient glow */
+  .ambient-glow {
+    @apply relative;
+  }
+  .ambient-glow::after {
+    content: '';
+    @apply absolute -inset-4 bg-luxury-gold-500/5 rounded-full blur-3xl -z-10 opacity-0 
+           transition-opacity duration-500;
+  }
+  .ambient-glow:hover::after { @apply opacity-100; }
+}
+
+@layer utilities {
+  .text-gradient-gold {
+    @apply text-transparent bg-clip-text bg-gradient-to-r 
+           from-luxury-gold-400 via-luxury-gold-300 to-luxury-gold-500;
+  }
+  .text-gradient-white {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400;
+  }
+  .animate-in {
+    animation: fadeIn 0.5s ease-out, slideUp 0.5s ease-out;
+  }
+  .animate-in-delay-1 { animation-delay: 100ms; animation-fill-mode: both; }
+  .animate-in-delay-2 { animation-delay: 200ms; animation-fill-mode: both; }
+  .animate-in-delay-3 { animation-delay: 300ms; animation-fill-mode: both; }
+  .animate-in-delay-4 { animation-delay: 400ms; animation-fill-mode: both; }
+  .animate-in-delay-5 { animation-delay: 500ms; animation-fill-mode: both; }
+
+  .bg-grid {
+    background-image: 
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .text-balance { text-wrap: balance; }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+}
