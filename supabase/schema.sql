@@ -323,6 +323,21 @@ CREATE POLICY users_select_policy ON public.users
 CREATE POLICY users_update_policy ON public.users
   FOR UPDATE USING (auth.uid() = id);
 
+-- =====================
+-- PROJECTS RLS
+-- =====================
+CREATE POLICY "Users can view own projects" ON public.projects
+  FOR SELECT USING (auth.uid() = user_id OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager')));
+CREATE POLICY "Users can insert projects" ON public.projects
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own projects" ON public.projects
+  FOR UPDATE USING (auth.uid() = user_id OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager')));
+CREATE POLICY "Users can delete own projects" ON public.projects
+  FOR DELETE USING (auth.uid() = user_id OR auth.uid() IN (SELECT id FROM public.users WHERE role = 'admin'));
+
+-- =====================
+-- LEADS RLS
+-- =====================
 CREATE POLICY leads_select_policy ON public.leads
   FOR SELECT USING (auth.uid() = user_id OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager')));
 CREATE POLICY leads_insert_policy ON public.leads
@@ -332,10 +347,155 @@ CREATE POLICY leads_update_policy ON public.leads
 CREATE POLICY leads_delete_policy ON public.leads
   FOR DELETE USING (auth.uid() = user_id OR auth.uid() IN (SELECT id FROM public.users WHERE role = 'admin'));
 
--- Other tables: users can CRUD own data
-CREATE POLICY "Users can manage own notifications" ON public.notifications
-  FOR ALL USING (auth.uid() = user_id);
+-- =====================
+-- LEAD EVENTS RLS (inherited ownership through leads table)
+-- =====================
+CREATE POLICY "Users can view own lead events" ON public.lead_events
+  FOR SELECT USING (
+    auth.uid() IN (SELECT user_id FROM public.leads WHERE id = lead_id)
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+CREATE POLICY "Users can insert lead events" ON public.lead_events
+  FOR INSERT WITH CHECK (
+    auth.uid() IN (SELECT user_id FROM public.leads WHERE id = lead_id)
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+
+-- =====================
+-- CONVERSATIONS RLS (inherited ownership through leads table)
+-- =====================
+CREATE POLICY "Users can view own conversations" ON public.conversations
+  FOR SELECT USING (
+    auth.uid() IN (SELECT user_id FROM public.leads WHERE id = lead_id)
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+CREATE POLICY "Users can insert conversations" ON public.conversations
+  FOR INSERT WITH CHECK (
+    auth.uid() IN (SELECT user_id FROM public.leads WHERE id = lead_id)
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+CREATE POLICY "Users can update own conversations" ON public.conversations
+  FOR UPDATE USING (
+    auth.uid() IN (SELECT user_id FROM public.leads WHERE id = lead_id)
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+
+-- =====================
+-- MESSAGES RLS (inherited ownership through conversations → leads)
+-- =====================
+CREATE POLICY "Users can view own messages" ON public.messages
+  FOR SELECT USING (
+    auth.uid() IN (
+      SELECT l.user_id FROM public.conversations c
+      JOIN public.leads l ON l.id = c.lead_id
+      WHERE c.id = conversation_id
+    )
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+CREATE POLICY "Users can insert messages" ON public.messages
+  FOR INSERT WITH CHECK (
+    auth.uid() IN (
+      SELECT l.user_id FROM public.conversations c
+      JOIN public.leads l ON l.id = c.lead_id
+      WHERE c.id = conversation_id
+    )
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+
+-- =====================
+-- SITE VISITS RLS (inherited ownership through leads)
+-- =====================
+CREATE POLICY "Users can view own site visits" ON public.site_visits
+  FOR SELECT USING (
+    auth.uid() IN (SELECT user_id FROM public.leads WHERE id = lead_id)
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+CREATE POLICY "Users can insert site visits" ON public.site_visits
+  FOR INSERT WITH CHECK (
+    auth.uid() IN (SELECT user_id FROM public.leads WHERE id = lead_id)
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+CREATE POLICY "Users can update own site visits" ON public.site_visits
+  FOR UPDATE USING (
+    auth.uid() IN (SELECT user_id FROM public.leads WHERE id = lead_id)
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+
+-- =====================
+-- LEAD SCORES RLS (inherited ownership through leads)
+-- =====================
+CREATE POLICY "Users can view own lead scores" ON public.lead_scores
+  FOR SELECT USING (
+    auth.uid() IN (SELECT user_id FROM public.leads WHERE id = lead_id)
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+CREATE POLICY "Users can insert lead scores" ON public.lead_scores
+  FOR INSERT WITH CHECK (
+    auth.uid() IN (SELECT user_id FROM public.leads WHERE id = lead_id)
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+CREATE POLICY "Users can update own lead scores" ON public.lead_scores
+  FOR UPDATE USING (
+    auth.uid() IN (SELECT user_id FROM public.leads WHERE id = lead_id)
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+
+-- =====================
+-- CAMPAIGNS RLS
+-- =====================
 CREATE POLICY "Users can manage own campaigns" ON public.campaigns
+  FOR ALL USING (auth.uid() = user_id OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager')));
+
+-- =====================
+-- WHATSAPP MESSAGES RLS (inherited ownership through leads)
+-- =====================
+CREATE POLICY "Users can view own whatsapp messages" ON public.whatsapp_messages
+  FOR SELECT USING (
+    auth.uid() IN (SELECT user_id FROM public.leads WHERE id = lead_id)
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+CREATE POLICY "Users can insert whatsapp messages" ON public.whatsapp_messages
+  FOR INSERT WITH CHECK (
+    auth.uid() IN (SELECT user_id FROM public.leads WHERE id = lead_id)
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+CREATE POLICY "Users can update own whatsapp messages" ON public.whatsapp_messages
+  FOR UPDATE USING (
+    auth.uid() IN (SELECT user_id FROM public.leads WHERE id = lead_id)
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+
+-- =====================
+-- ANALYTICS EVENTS RLS
+-- =====================
+CREATE POLICY "Users can view own analytics events" ON public.analytics_events
+  FOR SELECT USING (auth.uid() = user_id OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager')));
+CREATE POLICY "Users can insert analytics events" ON public.analytics_events
+  FOR INSERT WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
+
+-- =====================
+-- BOOKINGS RLS (inherited ownership through leads)
+-- =====================
+CREATE POLICY "Users can view own bookings" ON public.bookings
+  FOR SELECT USING (
+    auth.uid() IN (SELECT user_id FROM public.leads WHERE id = lead_id)
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+CREATE POLICY "Users can insert bookings" ON public.bookings
+  FOR INSERT WITH CHECK (
+    auth.uid() IN (SELECT user_id FROM public.leads WHERE id = lead_id)
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+CREATE POLICY "Users can update own bookings" ON public.bookings
+  FOR UPDATE USING (
+    auth.uid() IN (SELECT user_id FROM public.leads WHERE id = lead_id)
+    OR auth.uid() IN (SELECT id FROM public.users WHERE role IN ('admin', 'manager'))
+  );
+
+-- =====================
+-- NOTIFICATIONS RLS
+-- =====================
+CREATE POLICY "Users can manage own notifications" ON public.notifications
   FOR ALL USING (auth.uid() = user_id);
 
 -- Enable realtime
