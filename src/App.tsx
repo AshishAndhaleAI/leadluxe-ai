@@ -5,14 +5,14 @@ import { DashboardLayout } from './components/layout/DashboardLayout';
 import { Landing } from './pages/Landing';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
-import { Leads } from './pages/Leads';
-import { LeadDetail } from './pages/LeadDetail';
-import { CalendarPage } from './pages/Calendar';
-import { Analytics } from './pages/Analytics';
+import { Opportunities } from './pages/Opportunities';
+import { OpportunityDetail } from './pages/OpportunityDetail';
+import { Signals } from './pages/Signals';
+import { Competitors } from './pages/Competitors';
+import { Forecasts } from './pages/Forecasts';
+import { Coach } from './pages/Coach';
 import { Settings } from './pages/Settings';
 import { NotFound } from './pages/NotFound';
-import { DemoBaner, DemoKharadi, DemoWakad } from './pages/DemoBaner';
-import { DatabaseGate } from './components/setup/DatabaseGate';
 import type { ReactNode } from 'react';
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
@@ -37,9 +37,6 @@ function AppRoutes() {
       {/* Public Routes */}
       <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-      <Route path="/demo/vtp-baner" element={<DemoBaner />} />
-      <Route path="/demo/godrej-kharadi" element={<DemoKharadi />} />
-      <Route path="/demo/kolte-patil-wakad" element={<DemoWakad />} />
 
       {/* Protected Routes */}
       <Route
@@ -50,10 +47,12 @@ function AppRoutes() {
         }
       >
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/leads" element={<Leads />} />
-        <Route path="/lead/:id" element={<LeadDetail />} />
-        <Route path="/calendar" element={<CalendarPage />} />
-        <Route path="/analytics" element={<Analytics />} />
+        <Route path="/opportunities" element={<Opportunities />} />
+        <Route path="/opportunity/:id" element={<OpportunityDetail />} />
+        <Route path="/signals" element={<Signals />} />
+        <Route path="/competitors" element={<Competitors />} />
+        <Route path="/forecasts" element={<Forecasts />} />
+        <Route path="/coach" element={<Coach />} />
         <Route path="/settings" element={<Settings />} />
       </Route>
 
@@ -65,15 +64,13 @@ function AppRoutes() {
 
 function App() {
   return (
-    <DatabaseGate>
-      <BrowserRouter>
-        <AuthProvider>
-          <NotificationProvider>
-            <AppRoutes />
-          </NotificationProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </DatabaseGate>
+    <BrowserRouter>
+      <AuthProvider>
+        <NotificationProvider>
+          <AppRoutes />
+        </NotificationProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 

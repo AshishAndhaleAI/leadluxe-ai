@@ -1,101 +1,55 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
-import { supabase, subscribeToInserts } from '../lib/supabase';
-import type { Notification } from '../types';
-import { useAuth } from './AuthContext';
+import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+
+export interface AppNotification {
+  id: string;
+  title: string;
+  message?: string;
+  type: 'info' | 'success' | 'warning' | 'error' | 'lead';
+  is_read: boolean;
+  created_at: string;
+}
 
 interface NotificationContextType {
-  notifications: Notification[];
+  notifications: AppNotification[];
   unreadCount: number;
-  addNotification: (notification: Omit<Notification, 'id' | 'created_at' | 'is_read'>) => void;
+  addNotification: (notification: Omit<AppNotification, 'id' | 'created_at' | 'is_read'>) => void;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
-  clearNotifications: () => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-
-  // Fetch existing notifications and subscribe to new ones
-  useEffect(() => {
-    if (!user) {
-      setNotifications([]);
-      return;
-    }
-
-    // Fetch existing
-    supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(50)
-      .then(({ data }) => {
-        if (data) setNotifications(data as Notification[]);
-      });
-
-    // Subscribe to new
-    const channel = subscribeToInserts<Notification>(
-      'notifications',
-      (payload) => {
-        setNotifications((prev) => [payload, ...prev]);
-      },
-      `user_id=eq.${user.id}`
-    );
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user]);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
 
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   const addNotification = useCallback(
-    async (notification: Omit<Notification, 'id' | 'created_at' | 'is_read'>) => {
-      if (!user) return;
-      await supabase.from('notifications').insert({
-        user_id: user.id,
-        title: notification.title,
-        message: notification.message,
-        type: notification.type,
-        related_entity_type: notification.related_entity_type,
-        related_entity_id: notification.related_entity_id,
-      });
+    (notification: Omit<AppNotification, 'id' | 'created_at' | 'is_read'>) => {
+      const newNotif: AppNotification = {
+        ...notification,
+        id: `notif-${Date.now()}`,
+        created_at: new Date().toISOString(),
+        is_read: false,
+      };
+      setNotifications((prev) => [newNotif, ...prev]);
     },
-    [user]
+    []
   );
 
-  const markAsRead = useCallback(async (id: string) => {
+  const markAsRead = useCallback((id: string) => {
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
     );
-    await supabase.from('notifications').update({ is_read: true }).eq('id', id);
   }, []);
 
-  const markAllAsRead = useCallback(async () => {
+  const markAllAsRead = useCallback(() => {
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
-    const unreadIds = notifications.filter((n) => !n.is_read).map((n) => n.id);
-    if (unreadIds.length > 0) {
-      await supabase.from('notifications').update({ is_read: true }).in('id', unreadIds);
-    }
-  }, [notifications]);
-
-  const clearNotifications = useCallback(() => {
-    setNotifications([]);
   }, []);
 
   return (
     <NotificationContext.Provider
-      value={{
-        notifications,
-        unreadCount,
-        addNotification,
-        markAsRead,
-        markAllAsRead,
-        clearNotifications,
-      }}
+      value={{ notifications, unreadCount, addNotification, markAsRead, markAllAsRead }}
     >
       {children}
     </NotificationContext.Provider>
@@ -104,8 +58,6 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
 export function useNotifications() {
   const context = useContext(NotificationContext);
-  if (!context) {
-    throw new Error('useNotifications must be used within a NotificationProvider');
-  }
+  if (!context) throw new Error('useNotifications must be used within a NotificationProvider');
   return context;
 }

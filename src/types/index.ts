@@ -1,269 +1,184 @@
 // ============================================================
-// LeadLuxe AI — Enterprise Type Definitions
+// LeadLuxe AI — AI Deal Intelligence Platform Types
 // ============================================================
 
-export interface User {
+export interface DealOpportunity {
+  id: string;
+  builderName: string;
+  projectName: string;
+  projectType: 'luxury_residential' | 'commercial' | 'mixed_use' | 'township' | 'villa' | 'penthouse';
+  location: string;
+  city: string;
+  estimatedValue: number;
+  confidenceScore: number;
+  confidenceFactors: ConfidenceFactor[];
+  dealStage: DealStage;
+  expectedCommission: number;
+  reasons: string[];
+  recommendedActions: string[];
+  signals: BuyingSignal[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type DealStage =
+  | 'discovered'
+  | 'qualifying'
+  | 'proposal'
+  | 'negotiation'
+  | 'closing'
+  | 'closed_won'
+  | 'closed_lost';
+
+export const DEAL_STAGE_LABELS: Record<DealStage, string> = {
+  discovered: 'Discovered',
+  qualifying: 'Qualifying',
+  proposal: 'Proposal',
+  negotiation: 'Negotiation',
+  closing: 'Closing',
+  closed_won: 'Closed Won',
+  closed_lost: 'Closed Lost',
+};
+
+export const DEAL_STAGE_COLORS: Record<DealStage, string> = {
+  discovered: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
+  qualifying: 'bg-purple-500/15 text-purple-400 border-purple-500/25',
+  proposal: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
+  negotiation: 'bg-orange-500/15 text-orange-400 border-orange-500/25',
+  closing: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25',
+  closed_won: 'bg-luxury-gold-500/15 text-luxury-gold-400 border-luxury-gold-500/25',
+  closed_lost: 'bg-red-500/15 text-red-400 border-red-500/25',
+};
+
+export interface ConfidenceFactor {
+  label: string;
+  score: number; // 0-100
+  weight: 'high' | 'medium' | 'low';
+  description: string;
+}
+
+export interface BuyingSignal {
+  id: string;
+  type: SignalType;
+  title: string;
+  description: string;
+  source: string;
+  date: string;
+  relevanceScore: number;
+  impact: 'high' | 'medium' | 'low';
+  url?: string;
+}
+
+export type SignalType =
+  | 'rera_filing'
+  | 'government_approval'
+  | 'land_acquisition'
+  | 'builder_hiring'
+  | 'funding_raised'
+  | 'project_launch'
+  | 'partnership'
+  | 'expansion'
+  | 'market_trend'
+  | 'news_coverage'
+  | 'permit_issued'
+  | 'construction_start';
+
+export const SIGNAL_TYPE_LABELS: Record<SignalType, string> = {
+  rera_filing: 'RERA Filing',
+  government_approval: 'Government Approval',
+  land_acquisition: 'Land Acquisition',
+  builder_hiring: 'Builder Hiring',
+  funding_raised: 'Funding Raised',
+  project_launch: 'Project Launch',
+  partnership: 'Partnership',
+  expansion: 'Expansion',
+  market_trend: 'Market Trend',
+  news_coverage: 'News Coverage',
+  permit_issued: 'Permit Issued',
+  construction_start: 'Construction Start',
+};
+
+export interface CompetitorProfile {
+  id: string;
+  name: string;
+  logo: string;
+  headquarters: string;
+  foundedYear: number;
+  projects: CompetitorProject[];
+  annualRevenue: string;
+  growthRate: number;
+  marketShare: number;
+  totalProjects: number;
+  activeProjects: number;
+  totalUnitsDelivered: number;
+  pricing: 'budget' | 'mid_range' | 'premium' | 'luxury';
+  strengths: string[];
+  weaknesses: string[];
+  recentActivity: string[];
+  hiringTrend: 'increasing' | 'stable' | 'decreasing';
+  hiringCount: number;
+  fundingInfo?: string;
+  expansionPlans?: string[];
+  createdAt: string;
+}
+
+export interface CompetitorProject {
+  name: string;
+  location: string;
+  type: string;
+  status: 'ongoing' | 'completed' | 'upcoming';
+  totalValue: number;
+  units: number;
+  launchedDate: string;
+}
+
+export interface RevenueForecast {
+  month: string;
+  expectedCommission: number;
+  probableCommission: number;
+  optimisticCommission: number;
+  deals: { name: string; value: number; probability: number }[];
+}
+
+export interface AIInsight {
+  id: string;
+  type: 'opportunity' | 'signal' | 'competitor' | 'coach' | 'forecast';
+  title: string;
+  description: string;
+  priority: 'critical' | 'high' | 'medium' | 'low';
+  impact: string;
+  action: string;
+  createdAt: string;
+}
+
+export interface CoachMessage {
+  id: string;
+  role: 'ai' | 'user';
+  content: string;
+  suggestions?: string[];
+  confidence?: number;
+  createdAt: string;
+}
+
+export interface CoachSession {
+  id: string;
+  title: string;
+  dealId?: string;
+  messages: CoachMessage[];
+  summary?: string;
+  actionItems?: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Demo data types
+export interface DemoUser {
   id: string;
   email: string;
   full_name: string;
-  role: 'admin' | 'manager' | 'agent';
-  avatar_url?: string;
-  phone?: string;
-  created_at: string;
-  updated_at: string;
+  role: string;
 }
 
-export interface Project {
-  id: string;
-  user_id: string;
-  name: string;
-  description?: string;
-  location?: string;
-  property_type?: string;
-  status: 'active' | 'completed' | 'paused' | 'cancelled';
-  budget_range_min?: number;
-  budget_range_max?: number;
-  total_units?: number;
-  amenities?: string[];
-  images?: string[];
-  created_at: string;
-  updated_at: string;
-}
-
-export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'site_visit' | 'negotiation' | 'booked' | 'lost';
-export type LeadSource = 'website' | 'whatsapp' | 'referral' | 'social_media' | 'email' | 'phone' | 'other';
-
-export interface Lead {
-  id: string;
-  user_id: string;
-  project_id?: string;
-  name: string;
-  phone: string;
-  email?: string;
-  budget?: number;
-  preferred_location?: string;
-  property_type?: string;
-  visit_timeline?: string;
-  source: LeadSource;
-  status: LeadStatus;
-  notes?: string;
-  score: number;
-  score_factors?: Record<string, any>;
-  assigned_to?: string;
-  last_contacted_at?: string;
-  campaign_id?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Conversation {
-  id: string;
-  lead_id: string;
-  source: 'website' | 'whatsapp' | 'email' | 'phone';
-  status: 'active' | 'resolved' | 'archived';
-  subject?: string;
-  created_at: string;
-  updated_at: string;
-  messages?: Message[];
-}
-
-export interface Message {
-  id: string;
-  conversation_id: string;
-  sender_type: 'lead' | 'agent' | 'admin' | 'ai_bot' | 'system';
-  content: string;
-  metadata?: Record<string, any>;
-  created_at: string;
-}
-
-export interface SiteVisit {
-  id: string;
-  lead_id: string;
-  project_id?: string;
-  scheduled_date: string;
-  scheduled_time: string;
-  status: 'scheduled' | 'completed' | 'cancelled' | 'rescheduled' | 'no_show';
-  notes?: string;
-  assigned_agent?: string;
-  created_at: string;
-  updated_at: string;
-  lead?: Lead;
-}
-
-export interface LeadScore {
-  id: string;
-  lead_id: string;
-  score: number;
-  budget_score: number;
-  urgency_score: number;
-  engagement_score: number;
-  source_score: number;
-  factors?: Record<string, any>;
-  last_calculated_at: string;
-  created_at: string;
-  updated_at: string;
-}
-
-// New: Lead Journey Events for the animated timeline
-export interface LeadEvent {
-  id: string;
-  lead_id: string;
-  event_type: LeadEventType;
-  event_label: string;
-  event_description?: string;
-  metadata?: Record<string, any>;
-  created_at: string;
-}
-
-export type LeadEventType =
-  | 'ad_click'
-  | 'website_visit'
-  | 'chat_started'
-  | 'budget_qualified'
-  | 'brochure_sent'
-  | 'site_visit_booked'
-  | 'agent_assigned'
-  | 'negotiation_started'
-  | 'booking_confirmed'
-  | 'deal_closed'
-  | 'whatsapp_sent'
-  | 'email_sent'
-  | 'call_made'
-  | 'note_added'
-  | 'status_changed';
-
-export const LEAD_EVENT_LABELS: Record<LeadEventType, string> = {
-  ad_click: 'Ad Click',
-  website_visit: 'Website Visit',
-  chat_started: 'AI Chat Started',
-  budget_qualified: 'Budget Qualified',
-  brochure_sent: 'Brochure Sent',
-  site_visit_booked: 'Site Visit Booked',
-  agent_assigned: 'Sales Agent Assigned',
-  negotiation_started: 'Negotiation Started',
-  booking_confirmed: 'Booking Confirmed',
-  deal_closed: 'Deal Closed',
-  whatsapp_sent: 'WhatsApp Sent',
-  email_sent: 'Email Sent',
-  call_made: 'Call Made',
-  note_added: 'Note Added',
-  status_changed: 'Status Changed',
-};
-
-// New: Marketing Campaigns
-export interface Campaign {
-  id: string;
-  user_id: string;
-  name: string;
-  type: 'social_media' | 'google_ads' | 'email' | 'whatsapp' | 'referral' | 'direct';
-  status: 'active' | 'paused' | 'completed' | 'draft';
-  budget?: number;
-  spent?: number;
-  leads_generated?: number;
-  conversions?: number;
-  start_date?: string;
-  end_date?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-// New: WhatsApp Messages Queue
-export interface WhatsAppMessage {
-  id: string;
-  lead_id: string;
-  template_name: string;
-  parameters?: Record<string, string>;
-  status: 'pending' | 'sent' | 'delivered' | 'read' | 'failed';
-  sent_at?: string;
-  delivered_at?: string;
-  read_at?: string;
-  error_message?: string;
-  created_at: string;
-}
-
-export interface AnalyticsEvent {
-  id: string;
-  user_id?: string;
-  event_type: string;
-  event_data?: Record<string, any>;
-  page?: string;
-  session_id?: string;
-  created_at: string;
-}
-
-export interface Booking {
-  id: string;
-  lead_id: string;
-  project_id?: string;
-  booking_date: string;
-  amount?: number;
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  payment_status: 'pending' | 'partial' | 'completed' | 'refunded';
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Notification {
-  id: string;
-  user_id: string;
-  title: string;
-  message?: string;
-  type: 'info' | 'success' | 'warning' | 'error' | 'lead';
-  related_entity_type?: string;
-  related_entity_id?: string;
-  is_read: boolean;
-  created_at: string;
-}
-
-// Real-time dashboard metrics fetched from Supabase
-export interface DashboardMetrics {
-  totalLeads: number;
-  hotLeads: number;
-  siteVisits: number;
-  bookings: number;
-  conversionRate: number;
-  projectedRevenue: number;
-  pipelineValue: number;
-  qualifiedLeads: number;
-  responseTimeHours: number;
-  leadsByStatus: { status: LeadStatus; count: number }[];
-  leadsBySource: { source: LeadSource; count: number }[];
-  monthlyTrend: { month: string; leads: number; bookings: number }[];
-  campaignPerformance: { campaign: string; leads: number; conversions: number }[];
-}
-
-// Constants
-export const LEAD_STATUS_LABELS: Record<LeadStatus, string> = {
-  new: 'New',
-  contacted: 'Contacted',
-  qualified: 'Qualified',
-  site_visit: 'Site Visit',
-  negotiation: 'Negotiation',
-  booked: 'Booked',
-  lost: 'Lost',
-};
-
-export const LEAD_STATUS_COLORS: Record<LeadStatus, string> = {
-  new: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
-  contacted: 'bg-purple-500/15 text-purple-400 border-purple-500/25',
-  qualified: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25',
-  site_visit: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
-  negotiation: 'bg-orange-500/15 text-orange-400 border-orange-500/25',
-  booked: 'bg-luxury-gold-500/15 text-luxury-gold-400 border-luxury-gold-500/25',
-  lost: 'bg-red-500/15 text-red-400 border-red-500/25',
-};
-
-export const LEAD_SOURCE_LABELS: Record<LeadSource, string> = {
-  website: 'Website',
-  whatsapp: 'WhatsApp',
-  referral: 'Referral',
-  social_media: 'Social Media',
-  email: 'Email',
-  phone: 'Phone',
-  other: 'Other',
-};
-
-export const PIPELINE_STAGES: LeadStatus[] = [
-  'new', 'contacted', 'qualified', 'site_visit', 'negotiation', 'booked', 'lost',
-];
+// Commission constants
+export const COMMISSION_RATE = 0.03;
+export const calculateCommission = (value: number) => value * COMMISSION_RATE;

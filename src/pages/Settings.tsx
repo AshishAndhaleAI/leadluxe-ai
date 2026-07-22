@@ -1,29 +1,19 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import {
-  Settings as SettingsIcon, User, Bell, Shield,
-  MessageSquare, Palette, Key, Save, ChevronRight
+  Settings as SettingsIcon, User, Bell, Shield, Percent,
+  Building2, Save, CheckCircle, CreditCard, LogOut
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
-interface SettingsSection {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
-}
-
-const sections: SettingsSection[] = [
-  { id: 'profile', label: 'Profile', icon: <User className="w-4 h-4" /> },
-  { id: 'notifications', label: 'Notifications', icon: <Bell className="w-4 h-4" /> },
-  { id: 'whatsapp', label: 'WhatsApp Integration', icon: <MessageSquare className="w-4 h-4" /> },
-  { id: 'team', label: 'Team Members', icon: <Shield className="w-4 h-4" /> },
-  { id: 'branding', label: 'Branding', icon: <Palette className="w-4 h-4" /> },
-  { id: 'api', label: 'API Keys', icon: <Key className="w-4 h-4" /> },
-];
+type SettingsTab = 'profile' | 'notifications' | 'commission' | 'team';
 
 export function Settings() {
-  const { user } = useAuth();
-  const [activeSection, setActiveSection] = useState('profile');
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
@@ -31,24 +21,19 @@ export function Settings() {
     setTimeout(() => setSaved(false), 2000);
   };
 
-  return (
-    <div className="space-y-6 animate-fade-in">
-      {/* MVP Mode Banner */}
-      <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-start gap-3">
-        <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2">
-            <path d="M12 9v4M12 17h.01" />
-            <path d="M10.29 3.86l-8.2 14.2A1.5 1.5 0 003.3 20h17.4a1.5 1.5 0 001.21-2.24l-8.2-14.2a1.5 1.5 0 00-2.42 0z" />
-          </svg>
-        </div>
-        <div>
-          <p className="text-sm font-medium text-amber-400">MVP Mode: RLS Temporarily Disabled</p>
-          <p className="text-xs text-amber-400/70 mt-0.5">
-            Row-Level Security is disabled for demo and client onboarding. All authenticated users have read/write access to all tables. RLS will be re-enabled with corrected policies before production launch.
-          </p>
-        </div>
-      </div>
+  const tabs: { key: SettingsTab; label: string; icon: typeof User }[] = [
+    { key: 'profile', label: 'Profile', icon: User },
+    { key: 'notifications', label: 'Notifications', icon: Bell },
+    { key: 'commission', label: 'Commission', icon: Percent },
+    { key: 'team', label: 'Team', icon: Shield },
+  ];
 
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="max-w-4xl mx-auto space-y-6"
+    >
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-xl bg-luxury-gold-500/20 flex items-center justify-center">
@@ -56,227 +41,173 @@ export function Settings() {
         </div>
         <div>
           <h2 className="text-lg font-semibold text-white">Settings</h2>
-          <p className="text-sm text-gray-500">Manage your account and integrations</p>
+          <p className="text-sm text-gray-500">Manage your account and preferences</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Sidebar */}
-        <div className="space-y-1">
-          {sections.map((section) => (
-            <button
-              key={section.id}
-              onClick={() => setActiveSection(section.id)}
-              className={cn(
-                'flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-sm transition-all',
-                activeSection === section.id
-                  ? 'bg-luxury-gold-500/15 text-luxury-gold-400 border border-luxury-gold-500/20'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50 border border-transparent'
-              )}
-            >
-              <div className="flex items-center gap-2.5">
-                {section.icon}
-                <span>{section.label}</span>
-              </div>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
-          ))}
+      {/* Tabs */}
+      <div className="flex items-center border-b border-luxury-border overflow-x-auto">
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={cn(
+              'flex items-center gap-2 px-4 py-3 text-sm font-medium transition-all border-b-2 whitespace-nowrap',
+              activeTab === tab.key
+                ? 'text-luxury-gold-400 border-luxury-gold-500'
+                : 'text-gray-500 border-transparent hover:text-gray-300'
+            )}
+          >
+            <tab.icon className="w-4 h-4" />
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Profile Tab */}
+      {activeTab === 'profile' && (
+        <div className="premium-card p-6">
+          <h3 className="text-base font-semibold text-white mb-4">Profile Information</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label className="text-xs text-gray-400 mb-1.5 block">Full Name</label>
+              <input type="text" defaultValue={user?.full_name} className="input-glass" />
+            </div>
+            <div>
+              <label className="text-xs text-gray-400 mb-1.5 block">Email</label>
+              <input type="email" defaultValue={user?.email} className="input-glass" readOnly />
+            </div>
+            <div>
+              <label className="text-xs text-gray-400 mb-1.5 block">Company</label>
+              <input type="text" defaultValue="Premium Realty Developers" className="input-glass" />
+            </div>
+            <div>
+              <label className="text-xs text-gray-400 mb-1.5 block">Role</label>
+              <input type="text" defaultValue="Developer" className="input-glass" readOnly />
+            </div>
+          </div>
+          <button onClick={handleSave} className="btn-primary">
+            {saved ? <><CheckCircle className="w-4 h-4" /> Saved</> : <><Save className="w-4 h-4" /> Save Changes</>}
+          </button>
         </div>
+      )}
 
-        {/* Content */}
-        <div className="lg:col-span-3 rounded-xl border border-gray-800 bg-gray-900/80 p-6">
-          {activeSection === 'profile' && (
-            <div className="space-y-6">
-              <h3 className="text-sm font-semibold text-white">Profile Settings</h3>
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 rounded-full bg-luxury-gold-500/20 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-luxury-gold-400">
-                    {user?.full_name?.[0] || 'U'}
-                  </span>
-                </div>
+      {/* Notifications Tab */}
+      {activeTab === 'notifications' && (
+        <div className="premium-card p-6">
+          <h3 className="text-base font-semibold text-white mb-4">Notification Preferences</h3>
+          <div className="space-y-4">
+            {[
+              { label: 'New deal opportunities', desc: 'When AI detects a new high-confidence opportunity' },
+              { label: 'Buying signals detected', desc: 'When new RERA filings, approvals, or market signals are found' },
+              { label: 'Competitor activity', desc: 'When tracked builders launch projects or raise funding' },
+              { label: 'Weekly forecast summary', desc: 'Every Monday with updated commission projections' },
+              { label: 'AI Coach recommendations', desc: 'When the AI Coach has new deal-specific suggestions' },
+            ].map((item, i) => (
+              <div key={i} className="flex items-center justify-between p-3 rounded-lg hover:bg-white/5 transition-colors">
                 <div>
-                  <p className="text-sm font-medium text-white">{user?.full_name || 'User'}</p>
-                  <p className="text-xs text-gray-500">{user?.email}</p>
-                  <button className="text-xs text-luxury-gold-400 hover:text-luxury-gold-300 mt-1 transition-colors">
-                    Change avatar
-                  </button>
+                  <p className="text-sm font-medium text-white">{item.label}</p>
+                  <p className="text-xs text-gray-500">{item.desc}</p>
                 </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" defaultChecked className="sr-only peer" />
+                  <div className="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-luxury-gold-500" />
+                </label>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1.5">Full Name</label>
-                  <input
-                    type="text"
-                    defaultValue={user?.full_name || ''}
-                    className="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-luxury-gold-500/50 transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1.5">Email Address</label>
-                  <input
-                    type="email"
-                    defaultValue={user?.email || ''}
-                    className="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-luxury-gold-500/50 transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1.5">Phone Number</label>
-                  <input
-                    type="tel"
-                    defaultValue={user?.phone || ''}
-                    className="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-luxury-gold-500/50 transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1.5">Role</label>
-                  <input
-                    type="text"
-                    value={user?.role || 'Admin'}
-                    disabled
-                    className="w-full px-3 py-2.5 bg-gray-800/50 border border-gray-700 rounded-lg text-sm text-gray-500 cursor-not-allowed"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeSection === 'notifications' && (
-            <div className="space-y-6">
-              <h3 className="text-sm font-semibold text-white">Notification Preferences</h3>
-              <div className="space-y-4">
-                {[
-                  { label: 'New Lead Capture', desc: 'When a new lead is captured via website or WhatsApp' },
-                  { label: 'High Score Lead', desc: 'When a lead scores 80+ on AI scoring' },
-                  { label: 'Site Visit Scheduled', desc: 'When a site visit is booked' },
-                  { label: 'Site Visit Reminder', desc: '24 hours before a scheduled visit' },
-                  { label: 'Daily Digest', desc: 'End-of-day lead summary report' },
-                  { label: 'Weekly Report', desc: 'Weekly performance analytics report' },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between py-2">
-                    <div>
-                      <p className="text-sm text-white">{item.label}</p>
-                      <p className="text-xs text-gray-500">{item.desc}</p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" defaultChecked className="sr-only peer" />
-                      <div className="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-luxury-gold-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all" />
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeSection === 'whatsapp' && (
-            <div className="space-y-6">
-              <h3 className="text-sm font-semibold text-white">WhatsApp Integration</h3>
-              <div className="p-4 rounded-lg bg-luxury-gold-500/5 border border-luxury-gold-500/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <MessageSquare className="w-4 h-4 text-luxury-gold-400" />
-                  <p className="text-sm font-medium text-luxury-gold-400">WhatsApp Business API</p>
-                </div>
-                <p className="text-xs text-gray-400">
-                  Connect your WhatsApp Business account to enable automated follow-ups, 
-                  property brochures, and visit reminders. API integration coming soon.
-                </p>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-gray-800/30 border border-gray-800">
-                  <div>
-                    <p className="text-sm text-white">WhatsApp Business Number</p>
-                    <p className="text-xs text-gray-500 mt-0.5">Not configured</p>
-                  </div>
-                  <button className="px-3 py-1.5 text-xs bg-luxury-gold-500/20 text-luxury-gold-400 border border-luxury-gold-500/30 rounded-lg hover:bg-luxury-gold-500/30 transition-all">
-                    Configure
-                  </button>
-                </div>
-                <div className="flex items-center justify-between p-3 rounded-lg bg-gray-800/30 border border-gray-800">
-                  <div>
-                    <p className="text-sm text-white">Automated Follow-up Messages</p>
-                    <p className="text-xs text-gray-500 mt-0.5">Configure auto-reply templates</p>
-                  </div>
-                  <button className="px-3 py-1.5 text-xs bg-gray-800 text-gray-400 border border-gray-700 rounded-lg hover:text-white transition-colors">
-                    Edit Templates
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeSection === 'team' && (
-            <div className="space-y-6">
-              <h3 className="text-sm font-semibold text-white">Team Members</h3>
-              <p className="text-xs text-gray-500">
-                Manage team members and their access levels. (Coming soon)
-              </p>
-              <div className="p-8 text-center">
-                <Shield className="w-12 h-12 text-gray-700 mx-auto mb-3" />
-                <p className="text-sm text-gray-500">Team management will be available in the next update</p>
-              </div>
-            </div>
-          )}
-
-          {activeSection === 'branding' && (
-            <div className="space-y-6">
-              <h3 className="text-sm font-semibold text-white">Brand Settings</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1.5">Company Name</label>
-                  <input
-                    type="text"
-                    defaultValue="My Real Estate Co."
-                    className="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-luxury-gold-500/50 transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1.5">Website URL</label>
-                  <input
-                    type="url"
-                    defaultValue="https://mycompany.com"
-                    className="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:border-luxury-gold-500/50 transition-colors"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeSection === 'api' && (
-            <div className="space-y-6">
-              <h3 className="text-sm font-semibold text-white">API Keys</h3>
-              <div className="p-4 rounded-lg bg-gray-800/30 border border-gray-800">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm text-white">Supabase API Key</p>
-                  <button className="text-xs text-luxury-gold-400 hover:text-luxury-gold-300 transition-colors">
-                    Regenerate
-                  </button>
-                </div>
-                <div className="flex items-center gap-2">
-                  <code className="flex-1 px-3 py-2 bg-gray-900 rounded text-xs text-gray-400 font-mono">
-                    sk_live_xxxxxxxxxxxxxxxxxxxx
-                  </code>
-                  <button className="px-3 py-2 text-xs bg-gray-800 text-gray-400 border border-gray-700 rounded-lg hover:text-white transition-colors">
-                    Copy
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Save Button */}
-          <div className="mt-6 pt-6 border-t border-gray-800 flex items-center justify-between">
-            <p className="text-xs text-gray-500">
-              {saved ? '✅ Settings saved successfully!' : 'Changes are saved locally'}
-            </p>
-            <button
-              onClick={handleSave}
-              className="flex items-center gap-2 px-5 py-2.5 bg-luxury-gold-500/20 text-luxury-gold-400 border border-luxury-gold-500/30 rounded-lg text-sm font-medium hover:bg-luxury-gold-500/30 transition-all"
-            >
-              <Save className="w-4 h-4" />
-              Save Changes
-            </button>
+            ))}
           </div>
         </div>
+      )}
+
+      {/* Commission Tab */}
+      {activeTab === 'commission' && (
+        <div className="space-y-4">
+          <div className="premium-card p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-luxury-gold-500/20 flex items-center justify-center">
+                <Percent className="w-5 h-5 text-luxury-gold-400" />
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-white">Commission Model</h3>
+                <p className="text-sm text-gray-500">Zero subscription. Only pay when you close deals.</p>
+              </div>
+            </div>
+
+            <div className="glass-card p-5 border border-luxury-gold-500/10 mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm text-gray-400">Success Fee</span>
+                <span className="text-2xl font-bold text-luxury-gold-400">3%</span>
+              </div>
+              <div className="divider-gold mb-3" />
+              <div className="space-y-2 text-xs text-gray-500">
+                <p className="flex items-center gap-2"><CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> No monthly subscription fee</p>
+                <p className="flex items-center gap-2"><CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> No upfront payment required</p>
+                <p className="flex items-center gap-2"><CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> Only charged when a deal closes</p>
+                <p className="flex items-center gap-2"><CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> Cancel anytime with zero penalty</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { value: '₹50 L', commission: '₹1.5 L' },
+                { value: '₹1.2 Cr', commission: '₹3.6 L' },
+                { value: '₹2.5 Cr', commission: '₹7.5 L' },
+                { value: '₹5 Cr', commission: '₹15 L' },
+              ].map((ex, i) => (
+                <div key={i} className="glass-card p-3 text-center">
+                  <p className="text-sm text-gray-400">Deal: {ex.value}</p>
+                  <p className="text-base font-bold text-luxury-gold-400 mt-1">{ex.commission}</p>
+                  <p className="text-[10px] text-gray-600">commission</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Team Tab */}
+      {activeTab === 'team' && (
+        <div className="premium-card p-6">
+          <h3 className="text-base font-semibold text-white mb-4">Team Management</h3>
+          <div className="glass-card p-4 mb-4">
+            <p className="text-sm text-gray-400">
+              Invite your team members to collaborate on deal intelligence, share opportunities, and track commission together.
+            </p>
+          </div>
+          <div className="space-y-3">
+            {[
+              { name: 'Rajesh Mehta', email: user?.email || 'builder@leadluxe.ai', role: 'Admin' },
+            ].map((member, i) => (
+              <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-luxury-gray/50 border border-luxury-border">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-luxury-gold-500/20 flex items-center justify-center">
+                    <span className="text-xs font-semibold text-luxury-gold-400">{member.name[0]}</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white">{member.name}</p>
+                    <p className="text-xs text-gray-500">{member.email}</p>
+                  </div>
+                </div>
+                <span className="text-xs text-luxury-gold-400 font-medium bg-luxury-gold-500/10 px-2 py-0.5 rounded-full border border-luxury-gold-500/20">
+                  {member.role}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Sign Out */}
+      <div className="flex justify-between items-center">
+        <p className="text-xs text-gray-600">App version 2.0 · AI Deal Intelligence Platform</p>
+        <button
+          onClick={() => { signOut(); navigate('/login'); }}
+          className="btn-outline !text-red-400 !border-red-500/20 hover:!bg-red-500/10"
+        >
+          <LogOut className="w-4 h-4" />
+          Sign Out
+        </button>
       </div>
-    </div>
+    </motion.div>
   );
 }

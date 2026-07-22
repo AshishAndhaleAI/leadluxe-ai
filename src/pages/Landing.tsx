@@ -7,7 +7,7 @@ import {
   Star, ChevronRight, Menu, X, Zap, Layers, Check, Maximize2,
   Calculator, IndianRupee, Percent, Trophy
 } from 'lucide-react';
-import { PropertyChatbot } from '../components/chatbot/PropertyChatbot';
+
 import { cn } from '../lib/utils';
 import { formatIndianCurrency } from '../lib/format';
 
@@ -535,8 +535,6 @@ export function Landing() {
           </div>
         </div>
       </footer>
-
-      <PropertyChatbot />
 
       <AnimatePresence>
         {walkthroughOpen && (
