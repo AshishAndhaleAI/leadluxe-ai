@@ -33,6 +33,22 @@ export function Settings() {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* MVP Mode Banner */}
+      <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-start gap-3">
+        <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2">
+            <path d="M12 9v4M12 17h.01" />
+            <path d="M10.29 3.86l-8.2 14.2A1.5 1.5 0 003.3 20h17.4a1.5 1.5 0 001.21-2.24l-8.2-14.2a1.5 1.5 0 00-2.42 0z" />
+          </svg>
+        </div>
+        <div>
+          <p className="text-sm font-medium text-amber-400">MVP Mode: RLS Temporarily Disabled</p>
+          <p className="text-xs text-amber-400/70 mt-0.5">
+            Row-Level Security is disabled for demo and client onboarding. All authenticated users have read/write access to all tables. RLS will be re-enabled with corrected policies before production launch.
+          </p>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-xl bg-luxury-gold-500/20 flex items-center justify-center">
