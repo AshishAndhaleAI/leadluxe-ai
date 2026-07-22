@@ -317,11 +317,19 @@ ALTER TABLE public.analytics_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.bookings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 
--- Simplified RLS: users see their own data, admins see all
-CREATE POLICY users_select_policy ON public.users
-  FOR SELECT USING (auth.uid() = id OR auth.uid() IN (SELECT id FROM public.users WHERE role = 'admin'));
-CREATE POLICY users_update_policy ON public.users
-  FOR UPDATE USING (auth.uid() = id);
+-- Users can only see and update their own row.
+-- NOTE: Do NOT add role-based subqueries here (e.g. "auth.uid() IN (SELECT id
+-- FROM public.users WHERE role = 'admin')") — that would query public.users
+-- from within a policy ON public.users, causing infinite recursion.
+CREATE POLICY "Users can view own profile"
+  ON public.users
+  FOR SELECT
+  USING (id = auth.uid());
+CREATE POLICY "Users can update own profile"
+  ON public.users
+  FOR UPDATE
+  USING (id = auth.uid())
+  WITH CHECK (id = auth.uid());
 
 -- =====================
 -- PROJECTS RLS
