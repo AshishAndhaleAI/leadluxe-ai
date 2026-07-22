@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -6,17 +6,21 @@ import {
   Lightbulb, ChevronRight, ArrowRight, Zap
 } from 'lucide-react';
 import { DealCoachChat } from '../components/ai/DealCoachChat';
-import { DEMO_OPPORTUNITIES } from '../components/ai/demoData';
+import { useOpportunityEngine } from '../hooks/useOpportunityEngine';
 import { formatCommission } from '../lib/format';
 import { cn } from '../lib/utils';
 
 export function Coach() {
   const navigate = useNavigate();
+  const { opportunities, loading } = useOpportunityEngine();
 
-  const topDeals = DEMO_OPPORTUNITIES
-    .filter(o => o.dealStage !== 'closed_won')
-    .sort((a, b) => b.confidenceScore - a.confidenceScore)
-    .slice(0, 3);
+  const topDeals = useMemo(() =>
+    opportunities
+      .filter(o => o.is_active && o.deal_stage !== 'closed_won')
+      .sort((a, b) => b.confidence_score - a.confidence_score)
+      .slice(0, 3),
+    [opportunities]
+  );
 
   return (
     <motion.div
@@ -42,25 +46,31 @@ export function Coach() {
           <div className="premium-card p-4">
             <div className="flex items-center gap-2 mb-3">
               <Target className="w-4 h-4 text-luxury-gold-400" />
-              <h3 className="text-sm font-semibold text-white">Active Deals</h3>
+              <h3 className="text-sm font-semibold text-white">
+                {loading ? 'Loading...' : `Active Deals (${topDeals.length})`}
+              </h3>
             </div>
-            <div className="space-y-2">
-              {topDeals.map((deal, i) => (
-                <button
-                  key={deal.id}
-                  onClick={() => navigate(`/opportunity/${deal.id}`)}
-                  className="w-full text-left p-2.5 rounded-lg hover:bg-white/5 transition-colors group"
-                >
-                  <p className="text-sm font-medium text-white group-hover:text-luxury-gold-300 transition-colors truncate">
-                    {deal.builderName}
-                  </p>
-                  <div className="flex items-center justify-between text-[10px] text-gray-500 mt-0.5">
-                    <span>{deal.confidenceScore}% confidence</span>
-                    <span className="text-emerald-400">{formatCommission(deal.expectedCommission)}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
+            {topDeals.length === 0 ? (
+              <p className="text-xs text-gray-500 text-center py-3">No active deals yet</p>
+            ) : (
+              <div className="space-y-2">
+                {topDeals.map((deal) => (
+                  <button
+                    key={deal.id}
+                    onClick={() => navigate(`/opportunity/${deal.id}`)}
+                    className="w-full text-left p-2.5 rounded-lg hover:bg-white/5 transition-colors group"
+                  >
+                    <p className="text-sm font-medium text-white group-hover:text-luxury-gold-300 transition-colors truncate">
+                      {deal.title?.split('—')[0]?.trim() || 'Opportunity'}
+                    </p>
+                    <div className="flex items-center justify-between text-[10px] text-gray-500 mt-0.5">
+                      <span>{deal.confidence_score}% confidence</span>
+                      <span className="text-emerald-400">{formatCommission(deal.estimated_commission)}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Suggested Topics */}
@@ -71,7 +81,7 @@ export function Coach() {
             </div>
             <div className="space-y-1.5">
               {[
-                'How to close Balewadi Heights?',
+                'How to close my top opportunity?',
                 'Negotiation tips for premium buyers',
                 'Analyze my pipeline health',
                 'WhatsApp follow-up best practices',
@@ -95,20 +105,20 @@ export function Coach() {
             </div>
             <div className="space-y-2 text-xs">
               <div className="flex items-center justify-between">
-                <span className="text-gray-500">Deals analyzed</span>
-                <span className="text-white font-medium">12</span>
+                <span className="text-gray-500">Deals in pipeline</span>
+                <span className="text-white font-medium">{opportunities.filter(o => o.is_active).length}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-500">Success rate</span>
-                <span className="text-emerald-400 font-medium">83%</span>
+                <span className="text-gray-500">High confidence</span>
+                <span className="text-emerald-400 font-medium">
+                  {opportunities.filter(o => o.is_active && o.confidence_score >= 80).length}
+                </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-500">Suggestions given</span>
-                <span className="text-white font-medium">47</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-500">Commission generated</span>
-                <span className="text-luxury-gold-400 font-medium">₹5.25L</span>
+                <span className="text-gray-500">Total pipeline value</span>
+                <span className="text-luxury-gold-400 font-medium">
+                  {formatCommission(opportunities.reduce((s, o) => s + o.estimated_commission, 0))}
+                </span>
               </div>
             </div>
           </div>

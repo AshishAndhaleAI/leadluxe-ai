@@ -32,7 +32,7 @@ export function Dashboard() {
     developers,
     opportunities,
     signals,
-    getDeveloper,
+    systemStatus,
     loading,
   } = useOpportunityEngine();
 
@@ -190,7 +190,7 @@ export function Dashboard() {
           </div>
 
           {topOpps.map((opp, i) => {
-            const dev = getDeveloper(opp.developer_id);
+            const dev = developers.find(d => d.id === opp.developer_id);
             return (
               <motion.div
                 key={opp.id}
@@ -250,7 +250,7 @@ export function Dashboard() {
               </div>
               <div className="text-center space-y-1 mb-4">
                 <p className="text-base font-bold text-white">
-                  {getDeveloper(metrics.highestValueOpportunity.developer_id)?.name || 'Developer'}
+                  {developers.find(d => d.id === metrics.highestValueOpportunity!.developer_id)?.name || 'Developer'}
                 </p>
                 <p className="text-xs text-gray-500">{metrics.highestValueOpportunity.title}</p>
                 <div className="flex items-center justify-center gap-4 text-xs mt-2">
@@ -371,9 +371,8 @@ export function Dashboard() {
             <p className="text-xs text-gray-400 leading-relaxed">
               <strong className="text-luxury-gold-400">{metrics.highConfidenceDeals} high-confidence opportunities</strong> detected across {developers.filter(d => d.is_tracked).length} tracked developers.
               Total pipeline value: <strong className="text-luxury-gold-400">{formatIndianCurrency(metrics.totalPipelineValue)}</strong>.
-              Expected commission at 3%: <strong className="text-emerald-400">{formatCommission(metrics.expectedCommission)}</strong>.
-              {metrics.highestValueOpportunity && (
-                <> Top deal: <strong className="text-white">{getDeveloper(metrics.highestValueOpportunity.developer_id)?.name}</strong> — {formatIndianCurrency(metrics.highestValueOpportunity.estimated_value)}.</>
+              Expected commission at 3%: <strong className="text-emerald-400">{formatCommission(metrics.expectedCommission)}</strong>.                {metrics.highestValueOpportunity && (
+                <> Top deal: <strong className="text-white">{developers.find(d => d.id === metrics.highestValueOpportunity!.developer_id)?.name}</strong> — {formatIndianCurrency(metrics.highestValueOpportunity!.estimated_value)}.</>
               )}
               <button onClick={() => navigate('/opportunities')}
                 className="text-luxury-gold-400 hover:text-luxury-gold-300 ml-1 underline">
