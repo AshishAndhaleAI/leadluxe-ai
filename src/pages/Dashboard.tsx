@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import {
   Users, Calendar, Building2, IndianRupee,
   Target, Activity, UserPlus, Clock, ArrowRight, Zap,
-  BarChart3, Sparkles
+  BarChart3, Sparkles, Percent, Trophy
 } from 'lucide-react';
 import { useDashboard } from '../hooks/useDashboard';
 import { KPICard } from '../components/ui/KPICard';
@@ -11,7 +11,7 @@ import { StatusBadge } from '../components/ui/StatusBadge';
 import { LeadScoreIndicator } from '../components/ui/LeadScoreIndicator';
 import { AnimatedCounter } from '../components/ui/AnimatedCounter';
 import { KPICardSkeleton, TableSkeleton, ChartSkeleton } from '../components/ui/SkeletonLoader';
-import { formatIndianCurrency, formatPercentage } from '../lib/format';
+import { formatIndianCurrency, formatPercentage, formatCommission } from '../lib/format';
 import { formatRelativeTime, cn } from '../lib/utils';
 import type { LeadStatus } from '../types';
 
@@ -94,49 +94,46 @@ export function Dashboard() {
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4"
       >
         <KPICard
-          title="Total Leads"
-          value={<AnimatedCounter value={metrics.totalLeads} />}
-          icon={<Users className="w-5 h-5" />}
-          subtitle="All time leads"
-          trend={{ value: 12, isPositive: true }}
-          onClick={() => navigate('/leads')}
-        />
-        <KPICard
-          title="Hot Leads"
-          value={<AnimatedCounter value={metrics.hotLeads} />}
-          icon={<Zap className="w-5 h-5" />}
-          subtitle="Score 70+"
-          trend={{ value: 8, isPositive: true }}
-          onClick={() => navigate('/leads')}
-        />
-        <KPICard
-          title="Site Visits"
-          value={<AnimatedCounter value={metrics.siteVisits} />}
-          icon={<Calendar className="w-5 h-5" />}
-          subtitle="Scheduled"
-          trend={{ value: 15, isPositive: true }}
-          onClick={() => navigate('/calendar')}
-        />
-        <KPICard
-          title="Bookings"
-          value={<AnimatedCounter value={metrics.bookings} />}
-          icon={<Building2 className="w-5 h-5" />}
-          subtitle="Closed deals"
-          trend={{ value: 5, isPositive: true }}
-        />
-        <KPICard
-          title="Conversion"
-          value={formatPercentage(metrics.conversionRate)}
-          icon={<Target className="w-5 h-5" />}
-          subtitle="Lead to booking"
-          trend={{ value: 2.1, isPositive: true }}
-        />
-        <KPICard
           title="Pipeline Value"
           value={formatIndianCurrency(metrics.pipelineValue)}
           icon={<IndianRupee className="w-5 h-5" />}
           subtitle="Active pipeline"
           trend={{ value: 18, isPositive: true }}
+        />
+        <KPICard
+          title="Potential Commission"
+          value={formatCommission(metrics.potentialCommission)}
+          icon={<Percent className="w-5 h-5" />}
+          subtitle="3% of active pipeline"
+          trend={{ value: 12, isPositive: true }}
+        />
+        <KPICard
+          title="Closed Deals"
+          value={<AnimatedCounter value={metrics.closedDeals} />}
+          icon={<Trophy className="w-5 h-5" />}
+          subtitle="Total bookings"
+          trend={{ value: 5, isPositive: true }}
+        />
+        <KPICard
+          title="Commission Earned"
+          value={formatCommission(metrics.commissionEarned)}
+          icon={<IndianRupee className="w-5 h-5" />}
+          subtitle="3% on closed deals"
+          trend={{ value: 8, isPositive: true }}
+        />
+        <KPICard
+          title="Avg Deal Size"
+          value={metrics.averageDealSize > 0 ? formatIndianCurrency(metrics.averageDealSize) : '—'}
+          icon={<Building2 className="w-5 h-5" />}
+          subtitle="Per closed deal"
+        />
+        <KPICard
+          title="Site Visits"
+          value={<AnimatedCounter value={metrics.siteVisits} />}
+          icon={<Calendar className="w-5 h-5" />}
+          subtitle="Scheduled site visits"
+          trend={{ value: 15, isPositive: true }}
+          onClick={() => navigate('/calendar')}
         />
       </motion.div>
 
@@ -151,6 +148,9 @@ export function Dashboard() {
                 <Activity className="w-4 h-4 text-luxury-gold-400" />
                 <h3 className="text-sm font-semibold text-white">Monthly Trends</h3>
               </div>
+              <span className="text-xs text-luxury-gold-400">
+                Commission: {formatCommission(metrics.commissionEarned)}
+              </span>
             </div>
 
             <div className="flex items-end gap-2 h-40">
@@ -262,24 +262,32 @@ export function Dashboard() {
             </div>
 
             <div className="space-y-3">
-              {metrics.hotLeadsList.map((lead) => (
-                <div
-                  key={lead.id}
-                  onClick={() => navigate(`/lead/${lead.id}`)}
-                  className="p-3 rounded-lg border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10 cursor-pointer transition-all"
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <p className="text-sm font-medium text-white">{lead.name}</p>
-                    <LeadScoreIndicator score={lead.score} size="sm" showLabel={false} />
+              {metrics.hotLeadsList.map((lead) => {
+                const estCommission = (lead.budget || 0) * 0.03;
+                return (
+                  <div
+                    key={lead.id}
+                    onClick={() => navigate(`/lead/${lead.id}`)}
+                    className="p-3 rounded-lg border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10 cursor-pointer transition-all"
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <p className="text-sm font-medium text-white">{lead.name}</p>
+                      <LeadScoreIndicator score={lead.score} size="sm" showLabel={false} />
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>{lead.preferred_location || 'No location'}</span>
+                      <span className="text-luxury-gold-400">
+                        {lead.budget ? formatIndianCurrency(lead.budget) : '-'}
+                      </span>
+                    </div>
+                    {estCommission > 0 && (
+                      <p className="text-[10px] text-emerald-500/70 mt-1">
+                        Est. commission: {formatCommission(estCommission)}
+                      </p>
+                    )}
                   </div>
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>{lead.preferred_location || 'No location'}</span>
-                    <span className="text-luxury-gold-400">
-                      {lead.budget ? formatIndianCurrency(lead.budget) : '-'}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
               {metrics.hotLeadsList.length === 0 && (
                 <div className="text-center py-6">
                   <Zap className="w-8 h-8 text-gray-700 mx-auto mb-2" />

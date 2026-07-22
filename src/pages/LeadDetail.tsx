@@ -1,11 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import {
-  ArrowLeft, Phone, Mail, MapPin, IndianRupee, Calendar,
+import { motion } from 'framer-motion';import { ArrowLeft, Phone, Mail, MapPin, IndianRupee, Calendar,
   MessageSquare, Send, User, Bot, Clock, Edit2,
   Trash2, MoreHorizontal, ExternalLink, Building2, Sparkles,
-  ChevronDown, History
+  ChevronDown, History, Percent, Trophy
 } from 'lucide-react';
 import { supabase, subscribeToInserts } from '../lib/supabase';
 import { useLeads } from '../hooks/useLeads';
@@ -14,7 +12,7 @@ import { LeadScoreIndicator } from '../components/ui/LeadScoreIndicator';
 import { LeadJourneyTimeline } from '../components/leads/LeadJourneyTimeline';
 import { LeadDetailSkeleton } from '../components/ui/SkeletonLoader';
 import { getLeadCategory } from '../lib/ai-scoring';
-import { formatIndianCurrency } from '../lib/format';
+import { formatIndianCurrency, formatCommission, calculateCommission } from '../lib/format';
 import { formatDateTime, formatRelativeTime, cn } from '../lib/utils';
 import type { LeadStatus, Message, LeadEvent } from '../types';
 import { LEAD_STATUS_LABELS, LEAD_SOURCE_LABELS } from '../types';
@@ -380,6 +378,45 @@ export function LeadDetail() {
               <p>Updated: {formatRelativeTime(lead.updated_at)}</p>
             </div>
           </div>
+
+          {/* Deal Value & Commission */}
+          {lead.budget && lead.budget > 0 && (
+            <div className="premium-card p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <Trophy className="w-4 h-4 text-luxury-gold-400" />
+                <h3 className="text-sm font-semibold text-white">Deal Value & Commission</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-luxury-gray/50 border border-luxury-border">
+                  <span className="text-xs text-gray-400">Estimated Deal Value</span>
+                  <span className="text-sm font-bold text-white">{formatIndianCurrency(lead.budget)}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-luxury-gray/50 border border-luxury-border">
+                  <span className="text-xs text-gray-400">Success Fee</span>
+                  <span className="text-sm font-medium text-luxury-gold-400">3%</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-luxury-gold-500/10 border border-luxury-gold-500/30">
+                  <span className="text-xs font-medium text-white">Commission if Closed</span>
+                  <span className="text-base font-bold text-luxury-gold-400">{formatCommission(calculateCommission(lead.budget))}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-luxury-gray/50 border border-luxury-border">
+                  <span className="text-xs text-gray-400">Probability of Closure</span>
+                  <span className={cn(
+                    'text-sm font-semibold',
+                    lead.score >= 75 ? 'text-emerald-400' : lead.score >= 55 ? 'text-amber-400' : 'text-gray-400'
+                  )}>
+                    {lead.score >= 75 ? 'High' : lead.score >= 55 ? 'Medium' : 'Low'}
+                  </span>
+                </div>
+                {lead.status === 'booked' && (
+                  <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-center">
+                    <p className="text-xs text-emerald-400 font-medium">✅ Deal Closed — Commission Realized</p>
+                    <p className="text-sm font-bold text-emerald-400 mt-1">{formatCommission(calculateCommission(lead.budget))}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </motion.div>

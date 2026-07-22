@@ -11,6 +11,7 @@ import { CalendarPage } from './pages/Calendar';
 import { Analytics } from './pages/Analytics';
 import { Settings } from './pages/Settings';
 import { NotFound } from './pages/NotFound';
+import { DemoBaner, DemoKharadi, DemoWakad } from './pages/DemoBaner';
 import { DatabaseGate } from './components/setup/DatabaseGate';
 import type { ReactNode } from 'react';
 
@@ -36,6 +37,9 @@ function AppRoutes() {
       {/* Public Routes */}
       <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+      <Route path="/demo/vtp-baner" element={<DemoBaner />} />
+      <Route path="/demo/godrej-kharadi" element={<DemoKharadi />} />
+      <Route path="/demo/kolte-patil-wakad" element={<DemoWakad />} />
 
       {/* Protected Routes */}
       <Route

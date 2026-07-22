@@ -3,12 +3,12 @@ import { motion } from 'framer-motion';
 import {
   BarChart3, TrendingUp, IndianRupee, Users, Calendar,
   Download, Target, ArrowUp, Sparkles,
-  Building2, Activity
+  Building2, Activity, Percent, Trophy
 } from 'lucide-react';
 import { KPICard } from '../components/ui/KPICard';
 import { ConversionChart } from '../components/analytics/ConversionChart';
 import { useDashboard } from '../hooks/useDashboard';
-import { formatIndianCurrency, formatPercentage } from '../lib/format';
+import { formatIndianCurrency, formatPercentage, formatCommission } from '../lib/format';
 import { cn } from '../lib/utils';
 import type { LeadStatus } from '../types';
 
@@ -19,9 +19,14 @@ export function Analytics() {
   const analytics = useMemo(() => ({
     totalLeads: metrics.totalLeads,
     qualified: metrics.qualifiedLeads,
+    siteVisits: metrics.siteVisits,
     booked: metrics.bookings,
     lost: metrics.totalLeads - metrics.qualifiedLeads,
     pipelineValue: metrics.pipelineValue,
+    potentialCommission: metrics.potentialCommission,
+    commissionEarned: metrics.commissionEarned,
+    closedDeals: metrics.closedDeals,
+    averageDealSize: metrics.averageDealSize,
     avgScore: Math.round(
       metrics.totalLeads > 0
         ? metrics.hotLeadsList.reduce((s, l) => s + l.score, 0) / Math.max(metrics.hotLeadsList.length, 1)
@@ -98,24 +103,23 @@ export function Analytics() {
           subtitle="Active pipeline"
         />
         <KPICard
-          title="Conversion Rate"
-          value={formatPercentage(analytics.conversionRate)}
-          icon={<Target className="w-5 h-5" />}
-          subtitle="Lead to booking"
-          trend={{ value: 2.3, isPositive: true }}
+          title="Potential Commission"
+          value={formatCommission(analytics.potentialCommission)}
+          icon={<Percent className="w-5 h-5" />}
+          subtitle="3% success fee"
         />
         <KPICard
-          title="Avg Lead Score"
-          value={`${analytics.avgScore}/100`}
-          icon={<TrendingUp className="w-5 h-5" />}
-          subtitle="Quality metric"
+          title="Commission Earned"
+          value={formatCommission(analytics.commissionEarned)}
+          icon={<IndianRupee className="w-5 h-5" />}
+          subtitle="On closed deals"
           trend={{ value: 5, isPositive: true }}
         />
         <KPICard
-          title="Qualification Rate"
-          value={formatPercentage(analytics.qualificationRate)}
-          icon={<Users className="w-5 h-5" />}
-          subtitle="Lead to qualified"
+          title="Avg Deal Size"
+          value={analytics.averageDealSize > 0 ? formatIndianCurrency(analytics.averageDealSize) : '—'}
+          icon={<Building2 className="w-5 h-5" />}
+          subtitle="Per closed booking"
         />
       </div>
 
@@ -126,39 +130,102 @@ export function Analytics() {
           <ConversionChart data={analytics.leadsByStatus} />
         </div>
 
-        {/* Revenue Projection */}
+        {/* Commission by Month / Pipeline */}
         <div className="premium-card p-5">
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-white">Revenue Projection</h3>
-            <div className="flex items-end gap-2 h-48">
-              {analytics.monthlyData.map((item, i) => {
-                const maxVal = Math.max(...analytics.monthlyData.map((m) => Math.max(m.leads, m.bookings)), 1);
-                return (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                    <div className="relative w-full" style={{ height: '160px' }}>
-                      <div className="absolute bottom-0 left-1 right-1 rounded-t-md bg-luxury-gold-500/20 transition-all duration-500"
-                        style={{ height: `${(item.leads / maxVal) * 100}%` }}>
-                        <div className="absolute bottom-0 left-0 right-0 rounded-t-md bg-luxury-gold-500/40"
-                          style={{ height: `${Math.min((item.leads / maxVal) * 100, 100)}%` }} />
-                      </div>
-                      <div className="absolute bottom-0 left-1.5 right-1.5 rounded-t-md bg-emerald-500/60 transition-all duration-500"
-                        style={{ height: `${(item.bookings / maxVal) * 100}%` }} />
-                    </div>
-                    <span className="text-[10px] text-gray-500">{item.month}</span>
-                  </div>
-                );
-              })}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Trophy className="w-4 h-4 text-luxury-gold-400" />
+                <h3 className="text-sm font-semibold text-white">Commission & Pipeline</h3>
+              </div>
+              <span className="text-xs text-luxury-gold-400">Total: {formatCommission(analytics.potentialCommission + analytics.commissionEarned)}</span>
             </div>
-            <div className="flex items-center justify-center gap-6 text-xs text-gray-500">
-              <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-sm bg-luxury-gold-500/40" />
-                <span>Leads</span>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 rounded-lg bg-luxury-gray/30 border border-luxury-border">
+                <p className="text-[10px] text-gray-500">Pipeline Value</p>
+                <p className="text-base font-bold text-white">{formatIndianCurrency(analytics.pipelineValue)}</p>
+                <p className="text-[10px] text-luxury-gold-400">Potential: {formatCommission(analytics.potentialCommission)}</p>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-sm bg-emerald-500/60" />
-                <span>Bookings</span>
+              <div className="p-3 rounded-lg bg-luxury-gray/30 border border-luxury-border">
+                <p className="text-[10px] text-gray-500">Commission Realized</p>
+                <p className="text-base font-bold text-emerald-400">{formatCommission(analytics.commissionEarned)}</p>
+                <p className="text-[10px] text-gray-500">On {analytics.closedDeals} deals</p>
               </div>
-              <span>Conv: <span className="text-emerald-400">{formatPercentage(analytics.conversionRate)}</span></span>
+              <div className="p-3 rounded-lg bg-luxury-gray/30 border border-luxury-border">
+                <p className="text-[10px] text-gray-500">Avg Deal Size</p>
+                <p className="text-base font-bold text-white">{analytics.averageDealSize > 0 ? formatIndianCurrency(analytics.averageDealSize) : '—'}</p>
+                <p className="text-[10px] text-emerald-400">Avg commission: {analytics.averageDealSize > 0 ? formatCommission(analytics.averageDealSize * 0.03) : '—'}</p>
+              </div>
+              <div className="p-3 rounded-lg bg-luxury-gray/30 border border-luxury-border">
+                <p className="text-[10px] text-gray-500">Visit→Booking Rate</p>
+                <p className="text-base font-bold text-white">{formatPercentage(analytics.visitBookingRate)}</p>
+                <p className="text-[10px] text-gray-500">Conversion efficiency</p>
+              </div>
+            </div>
+
+            {/* Commission by month bar chart */}
+            <div>
+              <p className="text-xs text-gray-500 mb-3">Commission by Month</p>
+              <div className="flex items-end gap-2 h-32">
+                {analytics.monthlyData.map((item, i) => {
+                  // Estimate commission from each month's bookings (each booking assumed ~₹1Cr avg)
+                  const monthlyCommission = item.bookings * 10000000 * 0.03;
+                  const maxComm = Math.max(...analytics.monthlyData.map((m) => m.bookings * 10000000 * 0.03), 1);
+                  return (
+                    <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                      <div className="relative w-full" style={{ height: '100px' }}>
+                        <div className="absolute bottom-0 left-1.5 right-1.5 rounded-t-md"
+                          style={{
+                            height: monthlyCommission > 0 ? `${(monthlyCommission / maxComm) * 100}%` : '4px',
+                            background: monthlyCommission > 0 
+                              ? 'linear-gradient(to top, rgba(212, 160, 48, 0.6), rgba(212, 160, 48, 0.2))'
+                              : 'rgba(255,255,255,0.03)'
+                          }} 
+                        />
+                      </div>
+                      <span className="text-[9px] text-gray-600">{item.month}</span>
+                      {monthlyCommission > 0 && (
+                        <span className="text-[8px] text-luxury-gold-400/70">{formatCommission(monthlyCommission)}</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Conversion Metrics */}
+        <div className="premium-card p-5">
+          <h3 className="text-sm font-semibold text-white mb-4">Conversion Funnel</h3>
+          <div className="space-y-4">
+            <div className="relative h-12 bg-luxury-gray/30 rounded-lg overflow-hidden">
+              <div className="absolute inset-0 flex items-center justify-between px-4">
+                <span className="text-xs text-gray-500">Lead → Qualified</span>
+                <span className="text-xs font-medium text-white">{formatPercentage(analytics.qualificationRate)}</span>
+              </div>
+              <div className="h-full rounded-lg bg-emerald-500/30" style={{ width: `${Math.min(analytics.qualificationRate, 100)}%` }} />
+            </div>
+            <div className="relative h-12 bg-luxury-gray/30 rounded-lg overflow-hidden">
+              <div className="absolute inset-0 flex items-center justify-between px-4">
+                <span className="text-xs text-gray-500">Qualified → Site Visit</span>
+                <span className="text-xs font-medium text-white">{formatPercentage(analytics.siteVisits > 0 ? (analytics.booked / analytics.siteVisits) * 100 : 0)}</span>
+              </div>
+              <div className="h-full rounded-lg bg-amber-500/30" style={{ width: `${Math.min(analytics.siteVisits > 0 ? (analytics.booked / analytics.siteVisits) * 100 : 0, 100)}%` }} />
+            </div>
+            <div className="relative h-12 bg-luxury-gray/30 rounded-lg overflow-hidden">
+              <div className="absolute inset-0 flex items-center justify-between px-4">
+                <span className="text-xs text-gray-500">Site Visit → Booking</span>
+                <span className="text-xs font-medium text-white">{formatPercentage(analytics.visitBookingRate)}</span>
+              </div>
+              <div className="h-full rounded-lg bg-luxury-gold-500/30" style={{ width: `${Math.min(analytics.visitBookingRate, 100)}%` }} />
+            </div>
+            <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-400">Overall Conversion</span>
+                <span className="text-sm font-bold text-emerald-400">{formatPercentage(analytics.conversionRate)}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -179,29 +246,27 @@ export function Analytics() {
             </div>
             <div className="p-4 rounded-lg bg-luxury-gray/30 border border-luxury-border">
               <div className="flex items-center gap-2 mb-2">
-                <Users className="w-4 h-4 text-purple-400" />
+                <Percent className="w-4 h-4 text-luxury-gold-400" />
+                <p className="text-xs text-gray-500">Commission Rate</p>
+              </div>
+              <p className="text-2xl font-bold text-white">3%</p>
+              <p className="text-xs text-luxury-gold-400 mt-1">Success fee on closed deals</p>
+            </div>
+            <div className="p-4 rounded-lg bg-luxury-gray/30 border border-luxury-border">
+              <div className="flex items-center gap-2 mb-2">
+                <Trophy className="w-4 h-4 text-luxury-gold-400" />
+                <p className="text-xs text-gray-500">Closed Deals</p>
+              </div>
+              <p className="text-2xl font-bold text-white">{analytics.closedDeals}</p>
+              <p className="text-xs text-luxury-gold-400 mt-1">Commission: {formatCommission(analytics.commissionEarned)}</p>
+            </div>
+            <div className="p-4 rounded-lg bg-luxury-gray/30 border border-luxury-border">
+              <div className="flex items-center gap-2 mb-2">
+                <Building2 className="w-4 h-4 text-amber-400" />
                 <p className="text-xs text-gray-500">Qualified Leads</p>
               </div>
               <p className="text-2xl font-bold text-white">{analytics.qualified}</p>
               <p className="text-xs text-gray-500 mt-1">of {analytics.totalLeads} total</p>
-            </div>
-            <div className="p-4 rounded-lg bg-luxury-gray/30 border border-luxury-border">
-              <div className="flex items-center gap-2 mb-2">
-                <Building2 className="w-4 h-4 text-luxury-gold-400" />
-                <p className="text-xs text-gray-500">Total Bookings</p>
-              </div>
-              <p className="text-2xl font-bold text-white">{analytics.booked}</p>
-              <p className="text-xs text-luxury-gold-400 mt-1">{formatIndianCurrency(analytics.pipelineValue)} pipeline</p>
-            </div>
-            <div className="p-4 rounded-lg bg-luxury-gray/30 border border-luxury-border">
-              <div className="flex items-center gap-2 mb-2">
-                <Activity className="w-4 h-4 text-amber-400" />
-                <p className="text-xs text-gray-500">Lost Leads</p>
-              </div>
-              <p className="text-2xl font-bold text-white">{analytics.lost}</p>
-              <p className="text-xs text-red-400 mt-1">
-                {analytics.totalLeads > 0 ? formatPercentage((analytics.lost / analytics.totalLeads) * 100) : '0%'} loss rate
-              </p>
             </div>
           </div>
         </div>
@@ -214,22 +279,21 @@ export function Analytics() {
           </div>
           <div className="space-y-3">
             <div className="p-3 rounded-lg bg-luxury-gold-500/5 border border-luxury-gold-500/20">
-              <p className="text-sm text-luxury-gold-400 font-medium">📈 Conversion Opportunity</p>
+              <p className="text-sm text-luxury-gold-400 font-medium">📈 Commission Opportunity</p>
               <p className="text-xs text-gray-400 mt-1">
-                Your qualified leads have a {formatPercentage(analytics.visitBookingRate)} visit-to-booking rate.
-                Focus on moving more leads to site visits.
+                Your active pipeline of {formatIndianCurrency(analytics.pipelineValue)} could earn {formatCommission(analytics.potentialCommission)} in success fees at 3%.
               </p>
             </div>
             <div className="p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
               <p className="text-sm text-blue-400 font-medium">🎯 Lead Quality Improving</p>
               <p className="text-xs text-gray-400 mt-1">
-                Average lead score is {analytics.avgScore}/100. Leads from WhatsApp and referrals score 20% higher.
+                Average lead score is {analytics.avgScore}/100. Higher quality scores correlate with larger deal sizes.
               </p>
             </div>
             <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
-              <p className="text-sm text-emerald-400 font-medium">📊 Revenue Projection</p>
+              <p className="text-sm text-emerald-400 font-medium">💰 Zero Risk Revenue</p>
               <p className="text-xs text-gray-400 mt-1">
-                Current pipeline value of {formatIndianCurrency(analytics.pipelineValue)} with {formatPercentage(analytics.conversionRate)} expected conversion rate.
+                With {formatCommission(analytics.commissionEarned)} already earned from {analytics.closedDeals} closed deals — paid only after booking confirmation.
               </p>
             </div>
           </div>

@@ -78,3 +78,31 @@ export function getSourceIcon(source: string): string {
   };
   return map[source] || '📋';
 }
+
+/** Commission rate (3% of deal value) */
+export const COMMISSION_RATE = 0.03;
+
+/**
+ * Calculate the 3% success fee on a deal value.
+ */
+export function calculateCommission(dealValue: number): number {
+  return dealValue * COMMISSION_RATE;
+}
+
+/**
+ * Format a commission amount for display, e.g. 
+ *   ₹1.5 L (on ₹50 L deal)
+ *   ₹5.25 L (on ₹1.75 Cr deal)
+ */
+export function formatCommission(value: number): string {
+  return formatIndianCurrency(value);
+}
+
+/**
+ * Format a deal value with commission breakdown,
+ * e.g. "₹50 L deal → ₹1.5 L commission"
+ */
+export function formatDealWithCommission(dealValue: number): string {
+  const commission = calculateCommission(dealValue);
+  return `${formatIndianCurrency(dealValue)} → ${formatIndianCurrency(commission)} commission`;
+}

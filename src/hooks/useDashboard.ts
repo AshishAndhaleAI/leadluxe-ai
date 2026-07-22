@@ -3,6 +3,8 @@ import { supabase, subscribeToInserts, subscribeToUpdates } from '../lib/supabas
 import { useAuth } from '../context/AuthContext';
 import type { Lead, LeadStatus, LeadSource } from '../types';
 
+const COMMISSION_RATE = 0.03; // 3% success fee
+
 export interface DashboardMetrics {
   totalLeads: number;
   hotLeads: number;
@@ -18,6 +20,12 @@ export interface DashboardMetrics {
   monthlyTrend: { month: string; leads: number; bookings: number }[];
   recentLeads: Lead[];
   hotLeadsList: Lead[];
+  // Commission-based metrics
+  potentialCommission: number;
+  commissionEarned: number;
+  closedDeals: number;
+  averageDealSize: number;
+  closedDealsList: Lead[];
 }
 
 export function useDashboard() {
@@ -81,6 +89,16 @@ export function useDashboard() {
       .filter((l) => !['booked', 'lost'].includes(l.status))
       .reduce((sum, l) => sum + (l.budget || 0), 0);
 
+    // Commission-based metrics
+    const activePipeline = leads.filter((l) => !['booked', 'lost'].includes(l.status));
+    const potentialCommission = activePipeline.reduce((sum, l) => sum + ((l.budget || 0) * COMMISSION_RATE), 0);
+    const closedDealsList = leads.filter((l) => l.status === 'booked');
+    const closedDeals = closedDealsList.length;
+    const commissionEarned = closedDealsList.reduce((sum, l) => sum + ((l.budget || 0) * COMMISSION_RATE), 0);
+    const averageDealSize = closedDeals > 0
+      ? closedDealsList.reduce((sum, l) => sum + (l.budget || 0), 0) / closedDeals
+      : 0;
+
     const today = new Date().toDateString();
     const newLeadsToday = leads.filter(
       (l) => new Date(l.created_at).toDateString() === today
@@ -132,6 +150,7 @@ export function useDashboard() {
       totalLeads, hotLeads, qualifiedLeads, siteVisits, bookings,
       conversionRate, projectedRevenue, pipelineValue, newLeadsToday,
       leadsByStatus, leadsBySource, monthlyTrend, recentLeads, hotLeadsList,
+      potentialCommission, commissionEarned, closedDeals, averageDealSize, closedDealsList,
     };
   }, [leads]);
 
