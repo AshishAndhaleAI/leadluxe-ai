@@ -3,6 +3,9 @@ import { createClient, type RealtimeChannel } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+console.log('[Supabase] URL loaded:', !!supabaseUrl);
+console.log('[Supabase] Anon Key loaded:', !!supabaseAnonKey);
+
 /** Whether the required environment variables are present. */
 export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
 
@@ -24,38 +27,40 @@ export const supabase = isSupabaseConfigured
     })
   : null!;
 
-export type ConnectionStatus = 'connected' | 'schema_missing' | 'failed';
+export type ConnectionStatus = 'connected' | 'failed';
 
 /**
  * Ping the Supabase REST API to verify database connectivity.
- * Returns the connection status:
- *   - 'connected':  All good — tables exist and are queryable
- *   - 'schema_missing': Connection works, but tables haven't been created yet
- *   - 'failed':      Cannot reach the Supabase API at all
+ * Queries the `projects` table (known to exist after schema creation)
+ * using a lightweight head request with limit 1.
+ *
+ * Returns:
+ *   - 'connected':  The Supabase API responded and the table is queryable.
+ *   - 'failed':     Credentials are missing or the request could not complete.
  */
 export async function checkDatabaseConnection(): Promise<ConnectionStatus> {
-  if (!isSupabaseConfigured || !supabase) return 'failed';
+  if (!isSupabaseConfigured || !supabase) {
+    console.log('[Supabase] Health check: skipped — credentials not configured');
+    return 'failed';
+  }
+
+  console.log('[Supabase] Health check: started — querying projects table');
+
   try {
     const { error } = await supabase
-      .from('users')
-      .select('id', { count: 'exact', head: true })
+      .from('projects')
+      .select('id')
       .limit(1);
 
     if (error) {
-      // Schema not applied: PostgREST returns PGRST205 with "Could not find the table"
-      // Raw Postgres would say "relation ... does not exist"
-      const msg = error.message || '';
-      if (
-        (msg.includes('relation') && msg.includes('does not exist')) ||
-        msg.includes('Could not find the table')
-      ) {
-        return 'schema_missing';
-      }
+      console.log('[Supabase] Health check: error —', error.message);
       return 'failed';
     }
 
+    console.log('[Supabase] Health check: success');
     return 'connected';
-  } catch {
+  } catch (err: any) {
+    console.log('[Supabase] Health check: exception —', err?.message || err);
     return 'failed';
   }
 }
