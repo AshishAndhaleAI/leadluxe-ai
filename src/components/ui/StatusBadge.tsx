@@ -8,6 +8,16 @@ interface StatusBadgeProps {
   size?: 'sm' | 'md';
 }
 
+const STATUS_DOT_CLASSES: Record<LeadStatus, string> = {
+  new: 'bg-blue-400',
+  contacted: 'bg-purple-400',
+  qualified: 'bg-emerald-400',
+  site_visit: 'bg-amber-400',
+  negotiation: 'bg-orange-400',
+  booked: 'bg-yellow-400',
+  lost: 'bg-red-400',
+};
+
 export function StatusBadge({ status, className, size = 'sm' }: StatusBadgeProps) {
   return (
     <span
@@ -18,18 +28,7 @@ export function StatusBadge({ status, className, size = 'sm' }: StatusBadgeProps
         className
       )}
     >
-      <span className={cn(
-        'w-1.5 h-1.5 rounded-full mr-1.5',
-        {
-          'bg-blue-400': status === 'new',
-          'bg-purple-400': status === 'contacted',
-          'bg-emerald-400': status === 'qualified',
-          'bg-amber-400': status === 'site_visit',
-          'bg-orange-400': status === 'negotiation',
-          'bg-yellow-400': status === 'booked',
-          'bg-red-400': status === 'lost',
-        }
-      )} />
+      <span className={cn('w-1.5 h-1.5 rounded-full mr-1.5', STATUS_DOT_CLASSES[status])} />
       {LEAD_STATUS_LABELS[status]}
     </span>
   );

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
-type RealtimeCallback<T> = (payload: RealtimePostgresChangesPayload<T>) => void;
+type RealtimeCallback<T extends Record<string, any>> = (payload: RealtimePostgresChangesPayload<T>) => void;
 
 interface RealtimeSubscription {
   table: string;
@@ -17,7 +17,7 @@ export function useRealtime(subscriptions: RealtimeSubscription[]) {
   subscriptionsRef.current = subscriptions;
 
   useEffect(() => {
-    if (!isSupabaseConfigured()) return;
+    if (!isSupabaseConfigured) return;
 
     const channels = subscriptionsRef.current.map((sub) => {
       const channel = supabase.channel(`${sub.table}-${Date.now()}`);

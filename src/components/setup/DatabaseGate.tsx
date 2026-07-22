@@ -1,6 +1,6 @@
 import { useState, useEffect, type ReactNode } from 'react';
 import { isSupabaseConfigured, checkDatabaseConnection } from '../../lib/supabase';
-import { Building2, AlertTriangle, CheckCircle, Loader2, RefreshCw } from 'lucide-react';
+import { Building2, AlertTriangle, Loader2, RefreshCw } from 'lucide-react';
 import { SupabaseSetup } from './SupabaseSetup';
 
 type ConnectionStatus = 'loading' | 'connected' | 'failed' | 'unconfigured';
@@ -133,17 +133,7 @@ export function DatabaseGate({ children }: DatabaseGateProps) {
           </div>
         )}
 
-        {status === 'connected' && (
-          <div className="glass-card p-8 border border-emerald-500/20">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-8 h-8 text-emerald-400" />
-            </div>
-            <h2 className="text-xl font-bold text-white mb-2">Connected!</h2>
-            <p className="text-sm text-gray-400">
-              Redirecting to the application...
-            </p>
-          </div>
-        )}
+
       </div>
     </div>
   );
