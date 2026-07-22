@@ -24,29 +24,39 @@ export const supabase = isSupabaseConfigured
     })
   : null!;
 
+export type ConnectionStatus = 'connected' | 'schema_missing' | 'failed';
+
 /**
  * Ping the Supabase REST API to verify database connectivity.
- * Returns `true` if the connection works, `false` otherwise.
+ * Returns the connection status:
+ *   - 'connected':  All good — tables exist and are queryable
+ *   - 'schema_missing': Connection works, but tables haven't been created yet
+ *   - 'failed':      Cannot reach the Supabase API at all
  */
-export async function checkDatabaseConnection(): Promise<boolean> {
-  if (!isSupabaseConfigured || !supabase) return false;
+export async function checkDatabaseConnection(): Promise<ConnectionStatus> {
+  if (!isSupabaseConfigured || !supabase) return 'failed';
   try {
-    // We use a lightweight health-check — query the users table (empty OK).
-    // Add ?limit=1 so it returns immediately even on a huge table.
     const { error } = await supabase
       .from('users')
       .select('id', { count: 'exact', head: true })
       .limit(1);
 
-    // A "relation does not exist" error means the DB is reachable but tables
-    // haven't been created yet — the connection IS working.
-    if (error && error.message?.includes('relation') && error.message?.includes('does not exist')) {
-      return true;
+    if (error) {
+      // Schema not applied: PostgREST returns PGRST205 with "Could not find the table"
+      // Raw Postgres would say "relation ... does not exist"
+      const msg = error.message || '';
+      if (
+        (msg.includes('relation') && msg.includes('does not exist')) ||
+        msg.includes('Could not find the table')
+      ) {
+        return 'schema_missing';
+      }
+      return 'failed';
     }
 
-    return !error;
+    return 'connected';
   } catch {
-    return false;
+    return 'failed';
   }
 }
 

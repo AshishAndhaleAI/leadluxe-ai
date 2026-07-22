@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { X, Send, IndianRupee } from 'lucide-react';
 import { calculateLeadScore, getLeadCategory } from '../../lib/ai-scoring';
-import type { Lead, LeadSource } from '../../types';
+import type { Lead } from '../../types';
 import { LEAD_SOURCE_LABELS } from '../../types';
 import { cn } from '../../lib/utils';
 

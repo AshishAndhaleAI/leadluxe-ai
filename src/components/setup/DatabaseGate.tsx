@@ -1,9 +1,9 @@
 import { useState, useEffect, type ReactNode } from 'react';
 import { isSupabaseConfigured, checkDatabaseConnection } from '../../lib/supabase';
-import { Building2, AlertTriangle, Loader2, RefreshCw } from 'lucide-react';
+import { Building2, AlertTriangle, Loader2, RefreshCw, Database } from 'lucide-react';
 import { SupabaseSetup } from './SupabaseSetup';
 
-type ConnectionStatus = 'loading' | 'connected' | 'failed' | 'unconfigured';
+type ConnectionStatus = 'loading' | 'connected' | 'schema_missing' | 'failed' | 'unconfigured';
 
 interface DatabaseGateProps {
   children: ReactNode;
@@ -22,10 +22,10 @@ export function DatabaseGate({ children }: DatabaseGateProps) {
 
     const check = async () => {
       try {
-        const ok = await checkDatabaseConnection();
+        const result = await checkDatabaseConnection();
         if (cancelled) return;
-        setStatus(ok ? 'connected' : 'failed');
-        if (!ok) {
+        setStatus(result as ConnectionStatus);
+        if (result === 'failed') {
           setErrorDetail('The Supabase project is reachable but the database did not respond as expected.');
         }
       } catch (err: any) {
@@ -47,9 +47,9 @@ export function DatabaseGate({ children }: DatabaseGateProps) {
     setStatus('loading');
     setErrorDetail('');
     checkDatabaseConnection()
-      .then((ok) => {
-        setStatus(ok ? 'connected' : 'failed');
-        if (!ok) setErrorDetail('The Supabase project is reachable but the database did not respond as expected.');
+      .then((result) => {
+        setStatus(result as ConnectionStatus);
+        if (result === 'failed') setErrorDetail('The Supabase project is reachable but the database did not respond as expected.');
       })
       .catch((err: any) => {
         setStatus('failed');
@@ -102,6 +102,49 @@ export function DatabaseGate({ children }: DatabaseGateProps) {
           </div>
         )}
 
+        {status === 'schema_missing' && (
+          <div className="glass-card p-8 border border-amber-500/20">
+            <div className="w-16 h-16 rounded-2xl bg-amber-500/20 flex items-center justify-center mx-auto mb-4">
+              <Database className="w-8 h-8 text-amber-400" />
+            </div>
+            <h2 className="text-xl font-bold text-white mb-2">Database Schema Required</h2>
+            <p className="text-sm text-gray-400 mb-4">
+              Your Supabase project is connected, but the database tables haven't been created yet.
+              Run the schema file in your Supabase SQL Editor to create all 13 tables.
+            </p>
+
+            <div className="glass-card p-4 mb-4 text-left border border-luxury-gold-500/10">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Quick Steps</p>
+              <ol className="text-sm text-gray-400 space-y-2 list-decimal list-inside">
+                <li>Open{' '}
+                  <a
+                    href="https://supabase.com/dashboard/project/alrmqtusoytldraxfnba/sql/new"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-luxury-gold-400 hover:text-luxury-gold-300 underline"
+                  >
+                    your Supabase SQL Editor
+                  </a>
+                </li>
+                <li>Open the file <code className="text-luxury-gold-400 bg-luxury-gold-500/10 px-1 rounded">supabase/schema.sql</code> in your editor</li>
+                <li>Copy the entire contents and paste into the SQL Editor</li>
+                <li>Click <strong className="text-white">Run</strong> to create all tables</li>
+                <li>Then click <strong className="text-white">Retry</strong> below</li>
+              </ol>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={handleRetry}
+                className="btn-primary"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Retry Connection
+              </button>
+            </div>
+          </div>
+        )}
+
         {status === 'failed' && (
           <div className="glass-card p-8 border border-red-500/20">
             <div className="w-16 h-16 rounded-2xl bg-red-500/20 flex items-center justify-center mx-auto mb-4">
@@ -125,15 +168,11 @@ export function DatabaseGate({ children }: DatabaseGateProps) {
                 Retry Connection
               </button>
               <p className="text-xs text-gray-500 mt-3">
-                Make sure you have run the schema from{' '}
-                <code className="text-luxury-gold-400 bg-luxury-gold-500/10 px-1 rounded">supabase/schema.sql</code>{' '}
-                in your Supabase SQL Editor.
+                Make sure your <code className="text-luxury-gold-400 bg-luxury-gold-500/10 px-1 rounded">.env</code> file has the correct Supabase URL and Anon Key.
               </p>
             </div>
           </div>
         )}
-
-
       </div>
     </div>
   );
