@@ -20,6 +20,7 @@ import { cn } from '../lib/utils';
 import { getPropertyDatabase } from '../lib/property-database';
 import type { Property, PropertyStatus, PropertyType, PropertyImage, PropertyUnit } from '../lib/property-database';
 import { getEnrichedPropertyById } from '../services/property-enrichment';
+import { trackPropertyClick, trackContactSubmit } from '../lib/analytics';
 
 // ============================================================
 // TYPES
@@ -864,7 +865,7 @@ function PropertyCard({ property, index, isFavorite, onToggleFavorite, onClick, 
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.015 }}
       className="premium-card overflow-hidden group cursor-pointer"
-      onClick={onClick}
+      onClick={() => { trackPropertyClick(property.id, property.name, property.city, property.price_min); onClick(); }}
     >
       {/* Image */}
       <div className="relative h-40 bg-gray-900 overflow-hidden">
@@ -966,7 +967,7 @@ function PropertyListItem({ property, index, isFavorite, onToggleFavorite, onCli
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.01 }}
-      onClick={onClick}
+      onClick={() => { trackPropertyClick(property.id, property.name, property.city, property.price_min); onClick(); }}
       className="premium-card p-3 cursor-pointer hover:border-gray-600/50 transition-all"
     >
       <div className="flex items-center gap-4">
@@ -1041,6 +1042,8 @@ function InterestModal({ property, onClose, onSubmitted }: {
     const existing = JSON.parse(localStorage.getItem('leadluxe-deals') || '[]');
     existing.unshift(deal);
     localStorage.setItem('leadluxe-deals', JSON.stringify(existing));
+    // Track the contact form submission in GA4
+    trackContactSubmit(property.id, property.name, 'form');
     setSubmitted(true);
     setTimeout(onSubmitted, 2000);
   };

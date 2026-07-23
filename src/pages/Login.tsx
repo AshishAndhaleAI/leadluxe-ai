@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { cn } from '../lib/utils';
+import { trackLocationSelected } from '../lib/analytics';
 import { COUNTRIES, CITIES, getCitiesByCountry } from '../lib/global-data';
 import type { Country, City } from '../lib/global-data';
 
@@ -102,6 +103,7 @@ export function Login() {
       country: selectedCountry as any,
       city: selectedCity as any,
     });
+    trackLocationSelected(selectedCountry.name, selectedCity.name);
     setStep('preferences');
   };
 

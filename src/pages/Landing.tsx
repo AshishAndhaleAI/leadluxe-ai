@@ -10,6 +10,7 @@ import {
 
 import { cn } from '../lib/utils';
 import { formatIndianCurrency } from '../lib/format';
+import { trackCommissionCalculated } from '../lib/analytics';
 
 const Hero3D = lazy(() =>
   import('../components/hero/Hero3D').then((m) => ({ default: m.Hero3D }))
@@ -353,14 +354,16 @@ export function Landing() {
                       </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <button
-                        onClick={() => navigate('/login')}
-                        className="btn-primary flex-1"
-                      >
-                        Calculate My Commission ROI
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
+                    <div className="flex flex-col sm:flex-row gap-3">                        <button
+                          onClick={() => {
+                            trackCommissionCalculated(parsedDeal, calcCommission);
+                            navigate('/login');
+                          }}
+                          className="btn-primary flex-1"
+                        >
+                          Calculate My Commission ROI
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
                       <button
                         onClick={() => navigate('/login')}
                         className="btn-outline flex-1"

@@ -22,6 +22,7 @@ import { cn } from '../lib/utils';
 import { getEnrichedPropertyById, getEnrichedPropertyBySlug, getEnrichedPropertiesByCity } from '../services/property-enrichment';
 import type { EnrichedProperty } from '../services/property-enrichment';
 import { SEOHelmet, RealEstateListingLD, BreadcrumbLD } from '../components/seo/SEOHelmet';
+import { trackOpportunityView } from '../lib/analytics';
 
 // ============================================================
 // HELPERS
@@ -270,7 +271,12 @@ export function PropertyDetail() {
   // Find property by slug or ID using enriched data
   const property = useMemo(() => {
     if (!slug) return undefined;
-    return getEnrichedPropertyBySlug(slug) || getEnrichedPropertyById(slug);
+    const prop = getEnrichedPropertyBySlug(slug) || getEnrichedPropertyById(slug);
+    // Track opportunity view (fires once per navigation)
+    if (prop) {
+      trackOpportunityView(prop.id, prop.name, prop.city, prop.country, (prop.price_min + prop.price_max) / 2);
+    }
+    return prop;
   }, [slug]);
 
   // Similar properties in same city

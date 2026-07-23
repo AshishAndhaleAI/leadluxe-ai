@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { Country, City } from '../lib/global-data';
+import { trackSignUp, trackLogin } from '../lib/analytics';
 
 interface UserPreferences {
   country: Country | null;
@@ -98,6 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     setUser(demoUser);
     localStorage.setItem('leadluxe_user', JSON.stringify(demoUser));
+    trackLogin('email');
     return {};
   }
 
@@ -112,6 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     setUser(newUser);
     localStorage.setItem('leadluxe_user', JSON.stringify(newUser));
+    trackSignUp('email');
     return {};
   }
 
