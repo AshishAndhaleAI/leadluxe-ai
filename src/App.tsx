@@ -28,6 +28,7 @@ import { Pilot } from './pages/Pilot';
 import { TractionDashboard } from './pages/TractionDashboard';
 import { BookDemo } from './pages/BookDemo';
 import { DealReport } from './pages/DealReport';
+import { DataProvenance } from './pages/DataProvenance';
 import { AIGovernancePanel } from './components/investor/AIGovernancePanel';
 import { NeuralCapitalMap } from './pages/NeuralCapitalMap';
 import { TimeMachine } from './pages/TimeMachine';
@@ -112,6 +113,9 @@ function AppRoutes() {
         <Route path="/pilot" element={<Pilot />} />
         <Route path="/book-demo" element={<BookDemo />} />
         <Route path="/report/:slug" element={<DealReport />} />
+
+        {/* Public Info pages — no auth required */}
+        <Route path="/data-provenance" element={<DataProvenance />} />
 
         {/* Public SEO pages — no auth required */}
         <Route path="/property/:slug" element={<PropertyDetail />} />

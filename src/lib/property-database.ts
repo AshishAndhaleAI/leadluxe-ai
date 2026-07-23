@@ -23,6 +23,43 @@ export interface PropertyImage {
   type: 'exterior' | 'interior' | 'view' | 'floorplan';
 }
 
+// ============================================================
+// VERIFICATION FIELDS
+// Every property record must track its data provenance.
+// ============================================================
+
+export type VerificationStatus = 'VERIFIED' | 'PARTIAL' | 'UNVERIFIED' | 'STALE';
+
+export interface VerificationMetadata {
+  status: VerificationStatus;
+  /** When this record was last verified against a trusted source */
+  verifiedAt: string | null;
+  /** Confidence in verification (0-100). Null means never verified. */
+  confidence: number | null;
+  /** The trusted source this data comes from */
+  sourceType: string | null;
+  /** URL to the source document or listing */
+  sourceUrl: string | null;
+  /** Name of the source (e.g. 'MahaRERA', 'DLD', 'UK Land Registry') */
+  sourceName: string | null;
+  /** Source-specific project ID (e.g. RERA registration number) */
+  sourceProjectId: string | null;
+  /** Human-readable address */
+  formattedAddress: string | null;
+  /** Verification notes */
+  notes: string | null;
+}
+
+export interface EvidenceRecord {
+  id: string;
+  projectId: string;
+  evidenceType: 'rera_filing' | 'planning_approval' | 'land_registry' | 'developer_brochure' | 'official_page' | 'news_coverage' | 'market_report';
+  title: string;
+  url: string;
+  sourceName: string;
+  capturedAt: string;
+}
+
 export interface Property {
   id: string;
   name: string;
@@ -53,6 +90,7 @@ export interface Property {
   bedrooms: number[];
   completion_date: string;
   rera_status: 'approved' | 'applied' | 'not_applicable';
+  rera_number: string | null;
   amenities: string[];
   images: PropertyImage[];
   tags: string[];
@@ -64,6 +102,14 @@ export interface Property {
   hero_url: string;
   sales_status: 'hot' | 'active' | 'limited' | 'sold_out';
   created_at: string;
+  // VERIFICATION LAYER
+  verification: VerificationMetadata;
+  evidence: EvidenceRecord[];
+  // Developer contact fields — set to null unless independently verified
+  developer_phone: string | null;
+  developer_email: string | null;
+  developer_website: string | null;
+  developer_address: string | null;
 }
 
 // ============================================================
@@ -457,6 +503,10 @@ function generatePropertiesForCity(
       const avgUnitValue = (minPrice + maxPrice) / 2;
       const commission = Math.round(avgUnitValue * 0.03);
 
+      // Use exact city centroid — no random offset. Coordinates are city-level, not parcel-level.
+      const exactLat = lat;
+      const exactLng = lng;
+
       const description = `${dev.name} presents ${propName}, a ${isLuxury ? 'luxury' : isAffordable ? 'value-engineered' : 'premium'} ${propType} development in ${cityName}, ${countryName}. ` +
         `Featuring ${unitTypes.map(u => `${u.bedrooms}BHK (${u.size_sqft} sqft)`).join(', ')} configurations. ` +
         `With ${amenities.slice(0, 4).join(', ')}, and ${amenities.length - 4} more world-class amenities. ` +
@@ -483,8 +533,8 @@ function generatePropertiesForCity(
         cityId,
         state: '',
         district: cityName,
-        latitude: lat + rngFloat(-0.05, 0.05, 4),
-        longitude: lng + rngFloat(-0.05, 0.05, 4),
+        latitude: exactLat,
+        longitude: exactLng,
         property_type: propType,
         status: propStatus,
         price_min: minPrice,
@@ -500,6 +550,7 @@ function generatePropertiesForCity(
         bedrooms: bedCounts,
         completion_date: mCompletionDate(propStatus),
         rera_status: propStatus === 'resale' ? 'not_applicable' : pick(['approved', 'applied', 'approved']),
+        rera_number: null,
         amenities,
         ...extImg(id),
         tags: isLuxury ? [...tags, 'luxury', 'premium'] : tags,
@@ -510,6 +561,24 @@ function generatePropertiesForCity(
         commission_percentage: 3.0,
         sales_status: salesStatus as Property['sales_status'],
         created_at: new Date(Date.now() - rng(1, 180) * 24 * 60 * 60 * 1000).toISOString(),
+        // VERIFICATION LAYER — all properties start as UNVERIFIED
+        verification: {
+          status: 'UNVERIFIED' as const,
+          verifiedAt: null,
+          confidence: null,
+          sourceType: null,
+          sourceUrl: null,
+          sourceName: null,
+          sourceProjectId: null,
+          formattedAddress: null,
+          notes: null,
+        },
+        evidence: [] as EvidenceRecord[],
+        // Developer contacts — set to null unless independently verified
+        developer_phone: null,
+        developer_email: null,
+        developer_website: null,
+        developer_address: null,
       });
     }
   });

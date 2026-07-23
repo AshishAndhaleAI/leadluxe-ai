@@ -793,7 +793,7 @@ function PropertyDetailModalInner({ property, isFavorite, onToggleFavorite, onEx
                   <p className="text-[9px] text-gray-500 capitalize">{property.developer_type} company</p>
                 </div>
               </div>
-              {builderContact && (
+              {builderContact && builderContact.salesPhone && (
                 <div className="space-y-1.5 text-[10px]">
                   <div className="flex items-center gap-2 text-gray-400">
                     <Phone className="w-3 h-3 text-emerald-400" />
@@ -803,6 +803,13 @@ function PropertyDetailModalInner({ property, isFavorite, onToggleFavorite, onEx
                     <Mail className="w-3 h-3 text-luxury-gold-400" />
                     <a href={`mailto:${builderContact.salesEmail}`} className="hover:text-white transition-colors">{builderContact.salesEmail}</a>
                   </div>
+                </div>
+              )}
+              {/* Show verification notice when no contacts are verified */}
+              {(!builderContact || !builderContact.salesPhone) && (
+                <div className="p-2 rounded-lg bg-gray-900/50 border border-gray-800 text-[9px] text-gray-500 text-center">
+                  Contact information has not yet been independently verified.
+                  <a href="/data-provenance" className="text-luxury-gold-400 hover:underline ml-1">Learn more</a>
                 </div>
               )}
             </div>

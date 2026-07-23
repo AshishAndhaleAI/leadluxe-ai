@@ -508,28 +508,26 @@ export function getPropertyAddress(property: Property): AddressData {
 /**
  * Get builder contact information for a property
  */
-export function getBuilderContact(property: Property): BuilderContact {
+export function getBuilderContact(property: Property): BuilderContact | { salesPhone: null; salesEmail: null; headquarters: null; website: string | null; yearEstablished: null } {
   const contact = BUILDER_CONTACTS[property.developer_slug];
-  if (contact) return contact;
+  if (contact) {
+    // Only return known builder contacts — never generate fake ones
+    return {
+      salesPhone: contact.salesPhone,
+      salesEmail: contact.salesEmail,
+      headquarters: contact.headquarters,
+      website: contact.website,
+      yearEstablished: contact.yearEstablished,
+    };
+  }
 
-  // Generate realistic fallback contact
-  const phonePrefixMap: Record<string, string> = {
-    'IN': '+91 22', 'AE': '+971 4', 'US': '+1 212', 'GB': '+44 20',
-    'SG': '+65', 'SA': '+966 11', 'DE': '+49 30', 'FR': '+33 1',
-    'JP': '+81 3', 'KR': '+82 2', 'TH': '+66 2', 'VN': '+84 24',
-    'BR': '+55 11', 'MX': '+52 55', 'TR': '+90 212', 'ES': '+34 91',
-    'IT': '+39 06', 'NL': '+31 20', 'CA': '+1 416', 'AU': '+61 2',
-    'MY': '+60 3', 'QA': '+974', 'ZA': '+27 11', 'NG': '+234 1', 'EG': '+20 2',
-  };
-  const prefix = phonePrefixMap[property.countryCode] || '+1 212';
-  const phoneNum = String(1000000 + Math.abs(property.id.split('').reduce((a, c) => a + c.charCodeAt(0), 0)) % 9000000);
-  
+  // Return nulls for unverified developers — no synthetic contact generation
   return {
-    salesPhone: `${prefix} ${phoneNum}`,
-    salesEmail: `sales.${property.developer_slug}@leadluxe.ai`,
-    headquarters: `${property.developer_name} HQ, ${property.city}, ${property.country}`,
-    website: `https://www.${property.developer_slug}.com`,
-    yearEstablished: 2000,
+    salesPhone: null,
+    salesEmail: null,
+    headquarters: null,
+    website: null,
+    yearEstablished: null,
   };
 }
 

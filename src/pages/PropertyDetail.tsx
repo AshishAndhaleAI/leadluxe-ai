@@ -318,7 +318,7 @@ export function PropertyDetail() {
       {/* SEO */}
       <SEOHelmet
         title={`${property.name} — ${property.developer_name} in ${property.address.district}, ${property.city}, ${property.country}`}
-        description={`${property.name} by ${property.developer_name}. Located at ${property.address.street}, ${property.address.district}, ${property.city}, ${property.country}. ${property.unit_types.length} configurations from ${formatPrice(property.price_min, property.countryCode)}. ${property.amenities.length} amenities. RERA ${property.rera_status}. Contact: ${property.builder.salesPhone}. View details, real images, Google Maps, and contact information.`}
+        description={`${property.name} by ${property.developer_name}. Located at ${property.address.street}, ${property.address.district}, ${property.city}, ${property.country}. ${property.unit_types.length} configurations from ${formatPrice(property.price_min, property.countryCode)}. ${property.amenities.length} amenities. View details, real images, Google Maps, and contact information.`}
         image={heroImage}
         url={pageUrl}
         type="product"
@@ -361,13 +361,17 @@ export function PropertyDetail() {
                   <Share2 className="w-3.5 h-3.5" />
                   Share
                 </button>
-                <a
-                  href={`tel:${property.builder.salesPhone.replace(/\s/g, '')}`}
-                  className="btn-primary text-xs px-3 py-1.5"
-                >
-                  <Phone className="w-3.5 h-3.5" />
-                  Call Now
-                </a>
+                {property.builder?.salesPhone ? (
+                  <a
+                    href={`tel:${property.builder.salesPhone.replace(/\s/g, '')}`}
+                    className="btn-primary text-xs px-3 py-1.5"
+                  >
+                    <Phone className="w-3.5 h-3.5" />
+                    Call Now
+                  </a>
+                ) : (
+                  <span className="text-xs text-gray-600 px-3 py-1.5">Contact info unverified</span>
+                )}
               </div>
             </div>
 
@@ -493,45 +497,59 @@ export function PropertyDetail() {
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-white">{property.developer_name}</p>
-                        <p className="text-[9px] text-gray-500">Est. {property.builder.yearEstablished} · {property.developer_type}</p>
+                        <p className="text-[9px] text-gray-500">{property.developer_type}</p>
                       </div>
                     </div>
                     <div className="space-y-2 text-xs">
-                      <div className="flex items-center gap-2 text-gray-400">
-                        <Phone className="w-3.5 h-3.5 text-emerald-400" />
-                        <a href={`tel:${property.builder.salesPhone.replace(/\s/g, '')}`} className="hover:text-white transition-colors">{property.builder.salesPhone}</a>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-400">
-                        <Mail className="w-3.5 h-3.5 text-luxury-gold-400" />
-                        <a href={`mailto:${property.builder.salesEmail}`} className="hover:text-white transition-colors">{property.builder.salesEmail}</a>
-                      </div>
-                      <div className="flex items-start gap-2 text-gray-400">
-                        <MapPin className="w-3.5 h-3.5 text-rose-400 mt-0.5" />
-                        <span className="text-[11px]">{property.builder.headquarters}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-400">
-                        <Globe className="w-3.5 h-3.5 text-blue-400" />
-                        <a href={property.builder.website} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">{property.builder.website}</a>
-                      </div>
+                      {property.builder?.salesPhone ? (
+                        <div className="flex items-center gap-2 text-gray-400">
+                          <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                          <a href={`tel:${property.builder.salesPhone.replace(/\s/g, '')}`} className="hover:text-white transition-colors">{property.builder.salesPhone}</a>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-gray-500">
+                          <Phone className="w-3.5 h-3.5 text-gray-600" />
+                          <span className="italic">Phone not verified</span>
+                        </div>
+                      )}
+                      {property.builder?.salesEmail ? (
+                        <div className="flex items-center gap-2 text-gray-400">
+                          <Mail className="w-3.5 h-3.5 text-luxury-gold-400" />
+                          <a href={`mailto:${property.builder.salesEmail}`} className="hover:text-white transition-colors">{property.builder.salesEmail}</a>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-gray-500">
+                          <Mail className="w-3.5 h-3.5 text-gray-600" />
+                          <span className="italic">Email not verified</span>
+                        </div>
+                      )}
                     </div>
+                    {!property.builder?.salesPhone && !property.builder?.salesEmail && (
+                      <div className="mt-2 p-2 rounded-lg bg-amber-500/5 border border-amber-500/10 text-[9px] text-amber-400/70 text-center">
+                        Contact information has not been independently verified.
+                        <a href="/data-provenance" className="text-luxury-gold-400 hover:underline ml-1">Source policy</a>
+                      </div>
+                    )}
                   </div>
                   <div className="flex flex-col justify-center p-4 rounded-xl bg-luxury-gold-500/5 border border-luxury-gold-500/20">
                     <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-3">Get in Touch</p>
                     <div className="space-y-2">
-                      <a
-                        href={`tel:${property.builder.salesPhone.replace(/\s/g, '')}`}
-                        className="btn-primary w-full text-xs"
-                      >
-                        <PhoneCall className="w-3.5 h-3.5" />
-                        Call {property.builder.salesPhone}
-                      </a>
-                      <a
-                        href={`mailto:${property.builder.salesEmail}`}
-                        className="btn-outline w-full text-xs"
-                      >
-                        <Mail className="w-3.5 h-3.5" />
-                        Send Email
-                      </a>
+                      {property.builder?.salesPhone ? (
+                        <a href={`tel:${property.builder.salesPhone.replace(/\s/g, '')}`} className="btn-primary w-full text-xs">
+                          <PhoneCall className="w-3.5 h-3.5" />
+                          Call {property.developer_name}
+                        </a>
+                      ) : (
+                        <div className="text-[10px] text-gray-600 text-center italic p-2">Phone not verified</div>
+                      )}
+                      {property.builder?.salesEmail ? (
+                        <a href={`mailto:${property.builder.salesEmail}`} className="btn-outline w-full text-xs">
+                          <Mail className="w-3.5 h-3.5" />
+                          Send Email
+                        </a>
+                      ) : (
+                        <div className="text-[10px] text-gray-600 text-center italic p-2">Email not verified</div>
+                      )}
                       <a
                         href={property.address.googleMapsDirectionsUrl}
                         target="_blank"
@@ -664,7 +682,7 @@ export function PropertyDetail() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-white">{property.developer_name}</p>
-                    <p className="text-[10px] text-gray-500">Est. {property.builder.yearEstablished} · {property.developer_type}</p>
+                    <p className="text-[10px] text-gray-500">{property.developer_type}</p>
                   </div>
                 </div>
 
@@ -719,50 +737,75 @@ export function PropertyDetail() {
                   <p className="text-[9px] text-gray-600">3% success fee · Only paid on closed deals</p>
                 </div>
 
-                {/* Builder Contact (Always Visible) — REAL DATA */}
+                {/* Builder Contact — only shows verified data */}
                 <div className="space-y-3 mb-4">
-                  <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Award className="w-4 h-4 text-emerald-400" />
-                      <p className="text-[10px] font-medium text-emerald-400">Project Coordinator — {property.developer_name}</p>
+                  {property.builder?.salesPhone || property.builder?.salesEmail ? (
+                    <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Award className="w-4 h-4 text-emerald-400" />
+                        <p className="text-[10px] font-medium text-emerald-400">Project Coordinator — {property.developer_name}</p>
+                      </div>
+                      <div className="space-y-2">
+                        {property.builder?.salesPhone && (
+                          <div className="flex items-center gap-2 text-xs text-gray-300">
+                            <Phone className="w-3.5 h-3.5 text-luxury-gold-400 shrink-0" />
+                            <a href={`tel:${property.builder.salesPhone.replace(/\s/g, '')}`} className="hover:text-luxury-gold-300 transition-colors">
+                              {property.builder.salesPhone}
+                            </a>
+                          </div>
+                        )}
+                        {property.builder?.salesEmail && (
+                          <div className="flex items-center gap-2 text-xs text-gray-300">
+                            <Mail className="w-3.5 h-3.5 text-luxury-gold-400 shrink-0" />
+                            <a href={`mailto:${property.builder.salesEmail}`} className="hover:text-luxury-gold-300 transition-colors">
+                              {property.builder.salesEmail}
+                            </a>
+                          </div>
+                        )}
+                        <div className="flex items-start gap-2 text-xs text-gray-300">
+                          <MapPin className="w-3.5 h-3.5 text-luxury-gold-400 shrink-0 mt-0.5" />
+                          <span className="text-[11px]">{property.address.street}, {property.address.district}, {property.city}, {property.address.state}, {property.country} - {property.address.postalCode}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-xs text-gray-300">
-                        <Phone className="w-3.5 h-3.5 text-luxury-gold-400 shrink-0" />
-                        <a href={`tel:${property.builder.salesPhone.replace(/\s/g, '')}`} className="hover:text-luxury-gold-300 transition-colors">
-                          {property.builder.salesPhone}
-                        </a>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-gray-300">
-                        <Mail className="w-3.5 h-3.5 text-luxury-gold-400 shrink-0" />
-                        <a href={`mailto:${property.builder.salesEmail}`} className="hover:text-luxury-gold-300 transition-colors">
-                          {property.builder.salesEmail}
-                        </a>
-                      </div>
-                      <div className="flex items-start gap-2 text-xs text-gray-300">
-                        <MapPin className="w-3.5 h-3.5 text-luxury-gold-400 shrink-0 mt-0.5" />
-                        <span className="text-[11px]">{property.address.street}, {property.address.district}, {property.city}, {property.address.state}, {property.country} - {property.address.postalCode}</span>
-                      </div>
+                  ) : (
+                    <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
+                      <p className="text-[9px] text-amber-400/70 text-center">
+                        Developer contact information has not yet been independently verified.
+                        <a href="/data-provenance" className="text-luxury-gold-400 hover:underline ml-1">Data policy</a>
+                      </p>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* CTA Buttons */}
                 <div className="space-y-2">
-                  <a
-                    href={`tel:${property.builder.salesPhone.replace(/\s/g, '')}`}
-                    className="btn-primary w-full text-xs"
-                  >
-                    <PhoneCall className="w-3.5 h-3.5" />
-                    Call {property.developer_name} Sales
-                  </a>
-                  <a
-                    href={`mailto:${property.builder.salesEmail}?subject=Inquiry%3A%20${property.name}&body=I%20am%20interested%20in%20${property.name}%20at%20${property.address.district}%2C%20${property.city}.%20Please%20share%20details%2C%20availability%2C%20and%20pricing.`}
-                    className="btn-outline w-full text-xs"
-                  >
-                    <Mail className="w-3.5 h-3.5" />
-                    Send Inquiry Email
-                  </a>
+                  {property.builder?.salesPhone ? (
+                    <a
+                      href={`tel:${property.builder.salesPhone.replace(/\s/g, '')}`}
+                      className="btn-primary w-full text-xs"
+                    >
+                      <PhoneCall className="w-3.5 h-3.5" />
+                      Call {property.developer_name} Sales
+                    </a>
+                  ) : (
+                    <div className="p-2 rounded-lg bg-gray-900/50 border border-gray-800 text-[9px] text-gray-600 text-center italic">
+                      Phone not yet verified
+                    </div>
+                  )}
+                  {property.builder?.salesEmail ? (
+                    <a
+                      href={`mailto:${property.builder.salesEmail}?subject=Inquiry%3A%20${property.name}&body=I%20am%20interested%20in%20${property.name}%20at%20${property.address.district}%2C%20${property.city}.%20Please%20share%20details%2C%20availability%2C%20and%20pricing.`}
+                      className="btn-outline w-full text-xs"
+                    >
+                      <Mail className="w-3.5 h-3.5" />
+                      Send Inquiry Email
+                    </a>
+                  ) : (
+                    <div className="p-2 rounded-lg bg-gray-900/50 border border-gray-800 text-[9px] text-gray-600 text-center italic">
+                      Email not yet verified
+                    </div>
+                  )}
                   <button
                     onClick={() => {
                       const deals = JSON.parse(localStorage.getItem('leadluxe-deals') || '[]');
@@ -780,8 +823,8 @@ export function PropertyDetail() {
                         estimatedCommission: property.estimated_commission,
                         message: `Interested in ${property.name} — ${property.city}`,
                         contactName: '',
-                        contactEmail: property.builder.salesEmail,
-                        contactPhone: property.builder.salesPhone,
+                        contactEmail: property.builder?.salesEmail || '',
+                        contactPhone: property.builder?.salesPhone || '',
                         timestamp: new Date().toISOString(),
                         status: 'new',
                       });
