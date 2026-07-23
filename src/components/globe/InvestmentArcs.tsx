@@ -40,8 +40,50 @@ const MAJOR_ROUTES: { from: string; to: string }[] = [
   // US → India
   { from: 'us-nyc', to: 'in-blr' },
   { from: 'us-sfo', to: 'in-pun' },
-  // China connections
+  // Europe connections (new)
+  { from: 'de-ber', to: 'de-mun' },
+  { from: 'de-fra', to: 'gb-lon' },
+  { from: 'de-fra', to: 'fr-par' },
+  { from: 'fr-par', to: 'gb-lon' },
+  { from: 'es-mad', to: 'es-bcn' },
+  { from: 'es-bcn', to: 'fr-par' },
+  { from: 'it-mil', to: 'it-rom' },
+  { from: 'it-mil', to: 'de-fra' },
+  { from: 'nl-ams', to: 'gb-lon' },
+  { from: 'nl-ams', to: 'de-ber' },
+  { from: 'es-mad', to: 'mx-mex' }, // Spain ↔ Latin America
+  
+  // Asia connections (new)
   { from: 'sg-sin', to: 'my-kul' },
+  { from: 'jp-tky', to: 'sg-sin' },
+  { from: 'jp-tky', to: 'kr-sel' },
+  { from: 'kr-sel', to: 'jp-tky' },
+  { from: 'th-bkk', to: 'sg-sin' },
+  { from: 'th-bkk', to: 'vn-hcm' },
+  { from: 'vn-hcm', to: 'th-bkk' },
+  { from: 'kr-sel', to: 'vn-hcm' },
+  
+  // Middle East → Asia (new)
+  { from: 'ae-dxb', to: 'th-bkk' },
+  { from: 'ae-dxb', to: 'vn-hcm' },
+  
+  // Africa connections (new)
+  { from: 'eg-cai', to: 'ae-dxb' },
+  { from: 'za-jhb', to: 'gb-lon' },
+  { from: 'ng-los', to: 'gb-lon' },
+  { from: 'eg-cai', to: 'tr-ist' },
+  
+  // Turkey connections (new)
+  { from: 'tr-ist', to: 'ae-dxb' },
+  { from: 'tr-ist', to: 'de-ber' },
+  
+  // Brazil connections (new)
+  { from: 'br-spo', to: 'us-mia' },
+  { from: 'br-spo', to: 'es-mad' },
+  
+  // Mexico connections (new)
+  { from: 'mx-mex', to: 'us-mia' },
+  { from: 'mx-cun', to: 'us-mia' },
   // Middle East internal
   { from: 'ae-dxb', to: 'ae-abu' },
   { from: 'ae-dxb', to: 'sa-ruh' },
