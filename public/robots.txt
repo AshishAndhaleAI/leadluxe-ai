@@ -1,18 +1,13 @@
 # LeadLuxe AI — Robots.txt
 # https://leadluxe-ai.vercel.app/
+# Last updated: 2026-07-23
 
 User-agent: *
 Allow: /
-Allow: /property/
-Allow: /deal-room
-Allow: /global-map
+Disallow: /api/
 Disallow: /login
 Disallow: /dashboard
 Disallow: /settings
-Disallow: /portfolio
-Disallow: /commission
-Disallow: /opportunity/
-Disallow: /api/
 
 Sitemap: https://leadluxe-ai.vercel.app/sitemap.xml
 
