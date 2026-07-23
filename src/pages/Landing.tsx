@@ -312,24 +312,7 @@ export function Landing() {
         </div>
       </Suspense>
 
-      {/* Minimal footer */}
-      <footer className="bg-[#050505] border-t border-white/[0.03] py-8">
-        <div className="section-container">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-white/20 rounded-full" />
-              <span className="text-[9px] text-white/20 font-mono tracking-[0.2em] uppercase">
-                LeadLuxe AI
-              </span>
-            </div>
-            <div className="flex items-center gap-6 text-[9px] text-white/10 font-mono">
-              <span>Data sourced from government registries & institutional research</span>
-              <span className="hidden sm:inline">·</span>
-              <span>© 2024 LeadLuxe AI</span>
-            </div>
-          </div>
-        </div>
-      </footer>
+
     </div>
   );
 }
