@@ -17,6 +17,7 @@ import {
 import { cn } from '../lib/utils';
 import { getPropertyDatabase } from '../lib/property-database';
 import type { Property } from '../lib/property-database';
+import { getCoachPreferences, type CoachPreferences } from '../lib/coach-preferences';
 
 // ============================================================
 // HELPERS
@@ -89,7 +90,8 @@ interface CoachRecommendation {
   dealStatus: string;
 }
 
-function generateCoachRecommendations(deals: SavedDeal[]): CoachRecommendation[] {
+function generateCoachRecommendations(deals: SavedDeal[], prefs?: CoachPreferences): CoachRecommendation[] {
+  const p = prefs || getCoachPreferences();
   const recommendations: CoachRecommendation[] = [];
   const now = Date.now();
 
@@ -99,15 +101,64 @@ function generateCoachRecommendations(deals: SavedDeal[]): CoachRecommendation[]
     const commissionValue = deal.estimatedCommission;
     const countryCode = deal.countryCode || 'IN';
 
+    // Skip deals below minimum commission threshold
+    if (commissionValue < p.minCommissionThreshold) continue;
+
+    // Skip completed/lost deals unless user wants to see them
+    if (!p.showCompletedDeals && (deal.status === 'closed' || deal.status === 'lost')) continue;
+
+    // Determine the best channel from user's preferences
+    const topChannel = p.preferredChannels[0] || 'email';
+    const altChannel = p.preferredChannels[1] || 'phone';
+
+    // Map coaching style/tone to prefix and framing
+    const stylePrefix = (() => {
+      if (p.style === 'friendly' && p.tone === 'conversational') return 'Hey! ';
+      if (p.style === 'motivational') return 'Let\'s go! ';
+      if (p.style === 'professional' && p.tone === 'formal') return 'Recommendation: ';
+      if (p.tone === 'urgent') return 'Action required: ';
+      return '';
+    })();
+
+    const urgencyAdverb = (() => {
+      if (p.tone === 'urgent') return 'immediately';
+      if (p.tone === 'formal') return 'at your earliest convenience';
+      if (p.tone === 'encouraging') return 'when you\'re ready';
+      return 'soon';
+    })();
+
+    const channelLabel = (() => {
+      const map: Record<string, string> = { email: 'send an email', phone: 'make a call', whatsapp: 'send a WhatsApp message', meeting: 'schedule a meeting' };
+      const primary = map[topChannel] || 'reach out';
+      const alt = map[altChannel] || 'follow up';
+      return { primary, alt };
+    })();
+
     // Base priority score from commission value
     const commissionScore = Math.min(commissionValue / 1000000, 1) * 30;
 
     switch (deal.status) {
       case 'new': {
-        // Urgency increases with days since creation
-        const urgencyScore = Math.min(daysSinceCreation / 7, 1) * 40;
+        // Urgency increases with days since creation — use user's stale threshold
+        const urgencyScore = Math.min(daysSinceCreation / p.staleThresholdDays, 1) * 40;
         const priorityScore = commissionScore + urgencyScore + 20;
-        const isStale = daysSinceCreation > 5;
+        const isStale = daysSinceCreation > p.staleThresholdDays;
+
+        const action = isStale
+          ? `${stylePrefix}Urgent: Contact ${deal.contactName} about ${deal.propertyName} — idle for ${daysSinceCreation} days`
+          : `${stylePrefix}Reach out to ${deal.contactName} about ${deal.propertyName} in ${deal.city}`;
+
+        const reasoning = isStale
+          ? `This deal has been idle for ${daysSinceCreation} days. ${deal.contactName}'s interest may be cooling. ${p.tone === 'urgent' ? 'Contact them today before they explore other options.' : 'A timely follow-up can re-engage them before they explore other options.'}`
+          : `${deal.contactName} expressed interest ${daysSinceCreation === 0 ? 'today' : `${daysSinceCreation} days ago`}. Quick outreach now builds momentum and shows professionalism.`;
+
+        const tip = isStale
+          ? (p.style === 'friendly' ? 'Try a warm re-engagement message: "Hey, just checking in! We have some exciting updates on this project."' :
+             p.style === 'motivational' ? 'Don\'t let this deal slip away! Send a limited-time offer and light a fire under this lead.' :
+             'Send a re-engagement message with updated information or a time-sensitive update to spark renewed interest.')
+          : (p.style === 'friendly' ? 'Lead with a friendly greeting and reference their expressed interest. Keep it light and helpful!' :
+             p.style === 'professional' ? 'Open with a value proposition: reference their specific interest and offer 2-3 relevant insights about the property.' :
+             'Lead with value: share why this property matches their needs. Reference their message in your outreach.')
 
         recommendations.push({
           id: `coach-new-${deal.id}`,
@@ -122,16 +173,10 @@ function generateCoachRecommendations(deals: SavedDeal[]): CoachRecommendation[]
           priority: priorityScore >= 70 ? 'critical' : priorityScore >= 50 ? 'high' : 'medium',
           priorityScore,
           category: isStale ? 'stale' : 'contact',
-          action: isStale
-            ? `Urgent: Contact ${deal.contactName} about ${deal.propertyName} — deal has been idle for ${daysSinceCreation} days`
-            : `Reach out to ${deal.contactName} about ${deal.propertyName} in ${deal.city}`,
-          reasoning: isStale
-            ? `This deal has been in 'New' status for ${daysSinceCreation} days. The lead's interest may be cooling. Immediate contact is recommended to re-engage before they explore other options.`
-            : `This lead expressed interest ${daysSinceCreation === 0 ? 'today' : `${daysSinceCreation} days ago`}. Quick response increases close probability by 78%. Send a personalized property brochure and invite them for a virtual tour.`,
-          tip: isStale
-            ? 'Send a re-engagement email with updated pricing or a limited-time offer. Mention new developments in the area to spark renewed interest.'
-            : 'Lead with value: share 3 reasons why this property matches their stated needs. Reference their message in your outreach.',
-          channel: 'email',
+          action,
+          reasoning,
+          tip,
+          channel: topChannel,
           timeline: isStale ? 'today' : 'today',
           contactName: deal.contactName,
           contactEmail: deal.contactEmail,
@@ -144,9 +189,23 @@ function generateCoachRecommendations(deals: SavedDeal[]): CoachRecommendation[]
 
       case 'contacted': {
         const daysSinceContact = Math.max(daysSinceCreation - 1, 0);
-        const urgencyScore = Math.min(daysSinceContact / 5, 1) * 35;
+        const urgencyScore = Math.min(daysSinceContact / Math.max(p.staleThresholdDays - 1, 1), 1) * 35;
         const priorityScore = commissionScore + urgencyScore + 15;
-        const needsFollowUp = daysSinceContact > 3;
+        const needsFollowUp = daysSinceContact > Math.max(p.staleThresholdDays - 2, 1);
+
+        const action = needsFollowUp
+          ? `${stylePrefix}Follow up with ${deal.contactName} — no response in ${daysSinceContact} days`
+          : `${stylePrefix}Deepen the conversation with ${deal.contactName} — ${channelLabel.primary} now`;
+
+        const reasoning = needsFollowUp
+          ? `You contacted ${deal.contactName} ${daysSinceContact} days ago but the deal hasn't progressed. ${p.tone === 'urgent' ? 'Follow up today.' : 'A gentle nudge with fresh information could re-ignite their interest.'}`
+          : `${deal.contactName} has been contacted. Now qualify their timeline and budget. Ask about their move-in date and financing to identify any blockers.`;
+
+        const tip = needsFollowUp
+          ? (p.style === 'friendly' ? 'Try a different approach — maybe a quick call or a WhatsApp message this time. Keep it personal!' :
+             `Try a different channel — ${channelLabel.alt} instead of ${channelLabel.primary} to break through the noise.`)
+          : (p.style === 'friendly' ? 'Ask friendly questions: "What drew you to this property?" and "What would help you decide?"' :
+             'Ask discovery questions to qualify: budget timeline, financing status, and decision criteria.');
 
         recommendations.push({
           id: `coach-follow-${deal.id}`,
@@ -161,16 +220,10 @@ function generateCoachRecommendations(deals: SavedDeal[]): CoachRecommendation[]
           priority: needsFollowUp ? 'high' : priorityScore >= 55 ? 'high' : 'medium',
           priorityScore,
           category: 'follow_up',
-          action: needsFollowUp
-            ? `Follow up with ${deal.contactName} — no response in ${daysSinceContact} days`
-            : `Deepen the conversation with ${deal.contactName} — schedule a property walkthrough`,
-          reasoning: needsFollowUp
-            ? `You contacted ${deal.contactName} ${daysSinceContact} days ago but the deal hasn't progressed. A gentle follow-up with new information or a time-sensitive update could re-ignite their interest.`
-            : `${deal.contactName} has been contacted. The next step is to qualify their timeline and budget. Ask specific questions about their move-in date and financing to identify any blockers early.`,
-          tip: needsFollowUp
-            ? 'Reference your previous conversation. Try a different channel — if you emailed, call or send a WhatsApp message instead.'
-            : 'Ask discovery questions: "What drew you to this property?" and "What would make you decide to move forward this month?"',
-          channel: needsFollowUp ? 'phone' : 'email',
+          action,
+          reasoning,
+          tip,
+          channel: needsFollowUp ? altChannel : topChannel,
           timeline: needsFollowUp ? 'today' : 'this_week',
           contactName: deal.contactName,
           contactEmail: deal.contactEmail,
@@ -196,9 +249,11 @@ function generateCoachRecommendations(deals: SavedDeal[]): CoachRecommendation[]
           priority: priorityScore >= 65 ? 'high' : 'medium',
           priorityScore,
           category: 'site_visit',
-          action: `Schedule a site visit for ${deal.contactName} at ${deal.propertyName}`,
-          reasoning: `${deal.contactName} is a qualified lead interested in ${deal.propertyName}. A physical site visit is the highest-conversion activity — properties shown in person have a 4x higher close rate. Coordinate with ${deal.developerName}'s sales team to arrange a guided tour.`,
-          tip: 'Prepare a comparison sheet showing 2-3 similar properties in the area to demonstrate value. Offer to pick them up or arrange transportation to reduce friction.',
+          action: `${stylePrefix}Schedule a site visit for ${deal.contactName} at ${deal.propertyName}`,
+          reasoning: `${deal.contactName} is a qualified lead for ${deal.propertyName}. A physical site visit is the highest-conversion activity. ${p.style === 'friendly' ? 'Let\'s make it happen!' : 'Coordinate with the sales team to arrange a guided tour.'}`,
+          tip: p.style === 'friendly'
+            ? 'Make it easy for them — offer to arrange transportation or a virtual tour if they\'re busy. A little hospitality goes a long way!'
+            : 'Prepare a comparison sheet showing 2-3 similar properties in the area. Offer transportation to reduce friction.',
           channel: 'meeting',
           timeline: 'this_week',
           contactName: deal.contactName,
@@ -213,6 +268,7 @@ function generateCoachRecommendations(deals: SavedDeal[]): CoachRecommendation[]
       case 'site_visit': {
         const priorityScore = commissionScore + 45;
         const daysSinceVisit = Math.max(daysSinceCreation - 3, 0);
+        const visitUrgentThreshold = Math.max(p.staleThresholdDays + 2, 7);
 
         recommendations.push({
           id: `coach-neg-${deal.id}`,
@@ -224,19 +280,19 @@ function generateCoachRecommendations(deals: SavedDeal[]): CoachRecommendation[]
           countryCode,
           commission: commissionValue,
           currency: deal.currency,
-          priority: daysSinceVisit > 7 ? 'critical' : priorityScore >= 60 ? 'high' : 'medium',
+          priority: daysSinceVisit > visitUrgentThreshold ? 'critical' : priorityScore >= 60 ? 'high' : 'medium',
           priorityScore,
           category: 'negotiation',
-          action: daysSinceVisit > 7
-            ? `Follow up urgently — ${deal.contactName} visited ${deal.propertyName} ${daysSinceVisit} days ago`
-            : `Begin negotiation with ${deal.contactName} for ${deal.propertyName}`,
-          reasoning: daysSinceVisit > 7
-            ? `It's been ${daysSinceVisit} days since the site visit. The lead's memory of the property is fading. Send a recap with photos and a limited-time offer to re-engage.`
-            : `The site visit is complete. ${deal.contactName} has seen the property firsthand. Now is the time to discuss payment plans, the booking process, and your commission structure. Strike while the impression is fresh.`,
-          tip: daysSinceVisit > 7
-            ? 'Share a photo from their visit with a personal message: "Remember this view? Let me share a special offer that expires this week."'
-            : 'Prepare a side-by-side comparison of this property vs competitors. Highlight the unique advantages you discussed during the visit.',
-          channel: 'phone',
+          action: daysSinceVisit > visitUrgentThreshold
+            ? `${stylePrefix}Follow up urgently — ${deal.contactName} visited ${daysSinceVisit} days ago`
+            : `${stylePrefix}Begin negotiation with ${deal.contactName} for ${deal.propertyName}`,
+          reasoning: daysSinceVisit > visitUrgentThreshold
+            ? `It's been ${daysSinceVisit} days since the site visit. ${p.tone === 'urgent' ? 'The lead is getting cold! Act now.' : 'Send a recap with photos and a time-sensitive offer to re-engage before interest fades.'}`
+            : `The site visit is complete. ${deal.contactName} has seen the property firsthand. Now discuss payment plans and the booking process while the impression is fresh.`,
+          tip: daysSinceVisit > visitUrgentThreshold
+            ? (p.style === 'friendly' ? 'Send a photo from their visit with a personal note: "Remember this view? Let me share something special."' : 'Share a photo from their visit with a personalized message to re-engage emotionally.')
+            : (p.style === 'professional' ? 'Prepare a side-by-side comparison vs competitors highlighting the unique advantages you discussed.' : 'Highlight the unique advantages you discussed during the visit. Address any concerns they raised.'),
+          channel: altChannel,
           timeline: 'today',
           contactName: deal.contactName,
           contactEmail: deal.contactEmail,
@@ -262,10 +318,12 @@ function generateCoachRecommendations(deals: SavedDeal[]): CoachRecommendation[]
           priority: priorityScore >= 70 ? 'critical' : 'high',
           priorityScore,
           category: 'closing',
-          action: `Push to close ${deal.propertyName} — ${deal.contactName} is in negotiation`,
-          reasoning: `This deal is in the final stage with a potential commission of ${formatPrice(commissionValue, deal.currency)}. ${deal.contactName} is actively negotiating — maintain momentum by being responsive to their concerns and facilitating communication with ${deal.developerName}'s team.`,
-          tip: 'Identify the top 3 objections and prepare counter-arguments. Offer a limited-time add-on (free club membership, upgrade package) to tip the decision. Keep daily contact until signed.',
-          channel: 'phone',
+          action: `${stylePrefix}Push to close ${deal.propertyName} — commission of ${formatPrice(commissionValue, deal.currency)} at stake`,
+          reasoning: `This deal is in negotiation with a potential commission of ${formatPrice(commissionValue, deal.currency)}. ${p.style === 'motivational' ? 'You\'re so close! Stay on top of every detail.' : 'Maintain momentum by being responsive to their concerns and facilitating communication with the developer.'}`,
+          tip: p.style === 'motivational'
+            ? 'Identify the top 3 objections and crush them one by one. Offer a limited-time add-on to tip the scale. Keep daily contact until signed!'
+            : 'Identify top objections and prepare counter-arguments. Offer a limited-time add-on (upgrade package, free club membership) to encourage signing.',
+          channel: topChannel,
           timeline: 'today',
           contactName: deal.contactName,
           contactEmail: deal.contactEmail,
@@ -291,10 +349,12 @@ function generateCoachRecommendations(deals: SavedDeal[]): CoachRecommendation[]
           priority: priorityScore >= 75 ? 'critical' : 'high',
           priorityScore,
           category: 'closing',
-          action: `Finalize booking for ${deal.propertyName} — commission of ${formatPrice(commissionValue, deal.currency)} at stake`,
-          reasoning: `The deal is booked! Your commission of ${formatPrice(commissionValue, deal.currency)} is within reach. Ensure all documentation is in order, payment schedules are confirmed, and the developer has acknowledged the booking.`,
-          tip: 'Confirm the payment schedule with the developer. Send a congratulations message to the buyer. Request a referral — booked buyers are the best source of warm leads.',
-          channel: 'email',
+          action: `${stylePrefix}Finalize booking — ${formatPrice(commissionValue, deal.currency)} commission`,
+          reasoning: `The deal is booked! Your commission of ${formatPrice(commissionValue, deal.currency)} is within reach. ${p.style === 'motivational' ? 'Almost there! Push through the final steps.' : 'Confirm documentation, payment schedules, and developer acknowledgment.'}`,
+          tip: p.style === 'friendly'
+            ? 'Send a congratulations message and confirm everything is on track. Happy clients refer more clients!'
+            : 'Confirm payment schedules with the developer. Send a congratulations message and request referrals.',
+          channel: topChannel,
           timeline: 'today',
           contactName: deal.contactName,
           contactEmail: deal.contactEmail,
@@ -320,9 +380,9 @@ function generateCoachRecommendations(deals: SavedDeal[]): CoachRecommendation[]
           priority: 'medium',
           priorityScore,
           category: 'research',
-          action: `Request a referral from ${deal.contactName} — they just closed on ${deal.propertyName}`,
-          reasoning: `This deal closed successfully. ${deal.contactName} had a positive experience working with you. Now is the best time to ask for referrals — satisfied clients are 5x more likely to recommend you to their network.`,
-          tip: 'Send a personalized thank-you note and a small gift (welcome hamper, housewarming plant). Follow up in 30 days to ask for referrals and Google reviews.',
+          action: `${stylePrefix}Request a referral from ${deal.contactName} after ${deal.propertyName} closed`,
+          reasoning: `This deal closed successfully. ${p.style === 'friendly' ? 'Congratulate them and ask for introductions to friends who might be looking.' : 'Satisfied clients are the best source of warm leads. Ask for referrals and a Google review.'}`,
+          tip: 'Send a personalized thank-you note and a small gift. Follow up in 30 days to ask for referrals and reviews.',
           channel: 'email',
           timeline: 'this_month',
           contactName: deal.contactName,
@@ -464,9 +524,10 @@ export function Portfolio() {
     setFavoriteIds(next);
   };
 
-  // AI Deal Coach recommendations
+  // AI Deal Coach recommendations — reads preferences from localStorage on every update
+  // so changes made in Settings are reflected immediately without a page refresh.
   const coachRecommendations = useMemo(() =>
-    generateCoachRecommendations(savedDeals),
+    generateCoachRecommendations(savedDeals, getCoachPreferences()),
     [savedDeals]
   );
 
