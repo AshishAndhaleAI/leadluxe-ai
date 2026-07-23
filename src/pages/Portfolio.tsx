@@ -4,7 +4,7 @@
 // commissions with pipeline analytics and revenue tracking.
 // ============================================================
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -18,6 +18,7 @@ import { cn } from '../lib/utils';
 import { getPropertyDatabase } from '../lib/property-database';
 import type { Property } from '../lib/property-database';
 import { getCoachPreferences, type CoachPreferences } from '../lib/coach-preferences';
+import { useAuth } from '../context/AuthContext';
 
 // ============================================================
 // HELPERS
@@ -410,8 +411,10 @@ function generateCoachRecommendations(deals: SavedDeal[], prefs?: CoachPreferenc
 // ============================================================
 
 export function Portfolio() {
+  const { user } = useAuth();
   const allProperties = useMemo(() => getPropertyDatabase(), []);
   const [activeTab, setActiveTab] = useState<PortfolioTab>('overview');
+  const [syncVersion, setSyncVersion] = useState(0);
 
   // Load saved deals from localStorage
   const [savedDeals, setSavedDeals] = useState<SavedDeal[]>(() => {
@@ -524,11 +527,28 @@ export function Portfolio() {
     setFavoriteIds(next);
   };
 
-  // AI Deal Coach recommendations — reads preferences from localStorage on every update
-  // so changes made in Settings are reflected immediately without a page refresh.
+  // AI Deal Coach — attempt to sync from Supabase on mount (cross-device)
+  // so users who log in on a new device get their cloud preferences immediately
+  // without needing to visit Settings first.
+  useEffect(() => {
+    if (!user?.id) return;
+    const syncCloud = async () => {
+      const { tryLoadFromSupabase } = await import('../lib/coach-preferences');
+      const cloudPrefs = await tryLoadFromSupabase(user.id);
+      if (cloudPrefs) {
+        const { saveCoachPreferences } = await import('../lib/coach-preferences');
+        saveCoachPreferences(cloudPrefs);
+        // Force re-render by toggling a counter
+        setSyncVersion(v => v + 1);
+      }
+    };
+    syncCloud();
+  }, [user?.id]);
+
   const coachRecommendations = useMemo(() =>
     generateCoachRecommendations(savedDeals, getCoachPreferences()),
-    [savedDeals]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [savedDeals, syncVersion]
   );
 
   const criticalCount = useMemo(() =>

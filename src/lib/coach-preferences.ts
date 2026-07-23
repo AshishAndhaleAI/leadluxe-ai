@@ -2,6 +2,15 @@
 // LeadLuxe AI — AI Deal Coach Preferences
 // Customizable coaching templates for recommendation style,
 // response tone, preferred channels, and urgency thresholds.
+//
+// SYNC STRATEGY (localStorage-first, Supabase-backed):
+//   - localStorage is the primary/instant store.
+//   - Supabase is the cross-device sync layer.
+//   - On mount / login: try loading from Supabase; if found and
+//     newer than local, overwrite local.
+//   - On save: write to localStorage instantly, then upsert to Supabase
+//     in the background (fire-and-forget).
+//   - When Supabase is unavailable, everything still works locally.
 // ============================================================
 
 export interface CoachPreferences {
@@ -34,11 +43,12 @@ export const DEFAULT_PREFERENCES: CoachPreferences = {
   timezone: 'Asia/Kolkata',
 };
 
-const STORAGE_KEY = 'leadluxe-coach-preferences';
+const LOCAL_KEY = 'leadluxe-coach-preferences';
+const SYNC_KEY = 'leadluxe-coach-preferences-sync';
 
 export function getCoachPreferences(): CoachPreferences {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(LOCAL_KEY);
     if (!raw) return { ...DEFAULT_PREFERENCES };
     const parsed = JSON.parse(raw);
     // Merge with defaults to handle missing fields from older saves
@@ -50,9 +60,65 @@ export function getCoachPreferences(): CoachPreferences {
 
 export function saveCoachPreferences(prefs: CoachPreferences): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(prefs));
+    localStorage.setItem(SYNC_KEY, Date.now().toString());
   } catch {
     // localStorage full or unavailable — silently ignore
+  }
+}
+
+// ============================================================
+// SUPABASE SYNC
+// ============================================================
+
+/**
+ * Try to load coach preferences from Supabase.
+ * Returns the preferences if found and newer than local, or null
+ * if Supabase is unavailable or the local version is fresher.
+ */
+export async function tryLoadFromSupabase(userId: string): Promise<CoachPreferences | null> {
+  try {
+    const { supabase } = await import('./supabase');
+    if (!supabase) return null;
+
+    const { data, error } = await supabase
+      .from('user_preferences')
+      .select('preferences, updated_at')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (error || !data) return null;
+
+    const cloudPrefs = data.preferences as Record<string, unknown>;
+    const cloudUpdated = new Date(data.updated_at).getTime();
+    const localSyncTime = parseInt(localStorage.getItem(SYNC_KEY) || '0', 10);
+
+    // Only use cloud version if it's newer than local
+    if (cloudUpdated <= localSyncTime) return null;
+
+    return { ...DEFAULT_PREFERENCES, ...cloudPrefs } as CoachPreferences;
+  } catch {
+    return null; // Supabase unavailable — fall back to local
+  }
+}
+
+/**
+ * Persist coach preferences to Supabase (fire-and-forget).
+ * Errors are silently caught so they never block the UI.
+ */
+export async function syncToSupabase(userId: string, prefs: CoachPreferences): Promise<void> {
+  try {
+    const { supabase } = await import('./supabase');
+    if (!supabase) return;
+
+    await supabase
+      .from('user_preferences')
+      .upsert(
+        { user_id: userId, preferences: prefs as unknown as Record<string, unknown> },
+        { onConflict: 'user_id' }
+      );
+  } catch {
+    // Silently fail — localStorage still works
   }
 }
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Settings as SettingsIcon, User, Bell, Shield, Percent,
@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import {
   getCoachPreferences, saveCoachPreferences,
+  tryLoadFromSupabase, syncToSupabase,
   DEFAULT_PREFERENCES, STYLE_OPTIONS, TONE_OPTIONS, CHANNEL_OPTIONS,
   type CoachPreferences,
 } from '../lib/coach-preferences';
@@ -29,6 +30,21 @@ export function Settings() {
   };
 
   const [coachPrefs, setCoachPrefs] = useState<CoachPreferences>(() => getCoachPreferences());
+  const [cloudSyncStatus, setCloudSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
+
+  // On mount: try to load preferences from Supabase (cross-device sync)
+  // If a newer version exists in the cloud, overwrite local and update state.
+  useEffect(() => {
+    if (!user?.id) return;
+    const loadCloudPrefs = async () => {
+      const cloudPrefs = await tryLoadFromSupabase(user.id);
+      if (cloudPrefs) {
+        saveCoachPreferences(cloudPrefs); // overwrite local
+        setCoachPrefs(cloudPrefs);
+      }
+    };
+    loadCloudPrefs();
+  }, [user?.id]);
 
   const tabs: { key: SettingsTab; label: string; icon: typeof User }[] = [
     { key: 'profile', label: 'Profile', icon: User },
@@ -337,22 +353,68 @@ export function Settings() {
             </div>
           </div>
 
+          {/* Sync Status */}
+          {cloudSyncStatus === 'syncing' && (
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
+              <div className="w-3 h-3 rounded-full border-2 border-blue-400 border-t-transparent animate-spin" />
+              <p className="text-[10px] text-blue-400">Syncing preferences to cloud...</p>
+            </div>
+          )}
+          {cloudSyncStatus === 'synced' && (
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+              <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+              <p className="text-[10px] text-emerald-400">Preferences synced to cloud · accessible from any device</p>
+            </div>
+          )}
+          {cloudSyncStatus === 'error' && (
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
+              <Zap className="w-3.5 h-3.5 text-amber-400" />
+              <p className="text-[10px] text-amber-400">Cloud sync unavailable — preferences saved locally</p>
+            </div>
+          )}
+
           {/* Save / Reset */}
           <div className="flex items-center gap-3">
             <button
-              onClick={() => {
+              onClick={async () => {
+                setCloudSyncStatus('syncing');
                 saveCoachPreferences(coachPrefs);
+                if (user?.id) {
+                  try {
+                    await syncToSupabase(user.id, coachPrefs);
+                    setCloudSyncStatus('synced');
+                  } catch {
+                    setCloudSyncStatus('error');
+                    setTimeout(() => setCloudSyncStatus('idle'), 4000);
+                    setSaved(true);
+                    setTimeout(() => setSaved(false), 2000);
+                    return;
+                  }
+                } else {
+                  setCloudSyncStatus('error');
+                  setTimeout(() => setCloudSyncStatus('idle'), 3000);
+                }
                 setSaved(true);
-                setTimeout(() => setSaved(false), 2000);
+                setTimeout(() => { setSaved(false); setCloudSyncStatus('idle'); }, 3000);
               }}
               className="btn-primary"
             >
               {saved ? <><CheckCircle className="w-4 h-4" /> Saved</> : <><Save className="w-4 h-4" /> Save Coach Preferences</>}
             </button>
             <button
-              onClick={() => {
+              onClick={async () => {
                 setCoachPrefs({ ...DEFAULT_PREFERENCES });
                 saveCoachPreferences(DEFAULT_PREFERENCES);
+                if (user?.id) {
+                  setCloudSyncStatus('syncing');
+                  try {
+                    await syncToSupabase(user.id, DEFAULT_PREFERENCES);
+                    setCloudSyncStatus('synced');
+                  } catch {
+                    setCloudSyncStatus('error');
+                  }
+                  setTimeout(() => setCloudSyncStatus('idle'), 3000);
+                }
                 setSaved(true);
                 setTimeout(() => setSaved(false), 2000);
               }}
