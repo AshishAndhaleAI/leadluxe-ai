@@ -26,8 +26,10 @@ import { TwinDashboard } from './pages/TwinDashboard';
 import { Enterprise } from './pages/Enterprise';
 import { Pilot } from './pages/Pilot';
 import { TractionDashboard } from './pages/TractionDashboard';
+import { MarketIntelligence } from './pages/MarketIntelligence';
 import { BookDemo } from './pages/BookDemo';
 import { DealReport } from './pages/DealReport';
+import { Demo } from './pages/Demo';
 import { DataProvenance } from './pages/DataProvenance';
 import { AIGovernancePanel } from './components/investor/AIGovernancePanel';
 import { NeuralCapitalMap } from './pages/NeuralCapitalMap';
@@ -112,8 +114,10 @@ function AppRoutes() {
         {/* Public Business pages — no auth required */}
         <Route path="/enterprise" element={<Enterprise />} />
         <Route path="/pilot" element={<Pilot />} />
+        <Route path="/market-intelligence" element={<MarketIntelligence />} />
         <Route path="/book-demo" element={<BookDemo />} />
         <Route path="/report/:slug" element={<DealReport />} />
+        <Route path="/demo" element={<Demo />} />
 
         {/* Public Info pages — no auth required */}
         <Route path="/data-provenance" element={<DataProvenance />} />

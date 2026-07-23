@@ -16,9 +16,12 @@ const CinematicWalkthrough = lazy(() =>
 // Licensed under the Unsplash License — free for commercial use.
 // Replace with official developer/architectural firm imagery in production.
 const HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1920&q=85&auto=format',
-  'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=85&auto=format',
-  'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=85&auto=format',
+  // Indian luxury architecture — Mumbai skyline
+  'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=1920&q=85&auto=format',
+  // Indian contemporary architecture
+  'https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=1920&q=85&auto=format',
+  // Luxury Indian residential tower
+  'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=85&auto=format',
 ];
 
 // ─── Navigation ─────────────────────────────────────────────
@@ -190,7 +193,7 @@ export function Landing() {
                   transition={{ duration: 0.8, delay: 0.4 }}
                   className="heading-xl text-white mb-6"
                 >
-                  Intelligence for the World's Most{' '}
+                  Intelligence for India's Most{' '}
                   <span className="text-gradient-gold">Valuable Buildings.</span>
                 </motion.h1>
 
@@ -201,9 +204,9 @@ export function Landing() {
                   transition={{ duration: 0.8, delay: 0.6 }}
                   className="body-lg text-gray-400 max-w-xl mb-10 leading-relaxed"
                 >
-                  LeadLuxe analyzes verified global real-estate signals, capital flows, 
-                  infrastructure activity, and developer momentum to identify high-probability 
-                  investment opportunities — surfaced before traditional portals recognize them.
+                  LeadLuxe analyzes verified RERA data, infrastructure activity, capital flows, 
+                  developer momentum, and market signals across India to identify high-probability 
+                  real-estate opportunities — surfaced before traditional portals recognize them.
                 </motion.p>
 
                 {/* Single CTA + secondary */}
@@ -235,9 +238,9 @@ export function Landing() {
                   transition={{ duration: 0.8, delay: 1.2 }}
                   className="mt-12 flex items-center gap-4 text-[9px] text-white/15 font-mono tracking-[0.05em]"
                 >
-                  <span>Sources: DLD · MahaRERA · URA · HM Land Registry</span>
+                  <span>Sources: MahaRERA · State RERA Portals · HM Land Registry</span>
                   <span className="w-px h-3 bg-white/10" />
-                  <span>World Bank · CBRE · JLL · Knight Frank</span>
+                  <span>World Bank · JLL India · CBRE India · Knight Frank India</span>
                 </motion.div>
               </div>
             </div>
