@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Zaha Hadid–Inspired Design System ─────────────────────────── 
+ * Editorial, architectural, cinematic. Replaces all 
+ * SaaS-dashboard visual language with museum-grade typography,
+ * generous white space, and architectural rhythm.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+
 @layer base {
   * {
     @apply border-luxury-border;
@@ -12,21 +20,23 @@
   }
 
   body {
-    @apply bg-luxury-black text-white font-body antialiased;
+    @apply bg-[#050505] text-white font-body antialiased;
     text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   ::selection {
     @apply bg-luxury-gold-500/30 text-white;
   }
 
-  /* Custom scrollbar */
+  /* Custom scrollbar — minimal, architectural */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 4px;
+    height: 4px;
   }
   ::-webkit-scrollbar-track { @apply bg-transparent; }
-  ::-webkit-scrollbar-thumb { @apply bg-gray-800 rounded-full hover:bg-gray-700; }
+  ::-webkit-scrollbar-thumb { @apply bg-gray-800 rounded-full; }
 
   /* Input autofill */
   input:-webkit-autofill,
@@ -39,12 +49,67 @@
 
   /* Focus ring */
   *:focus-visible {
-    @apply outline-none ring-2 ring-luxury-gold-500/50 ring-offset-2 ring-offset-luxury-black;
+    @apply outline-none ring-1 ring-luxury-gold-500/40 ring-offset-1 ring-offset-[#050505];
   }
 }
 
 @layer components {
-  /* Glass card */
+  /* Editorial headline — Zaha-inspired large serif */
+  .heading-xl {
+    @apply font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl 
+           leading-[1.05] tracking-[-0.02em] text-white font-semibold;
+  }
+  .heading-lg {
+    @apply font-display text-3xl sm:text-4xl lg:text-5xl 
+           leading-[1.1] tracking-[-0.01em] text-white font-semibold;
+  }
+  .heading-md {
+    @apply font-display text-2xl sm:text-3xl 
+           leading-[1.15] text-white font-medium;
+  }
+  .heading-sm {
+    @apply font-display text-xl leading-[1.2] text-white font-medium;
+  }
+
+  /* Editorial body */
+  .body-lg {
+    @apply text-base sm:text-lg leading-relaxed text-gray-400 font-light;
+  }
+  .body-md {
+    @apply text-sm sm:text-base leading-relaxed text-gray-400 font-light;
+  }
+  .body-sm {
+    @apply text-xs sm:text-sm leading-relaxed text-gray-500 font-light;
+  }
+
+  /* Label — small editorial label used for section markers */
+  .editorial-label {
+    @apply font-mono text-[10px] sm:text-xs tracking-[0.15em] uppercase 
+           text-gray-500 font-medium;
+  }
+
+  /* Architectural annotation — used for data overlaid on images */
+  .arch-annotation {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 
+           bg-[#050505]/70 backdrop-blur-md 
+           border border-white/5 
+           text-xs text-gray-300 font-light;
+  }
+  .arch-annotation-gold {
+    @apply arch-annotation border-luxury-gold-500/20 text-luxury-gold-300;
+  }
+
+  /* Section container — editorial spacing */
+  .section-container {
+    @apply max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16;
+  }
+
+  /* Editorial divider */
+  .divider-arch {
+    @apply w-full h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent;
+  }
+
+  /* Glass card — kept for internal dashboards */
   .glass-card {
     @apply relative overflow-hidden rounded-xl border border-glass-border 
            bg-glass-white backdrop-blur-glass shadow-glass
@@ -62,7 +127,7 @@
     @apply border-glass-gold shadow-glass-lg;
   }
 
-  /* Premium card */
+  /* Premium card — kept for internal dashboards */
   .premium-card {
     @apply relative overflow-hidden rounded-xl border border-luxury-border 
            bg-gradient-to-br from-luxury-surface via-luxury-gray to-luxury-dark
@@ -78,7 +143,21 @@
     @apply border-luxury-gold-500/20 shadow-lg shadow-black/30;
   }
 
-  /* Gold button variants */
+  /* Button — minimal architectural style */
+  .btn-arch {
+    @apply inline-flex items-center justify-center gap-2.5 px-8 py-3.5
+           border border-white/10 rounded-none
+           text-sm font-medium text-white tracking-[0.08em] uppercase
+           hover:border-luxury-gold-500/40 hover:text-luxury-gold-300
+           transition-all duration-500 ease-out
+           disabled:opacity-30 disabled:cursor-not-allowed;
+  }
+  .btn-arch-filled {
+    @apply btn-arch bg-luxury-gold-500/10 border-luxury-gold-500/30 
+           text-luxury-gold-300 hover:bg-luxury-gold-500/20 hover:border-luxury-gold-500/50;
+  }
+
+  /* Gold button variants (existing, kept for dashboards) */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 
            bg-luxury-gold-500 text-black rounded-lg text-sm font-semibold 
@@ -145,7 +224,7 @@
   .status-dot-booked { @apply bg-luxury-gold-400; }
   .status-dot-lost { @apply bg-red-400; }
 
-  /* Divider with gold */
+  /* Divider */
   .divider-gold {
     @apply h-[1px] bg-gradient-to-r from-transparent via-luxury-gold-500/30 to-transparent;
   }
@@ -192,4 +271,22 @@
     scrollbar-width: none;
   }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+  /* Zaha utilities */
+  .arch-mask-top {
+    mask-image: linear-gradient(to top, black 40%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to top, black 40%, transparent 100%);
+  }
+  .arch-mask-bottom {
+    mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+  }
+  .arch-grid {
+    background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .perspective-1000 {
+    perspective: 1000px;
+  }
 }
