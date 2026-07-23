@@ -136,6 +136,32 @@ export function GravityEngine() {
     return markets;
   }, [categorySource, filterRisk, searchQuery]);
 
+  // Check if all markets in the current category are already selected (up to 6)
+  const allSelectedInCategory = useMemo(() => {
+    const categoryIds = categorySource.slice(0, 6).map(a => a.microMarket.id);
+    return categoryIds.every(id => selectedForCompare.has(id));
+  }, [categorySource, selectedForCompare]);
+
+  const handleSelectAllFromCategory = useCallback(() => {
+    const ids = categorySource.map(a => a.microMarket.id).slice(0, 6);
+    setSelectedForCompare(prev => {
+      const next = new Set(prev);
+      ids.forEach(id => {
+        if (next.size < 6) next.add(id);
+      });
+      return next;
+    });
+  }, [categorySource]);
+
+  const handleDeselectAllFromCategory = useCallback(() => {
+    const ids = new Set(categorySource.map(a => a.microMarket.id));
+    setSelectedForCompare(prev => {
+      const next = new Set(prev);
+      ids.forEach(id => next.delete(id));
+      return next;
+    });
+  }, [categorySource]);
+
   const selectedAnalysis = useMemo(() => {
     if (!selectedMarket) return null;
     return selectedMarket;
@@ -262,6 +288,22 @@ export function GravityEngine() {
             )}
           </button>
         ))}
+        {/* Select All / Deselect All button — only visible in compare mode */}
+        {compareMode && (
+          <div className="w-px h-5 bg-gray-800 mx-1" />
+        )}
+        {compareMode && (
+          <button
+            onClick={allSelectedInCategory ? handleDeselectAllFromCategory : handleSelectAllFromCategory}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+          >
+            {allSelectedInCategory ? (
+              <><X className="w-3 h-3" /> Deselect All</>
+            ) : (
+              <><CheckSquare className="w-3 h-3 text-luxury-gold-400" /> Select All</>
+            )}
+          </button>
+        )}
       </div>
 
       {/* Two-column layout */}
