@@ -2,7 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Zap, Globe, Building2, TrendingUp,
   Bot, ChevronLeft, Menu, Settings, Map, Sparkles as MatchIcon,
-  Percent, Target, Bell, Briefcase
+  Percent, Target, Bell, Briefcase, GitBranch, Clock, Handshake, Cpu
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { cn, getInitials } from '../../lib/utils';
@@ -16,6 +16,10 @@ interface SidebarProps {
 
 const navItems = [
   { path: '/dashboard', label: 'Experience', icon: LayoutDashboard },
+  { path: '/neural-capital', label: 'Neural Capital', icon: GitBranch },
+  { path: '/time-machine', label: 'Time Machine', icon: Clock },
+  { path: '/negotiation-lab', label: 'Negotiation Lab', icon: Handshake },
+  { path: '/agent-console', label: 'Agent Console', icon: Cpu },
   { path: '/deal-room', label: 'Deal Room', icon: Building2 },
   { path: '/portfolio', label: 'Portfolio', icon: Briefcase },
   { path: '/deal-compass', label: 'Deal Compass', icon: Target },

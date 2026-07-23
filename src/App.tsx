@@ -23,6 +23,10 @@ import { GravityBriefing } from './pages/GravityBriefing';
 import { Portfolio } from './pages/Portfolio';
 import { DealCompass } from './pages/DealCompass';
 import { AIGovernancePanel } from './components/investor/AIGovernancePanel';
+import { NeuralCapitalMap } from './pages/NeuralCapitalMap';
+import { TimeMachine } from './pages/TimeMachine';
+import { NegotiationLab } from './pages/NegotiationLab';
+import { AgentConsole } from './pages/AgentConsole';
 import { PropertyDetail } from './pages/PropertyDetail';
 import { CountryLanding } from './pages/CountryLanding';
 import { CityLanding } from './pages/CityLanding';
@@ -128,6 +132,10 @@ function AppRoutes() {
           <Route path="/deal-room" element={<DealRoom />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/deal-compass" element={<DealCompass />} />
+          <Route path="/neural-capital" element={<NeuralCapitalMap />} />
+          <Route path="/time-machine" element={<TimeMachine />} />
+          <Route path="/negotiation-lab" element={<NegotiationLab />} />
+          <Route path="/agent-console" element={<AgentConsole />} />
           <Route path="/governance" element={<AIGovernancePanel />} />
         </Route>
 
