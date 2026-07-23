@@ -17,6 +17,7 @@ import { NotFound } from './pages/NotFound';
 import { GlobalMap } from './pages/GlobalMap';
 import { Match } from './pages/Match';
 import { GravityEngine } from './pages/GravityEngine';
+import { GravityBriefing } from './pages/GravityBriefing';
 import type { ReactNode } from 'react';
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
@@ -61,6 +62,7 @@ function AppRoutes() {
         <Route path="/global-map" element={<GlobalMap />} />
         <Route path="/match" element={<Match />} />
         <Route path="/gravity" element={<GravityEngine />} />
+        <Route path="/briefing" element={<GravityBriefing />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/commission" element={<CommissionDashboard />} />
       </Route>

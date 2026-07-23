@@ -10,12 +10,18 @@ import { useNavigate } from 'react-router-dom';
 import {
   TrendingUp, TrendingDown, Globe, MapPin, Zap, Activity,
   Shield, Target, ArrowRight, Sparkles, AlertTriangle, Info,
-  Building2, Layers, Crosshair, Star, Search
+  Building2, Layers, Crosshair, Star, Search, Bell, Eye, EyeOff
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 import { computeGravityRankings, getCityGravityAnalysis, getCategoryMeta } from '../lib/gravity/engine';
 import type { GravityAnalysis, GravityCategoryScore } from '../lib/gravity/types';
+import {
+  getWatchlist,
+  addToWatchlist,
+  removeFromWatchlist,
+  isInWatchlist,
+} from '../lib/gravity/alerts';
 
 // ============================================================
 // MAIN PAGE
@@ -26,9 +32,18 @@ export function GravityEngine() {
   const [selectedMarket, setSelectedMarket] = useState<GravityAnalysis | null>(null);
   const [filterRisk, setFilterRisk] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [watchlist, setWatchlist] = useState(getWatchlist());
 
   const rankings = useMemo(() => computeGravityRankings(), []);
   const categoryMeta = useMemo(() => getCategoryMeta(), []);
+
+  const handleToggleWatch = useCallback((analysis: GravityAnalysis) => {
+    if (watchlist.some(w => w.cityId === analysis.microMarket.id)) {
+      setWatchlist(removeFromWatchlist(analysis.microMarket.id));
+    } else {
+      setWatchlist(addToWatchlist(analysis));
+    }
+  }, [watchlist]);
 
   // Filter markets by risk level and search
   const filteredTopMarkets = useMemo(() => {
@@ -53,8 +68,7 @@ export function GravityEngine() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-start justify-between">
+      {/* Header */}          <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <div className="w-8 h-8 rounded-lg bg-luxury-gold-500/20 flex items-center justify-center">
@@ -70,6 +84,20 @@ export function GravityEngine() {
             across {rankings.totalMarkets} micro-markets to predict where institutional value 
             will flow before traditional signals appear.
           </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate('/briefing')}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-luxury-gold-500/20 border border-luxury-gold-500/30 rounded-lg text-[10px] font-medium text-luxury-gold-400 hover:bg-luxury-gold-500/30 transition-colors"
+          >
+            <Bell className="w-3.5 h-3.5" />
+            Daily Briefing
+            {watchlist.length > 0 && (
+              <span className="w-4 h-4 rounded-full bg-luxury-gold-500 text-[8px] font-bold text-black flex items-center justify-center">
+                {watchlist.length}
+              </span>
+            )}
+          </button>
         </div>
         <div className="flex items-center gap-2">
           <div className="text-right">
@@ -161,9 +189,11 @@ export function GravityEngine() {
                   analysis={analysis}
                   rank={i + 1}
                   isSelected={selectedMarket?.microMarket.id === analysis.microMarket.id}
+                  isWatched={watchlist.some(w => w.cityId === analysis.microMarket.id)}
                   onClick={() => setSelectedMarket(
                     selectedMarket?.microMarket.id === analysis.microMarket.id ? null : analysis
                   )}
+                  onToggleWatch={() => handleToggleWatch(analysis)}
                 />
               ))
             )}
@@ -173,7 +203,12 @@ export function GravityEngine() {
         {/* Right: Detail Panel */}
         <div className="space-y-4">
           {selectedAnalysis ? (
-            <MarketDetailPanel analysis={selectedAnalysis} onNavigate={navigate} />
+            <MarketDetailPanel
+              analysis={selectedAnalysis}
+              onNavigate={navigate}
+              isWatched={watchlist.some(w => w.cityId === selectedAnalysis.microMarket.id)}
+              onToggleWatch={() => handleToggleWatch(selectedAnalysis)}
+            />
           ) : (
             <div className="premium-card p-8 text-center">
               <div className="w-12 h-12 rounded-full bg-luxury-gold-500/10 border border-luxury-gold-500/20 flex items-center justify-center mx-auto mb-4">
@@ -296,11 +331,13 @@ export function GravityEngine() {
 // MARKET CARD COMPONENT
 // ============================================================
 
-function MarketCard({ analysis, rank, isSelected, onClick }: {
+function MarketCard({ analysis, rank, isSelected, isWatched, onClick, onToggleWatch }: {
   analysis: GravityAnalysis;
   rank: number;
   isSelected: boolean;
+  isWatched: boolean;
   onClick: () => void;
+  onToggleWatch: () => void;
 }) {
   const { microMarket: m } = analysis;
   const scoreColor = analysis.overallScore >= 85 ? 'text-luxury-gold-400' :
@@ -339,12 +376,27 @@ function MarketCard({ analysis, rank, isSelected, onClick }: {
                   UNDERVALUED
                 </span>
               )}
+              {isWatched && (
+                <Eye className="w-3 h-3 text-luxury-gold-400" />
+              )}
             </div>
             <p className="text-[10px] text-gray-500">{m.countryName} · {m.countryCode}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-4 shrink-0">
+          {/* Watch button */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onToggleWatch(); }}
+            className={cn(
+              'p-1.5 rounded-lg transition-colors',
+              isWatched ? 'text-luxury-gold-400 hover:bg-luxury-gold-500/10' : 'text-gray-600 hover:text-gray-400 hover:bg-white/5'
+            )}
+            title={isWatched ? 'Unwatch market' : 'Watch market'}
+          >
+            {isWatched ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+          </button>
+
           {/* Gravity Score */}
           <div className="text-center">
             <p className={cn('text-lg font-bold', scoreColor)}>{analysis.overallScore}</p>
@@ -397,9 +449,11 @@ function MarketCard({ analysis, rank, isSelected, onClick }: {
 // MARKET DETAIL PANEL
 // ============================================================
 
-function MarketDetailPanel({ analysis, onNavigate }: {
+function MarketDetailPanel({ analysis, onNavigate, isWatched, onToggleWatch }: {
   analysis: GravityAnalysis;
   onNavigate: (path: string) => void;
+  isWatched: boolean;
+  onToggleWatch: () => void;
 }) {
   const { microMarket: m, categoryScores } = analysis;
 
@@ -407,9 +461,23 @@ function MarketDetailPanel({ analysis, onNavigate }: {
     <div className="space-y-4">
       {/* Header */}
       <div className="premium-card p-5">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-xl">{m.countryFlag}</span>
-          <h2 className="text-lg font-bold text-white font-display">{m.name}</h2>
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">{m.countryFlag}</span>
+            <h2 className="text-lg font-bold text-white font-display">{m.name}</h2>
+          </div>
+          <button
+            onClick={onToggleWatch}
+            className={cn(
+              'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-medium transition-colors',
+              isWatched
+                ? 'bg-luxury-gold-500/20 text-luxury-gold-400 border border-luxury-gold-500/30'
+                : 'bg-gray-800 text-gray-400 border border-gray-700 hover:text-white'
+            )}
+          >
+            {isWatched ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+            {isWatched ? 'Watching' : 'Watch'}
+          </button>
         </div>
         <p className="text-[10px] text-gray-500 mb-3">{m.countryName} · {m.countryCode}</p>
 
