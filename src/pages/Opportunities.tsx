@@ -1,12 +1,10 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, Search, ArrowUpDown, Sparkles, Building2, Globe, Loader2, CheckCircle2 } from 'lucide-react';
-import { useOpportunityEngine } from '../hooks/useOpportunityEngine';
-import { ConfidenceIndicator } from '../components/ai/ConfidenceIndicator';
+import { Zap, Search, ArrowUpDown, Sparkles, Building2, Globe, Loader2, CheckCircle2, Filter, X } from 'lucide-react';
+import { useSupabaseOpportunities, computePipelineStats, type OpportunityFilters, type OpportunityRecord, DEFAULT_FILTERS } from '../lib/intelligence/supabaseOpportunityEngine';
 import { formatIndianCurrency, formatCommission } from '../lib/format';
 import { cn } from '../lib/utils';
-import { PRIORITY_COLORS } from '../types';
 
 const LOADING_STEPS = [
   { icon: Loader2, text: 'Initializing AI intelligence scanner…' },
@@ -18,12 +16,23 @@ const LOADING_STEPS = [
 
 export function Opportunities() {
   const navigate = useNavigate();
-  const { opportunities, loading } = useOpportunityEngine();
   const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState<'confidence' | 'value'>('confidence');
+  const [sortBy, setSortBy] = useState<OpportunityFilters['sortBy']>('confidence');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [loadingStepIndex, setLoadingStepIndex] = useState(0);
 
-  // Animate through loading steps
+  const filters: OpportunityFilters = useMemo(() => ({
+    search,
+    sortBy,
+    sortDir,
+    minConfidence: 0,
+    countries: [],
+    propertyTypes: [],
+  }), [search, sortBy, sortDir]);
+
+  const { opportunities, loading } = useSupabaseOpportunities(filters);
+
+  // Animate loading steps
   useEffect(() => {
     if (!loading) { setLoadingStepIndex(LOADING_STEPS.length); return; }
     const interval = setInterval(() => {
@@ -32,26 +41,19 @@ export function Opportunities() {
     return () => clearInterval(interval);
   }, [loading]);
 
-  const filtered = useMemo(() => {
-    let list = [...opportunities].filter(o => o.is_active);
-    if (search) {
-      const s = search.toLowerCase();
-      list = list.filter(o => o.title.toLowerCase().includes(s));
-    }
-    list.sort((a, b) => sortBy === 'confidence'
-      ? b.confidence_score - a.confidence_score
-      : b.estimated_value - a.estimated_value);
-    return list;
-  }, [opportunities, search, sortBy]);
+  // Pipeline stats from real data
+  const pipelineStats = useMemo(() => computePipelineStats(opportunities), [opportunities]);
 
-  // Compute pipeline stats from real data
-  const pipelineStats = useMemo(() => {
-    const active = filtered;
-    const totalPipeline = active.reduce((s, o) => s + o.estimated_value, 0);
-    const totalCommission = active.reduce((s, o) => s + o.estimated_commission, 0);
-    const countries = new Set(active.map(o => o.title?.split('—')[1]?.trim() || ''));
-    return { totalPipeline, totalCommission, countries: countries.size };
-  }, [filtered]);
+  const handleSortToggle = useCallback((field: OpportunityFilters['sortBy']) => {
+    setSortBy(prev => {
+      if (prev === field) {
+        setSortDir(d => d === 'desc' ? 'asc' : 'desc');
+        return prev;
+      }
+      setSortDir('desc');
+      return field;
+    });
+  }, []);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -62,10 +64,12 @@ export function Opportunities() {
         </div>
         <div>
           <h2 className="text-lg font-semibold text-white">
-            {loading ? 'Initializing Scanner…' : `${filtered.length} Verified Opportunities`}
+            {loading ? 'Initializing Scanner…' : `${pipelineStats.total} Verified Opportunities`}
           </h2>
           <p className="text-sm text-gray-500">
-            {loading ? 'Connecting to knowledge graph…' : `${pipelineStats.countries} markets · ${formatIndianCurrency(pipelineStats.totalPipeline)} pipeline · ${formatCommission(pipelineStats.totalCommission)} potential commission`}
+            {loading ? 'Connecting to data sources…' : 
+              `${pipelineStats.countries} countries · ${formatIndianCurrency(pipelineStats.totalPipeline)} pipeline · ` +
+              `$${pipelineStats.totalCommission.toLocaleString()} commission · ${pipelineStats.avgConfidence}% avg confidence`}
           </p>
         </div>
       </div>
@@ -75,20 +79,22 @@ export function Opportunities() {
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
           <input type="text" value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="Search opportunities by city, developer, or project…" className="input-glass pl-10" />
+            placeholder="Search by city, country, developer…" className="input-glass pl-10" />
         </div>
         <div className="flex border border-luxury-border rounded-lg overflow-hidden">
-          {(['confidence', 'value'] as const).map(s => (
-            <button key={s} onClick={() => setSortBy(s)}
+          {(['confidence', 'value', 'commission', 'market_score'] as const).map(s => (
+            <button key={s} onClick={() => handleSortToggle(s)}
               className={cn('px-3 py-2 text-xs font-medium transition-colors',
                 sortBy === s ? 'bg-luxury-gold-500/20 text-luxury-gold-400' : 'text-gray-500 hover:text-white')}>
-              <ArrowUpDown className="w-3 h-3 inline mr-1" />{s === 'confidence' ? 'Confidence' : 'Value'}
+              <ArrowUpDown className="w-3 h-3 inline mr-1" />
+              {s === 'market_score' ? 'Market' : s.charAt(0).toUpperCase() + s.slice(1)}
+              {sortBy === s && (sortDir === 'asc' ? ' ↑' : ' ↓')}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Loading State with Progress Steps */}
+      {/* Loading State */}
       {loading && (
         <div className="premium-card p-8 text-center">
           <div className="space-y-4 max-w-md mx-auto">
@@ -107,13 +113,9 @@ export function Opportunities() {
                     !isActive && !isDone && 'text-gray-600'
                   )}
                 >
-                  {isDone ? (
-                    <CheckCircle2 className="w-4 h-4 shrink-0" />
-                  ) : isActive ? (
-                    <Loader2 className="w-4 h-4 animate-spin shrink-0" />
-                  ) : (
-                    <div className="w-4 h-4 shrink-0" />
-                  )}
+                  {isDone ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : 
+                   isActive ? <Loader2 className="w-4 h-4 animate-spin shrink-0" /> :
+                   <div className="w-4 h-4 shrink-0" />}
                   <span>{step.text}</span>
                 </motion.div>
               );
@@ -124,7 +126,6 @@ export function Opportunities() {
                   className="h-full bg-luxury-gold-400 rounded-full"
                   initial={{ width: '0%' }}
                   animate={{ width: `${((loadingStepIndex + 1) / LOADING_STEPS.length) * 100}%` }}
-                  transition={{ duration: 0.5 }}
                 />
               </div>
             </div>
@@ -133,40 +134,73 @@ export function Opportunities() {
       )}
 
       {/* Empty State */}
-      {!loading && filtered.length === 0 && (
+      {!loading && opportunities.length === 0 && (
         <div className="text-center py-16">
           <Sparkles className="w-12 h-12 text-gray-700 mx-auto mb-3" />
           <h3 className="text-base font-semibold text-white mb-1">Awaiting Intelligence Data</h3>
           <p className="text-sm text-gray-500 max-w-md mx-auto">
-            The autonomous intelligence system is actively gathering and analyzing public data sources.
-            Opportunities will appear here as signals are collected and processed.
+            The opportunity engine is actively analyzing global real estate markets.
+            Verified opportunities will appear here once market conditions meet the discovery threshold.
           </p>
         </div>
       )}
 
       {/* Opportunity Cards */}
-      {!loading && filtered.length > 0 && (
+      {!loading && opportunities.length > 0 && (
         <div className="space-y-4">
           <AnimatePresence>
-            {filtered.map((opp, i) => (
+            {opportunities.map((opp, i) => (
               <motion.div
-                key={opp.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
+                key={opp.id}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
                 onClick={() => navigate(`/opportunity/${opp.id}`)}
                 className="premium-card p-4 cursor-pointer group hover:border-luxury-gold-500/40 transition-all duration-300"
               >
                 <div className="flex items-start gap-4">
-                  <ConfidenceIndicator score={opp.confidence_score} size="sm" showLabel={false} />
+                  {/* Confidence Ring */}
+                  <div className="relative w-10 h-10 shrink-0">
+                    <svg viewBox="0 0 36 36" className="w-full h-full">
+                      <circle cx="18" cy="18" r="15.5" fill="none" stroke="#1f2937" strokeWidth="2" />
+                      <circle cx="18" cy="18" r="15.5" fill="none" 
+                        stroke={opp.confidence_score >= 85 ? '#22c55e' : opp.confidence_score >= 75 ? '#f59e0b' : '#ef4444'}
+                        strokeWidth="2" strokeDasharray={`${opp.confidence_score}, 100`} 
+                        strokeLinecap="round" transform="rotate(-90 18 18)" />
+                    </svg>
+                    <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-white">
+                      {opp.confidence_score}
+                    </span>
+                  </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <h3 className="text-sm font-semibold text-white group-hover:text-luxury-gold-300 transition-colors truncate">{opp.title}</h3>
-                      <span className={cn('inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium border', PRIORITY_COLORS[opp.priority])}>{opp.priority}</span>
+                      <h3 className="text-sm font-semibold text-white group-hover:text-luxury-gold-300 transition-colors truncate">
+                        {opp.title}
+                      </h3>
+                      <span className={cn(
+                        'inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium border',
+                        opp.priority === 'critical' ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400' :
+                        opp.priority === 'high' ? 'border-luxury-gold-500/30 bg-luxury-gold-500/10 text-luxury-gold-400' :
+                        'border-gray-700 bg-gray-800 text-gray-400'
+                      )}>
+                        {opp.priority}
+                      </span>
                     </div>
-                    <p className="text-xs text-gray-500 mb-1 line-clamp-1">{opp.summary}</p>
+                    <p className="text-xs text-gray-500 mb-1 line-clamp-1">
+                      {opp.developer_name} · {opp.city_name}, {opp.country_name}
+                    </p>
                     <div className="flex items-center gap-3 text-xs">
-                      <span className="text-luxury-gold-400 font-medium">{formatIndianCurrency(opp.estimated_value)}</span>
+                      <span className="text-luxury-gold-400 font-medium">
+                        {formatIndianCurrency(opp.property_value)}
+                      </span>
                       <span className="text-gray-600">·</span>
-                      <span className="text-emerald-400 font-medium">{formatCommission(opp.estimated_commission)}</span>
+                      <span className="text-emerald-400 font-medium">
+                        ${opp.commission_usd.toLocaleString()} commission
+                      </span>
+                      <span className="text-gray-600">·</span>
+                      <span className="text-blue-400">
+                        Market {opp.market_score}
+                      </span>
                     </div>
                   </div>
                 </div>
