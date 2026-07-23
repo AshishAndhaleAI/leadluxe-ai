@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
@@ -28,7 +28,42 @@ import { CityLanding } from './pages/CityLanding';
 import { Blog } from './pages/Blog';
 import { BlogPost } from './pages/BlogPost';
 import { SEOHelmet, OrganizationLD } from './components/seo/SEOHelmet';
+import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
+
+// Declare gtag for GA4 (loaded externally from the script tag in index.html)
+declare const gtag: (...args: any[]) => void;
+
+// ============================================================
+// GA4 Route Tracker — fires page_view on every route change
+// Solves: "Not tagged" issue in Google Analytics for SPAs
+// ============================================================
+function GARouteTracker() {
+  const { pathname, search } = useLocation();
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    // Skip the first render — the initial gtag('config', ...) from
+    // the <script> tag in index.html already fires a page_view.
+    // Only fire page_view on subsequent SPA navigations.
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    // Fire a page_view event whenever the route changes
+    // Uses string primitives as deps to avoid firing on every re-render
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'page_view', {
+        page_path: pathname + search,
+        page_location: window.location.href,
+        page_title: document.title,
+      });
+    }
+  }, [pathname, search]);
+
+  return null;
+}
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -49,6 +84,9 @@ function PublicRoute({ children }: { children: ReactNode }) {
 function AppRoutes() {
   return (
     <>
+      {/* GA4 Route Tracker — fires page_view on every SPA navigation */}
+      <GARouteTracker />
+
       {/* Global SEO meta and structured data */}
       <SEOHelmet />
       <OrganizationLD />
