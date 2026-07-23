@@ -4,25 +4,31 @@
 // Shows where institutional money is heading before it arrives
 // ============================================================
 
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   TrendingUp, TrendingDown, Globe, MapPin, Zap, Activity,
   Shield, Target, ArrowRight, Sparkles, AlertTriangle, Info,
   Building2, Layers, Crosshair, Star, Search, Bell, Eye, EyeOff,
-  BarChart3, CheckSquare, Square, X
+  BarChart3, CheckSquare, Square, X, IndianRupee, Percent, Clock
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { CITIES } from '../lib/global-data';
 
-import { computeGravityRankings, getCityGravityAnalysis, getCategoryMeta } from '../lib/gravity/engine';
+import { computeGravityRankings, getCategoryMeta } from '../lib/gravity/engine';
+import { computeGravityScore } from '../lib/gravity/gravityScore';
 import type { GravityAnalysis, GravityCategoryScore } from '../lib/gravity/types';
+import type { CommissionPotential } from '../lib/gravity/commissionPotential';
+import type { ClosingProbability } from '../lib/gravity/closingProbability';
+import type { GravityScoreResult } from '../lib/gravity/gravityScore';
 import {
   getWatchlist,
   addToWatchlist,
   removeFromWatchlist,
   isInWatchlist,
 } from '../lib/gravity/alerts';
+import { ErrorBoundary } from '../components/ui/ErrorBoundary';
 
 // ============================================================
 // RADAR CHART COLORS
@@ -64,9 +70,60 @@ export function GravityEngine() {
   const [watchlist, setWatchlist] = useState(getWatchlist());
   const [compareMode, setCompareMode] = useState(false);
   const [selectedForCompare, setSelectedForCompare] = useState<Set<string>>(new Set());
+  const [isLoading, setIsLoading] = useState(true);
+  const [gravityScores, setGravityScores] = useState<Map<string, GravityScoreResult>>(new Map());
+
+  // Simulate a brief loading state for a premium feel
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 400);
+    return () => clearTimeout(timer);
+  }, []);
 
   const rankings = useMemo(() => computeGravityRankings(), []);
   const categoryMeta = useMemo(() => getCategoryMeta(), []);
+
+  // Compute gravity scores for ALL ranked markets (top, emerging, undervalued, momentum)
+  useEffect(() => {
+    if (!rankings || isLoading) return;
+    const allMarkets = [
+      ...rankings.topMarkets,
+      ...rankings.emergingMarkets,
+      ...rankings.undervaluedMarkets,
+      ...rankings.highestMomentum,
+    ];
+    const seen = new Set<string>();
+    const scores = new Map<string, GravityScoreResult>();
+    
+    for (const analysis of allMarkets) {
+      if (seen.has(analysis.microMarket.id)) continue;
+      seen.add(analysis.microMarket.id);
+      
+      const m = analysis.microMarket;
+      // Look up real city tags from the CITIES array
+      const cityData = CITIES[m.countryCode]?.find(c => c.id === m.id);
+      const tags = cityData?.tags || [];
+      
+      const result = computeGravityScore({
+        id: m.id,
+        name: m.name,
+        countryCode: m.countryCode,
+        pricePerSqft: m.pricePerSqft,
+        priceTrend: m.priceTrend,
+        absorptionRate: m.absorptionRate,
+        averageRoi: m.averageRoi,
+        foreignDemand: m.foreignDemand,
+        investorInterest: m.investorInterest,
+        activeProjects: m.activeProjects,
+        upcomingLaunches: m.upcomingLaunches,
+        confidence: m.confidence,
+        tags,
+        latitude: m.latitude,
+        longitude: m.longitude,
+      });
+      scores.set(m.id, result);
+    }
+    setGravityScores(scores);
+  }, [rankings, isLoading]);
 
   const handleToggleWatch = useCallback((analysis: GravityAnalysis) => {
     if (watchlist.some(w => w.cityId === analysis.microMarket.id)) {
@@ -167,27 +224,66 @@ export function GravityEngine() {
     return selectedMarket;
   }, [selectedMarket]);
 
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        {/* Header skeleton */}
+        <div className="flex items-start justify-between">
+          <div className="space-y-2">
+            <div className="skeleton h-8 w-72" />
+            <div className="skeleton h-4 w-96" />
+          </div>
+          <div className="skeleton h-8 w-40" />
+        </div>
+        {/* KPI skeletons */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="premium-card p-4">
+              <div className="skeleton h-5 w-24 mb-3" />
+              <div className="skeleton h-8 w-16 mb-2" />
+              <div className="skeleton h-3 w-32" />
+            </div>
+          ))}
+        </div>
+        {/* Main content skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="premium-card p-4">
+                <div className="skeleton h-14 w-full" />
+              </div>
+            ))}
+          </div>
+          <div className="premium-card p-5">
+            <div className="skeleton h-64 w-full" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
+    <ErrorBoundary>
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <div className="w-8 h-8 rounded-lg bg-luxury-gold-500/20 flex items-center justify-center">
               <Target className="w-4 h-4 text-luxury-gold-400" />
             </div>
-            <h1 className="text-xl font-bold text-white font-display">Investment Gravity Engine</h1>
+            <h1 className="text-xl font-bold text-white font-display">Gravity Engine</h1>
             <span className="px-2 py-0.5 rounded-full bg-luxury-gold-500/10 border border-luxury-gold-500/20 text-[9px] font-medium text-luxury-gold-400">
               BETA
             </span>
           </div>
           <p className="text-sm text-gray-500 max-w-2xl">
-            Predictive capital flow intelligence — analyzes 5 non-obvious signal categories 
+            Predictive capital flow intelligence — analyzes 8 weighted signal components 
             across {rankings.totalMarkets} micro-markets to predict where institutional value 
             will flow before traditional signals appear.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 flex-wrap">
           <button
             onClick={() => navigate('/briefing')}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-luxury-gold-500/20 border border-luxury-gold-500/30 rounded-lg text-[10px] font-medium text-luxury-gold-400 hover:bg-luxury-gold-500/30 transition-colors"
@@ -200,18 +296,18 @@ export function GravityEngine() {
               </span>
             )}
           </button>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="text-right">
-            <p className="text-[9px] text-gray-600">Last analysis</p>
-            <p className="text-[10px] text-gray-400">
-              {new Date(rankings.generatedAt).toLocaleTimeString()}
-            </p>
-          </div>
-          <div className="w-px h-8 bg-gray-800" />
-          <div className="text-right">
-            <p className="text-[9px] text-gray-600">Markets tracked</p>
-            <p className="text-[10px] text-luxury-gold-400 font-bold">{rankings.totalMarkets}</p>
+          <div className="flex items-center gap-2">
+            <div className="text-right">
+              <p className="text-[9px] text-gray-600">Last analysis</p>
+              <p className="text-[10px] text-gray-400">
+                {new Date(rankings.generatedAt).toLocaleTimeString()}
+              </p>
+            </div>
+            <div className="w-px h-8 bg-gray-800" />
+            <div className="text-right">
+              <p className="text-[9px] text-gray-600">Markets tracked</p>
+              <p className="text-[10px] text-luxury-gold-400 font-bold">{rankings.totalMarkets}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -404,6 +500,7 @@ export function GravityEngine() {
           ) : selectedAnalysis ? (
             <MarketDetailPanel
               analysis={selectedAnalysis}
+              gravityResult={gravityScores.get(selectedAnalysis.microMarket.id)}
               onNavigate={navigate}
               isWatched={watchlist.some(w => w.cityId === selectedAnalysis.microMarket.id)}
               onToggleWatch={() => handleToggleWatch(selectedAnalysis)}
@@ -523,6 +620,7 @@ export function GravityEngine() {
         </div>
       </div>
     </div>
+    </ErrorBoundary>
   );
 }
 
@@ -685,13 +783,16 @@ function MarketCard({ analysis, rank, isSelected, isWatched, compareMode, isComp
 // MARKET DETAIL PANEL
 // ============================================================
 
-function MarketDetailPanel({ analysis, onNavigate, isWatched, onToggleWatch }: {
+function MarketDetailPanel({ analysis, gravityResult, onNavigate, isWatched, onToggleWatch }: {
   analysis: GravityAnalysis;
+  gravityResult?: GravityScoreResult;
   onNavigate: (path: string) => void;
   isWatched: boolean;
   onToggleWatch: () => void;
 }) {
   const { microMarket: m, categoryScores } = analysis;
+  const commission = gravityResult?.commissionPotential;
+  const closingProb = gravityResult?.closingProbability;
 
   return (
     <div className="space-y-4">
@@ -805,17 +906,183 @@ function MarketDetailPanel({ analysis, onNavigate, isWatched, onToggleWatch }: {
         </div>
       </div>
 
-      {/* Reasoning */}
+      {/* Key Drivers — Infrastructure + Demand Momentum */}
+      {gravityResult && (
+        <div className="premium-card p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Building2 className="w-3.5 h-3.5 text-luxury-gold-400" />
+            <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Key Drivers</h3>
+          </div>
+          <div className="space-y-2">
+            {/* Infrastructure Projects */}
+            {gravityResult.infrastructureImpact.keyInfrastructure.length > 0 && (
+              <div>
+                <p className="text-[8px] text-gray-600 mb-1 uppercase tracking-wider">Infrastructure</p>
+                <div className="space-y-1">
+                  {gravityResult.infrastructureImpact.keyInfrastructure.slice(0, 3).map((proj, i) => (
+                    <div key={i} className="flex items-start gap-1.5">
+                      <div className="w-1 h-1 rounded-full bg-emerald-400 mt-1" />
+                      <p className="text-[9px] text-gray-300 leading-relaxed">{proj}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* Demand Momentum Drivers */}
+            {gravityResult.demandMomentum.keyDrivers.length > 0 && (
+              <div>
+                <p className="text-[8px] text-gray-600 mb-1 mt-2 uppercase tracking-wider">Market Momentum</p>
+                <div className="space-y-1">
+                  {gravityResult.demandMomentum.keyDrivers.slice(0, 3).map((driver, i) => (
+                    <div key={i} className="flex items-start gap-1.5">
+                      <div className="w-1 h-1 rounded-full bg-luxury-gold-400 mt-1" />
+                      <p className="text-[9px] text-gray-300 leading-relaxed">{driver}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* Infrastructure Impact Score */}
+            <div className="flex items-center gap-3 mt-2 pt-2 border-t border-gray-800">
+              <div className="text-center">
+                <p className="text-sm font-bold text-luxury-gold-400">{gravityResult.infrastructureImpact.overallImpactScore}</p>
+                <p className="text-[7px] text-gray-600">Infra Impact</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-bold text-emerald-400">+{gravityResult.infrastructureImpact.estimatedValueAcceleration}%</p>
+                <p className="text-[7px] text-gray-600">Value Boost</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-bold text-white">{gravityResult.demandMomentum.demandSupplyRatio.toFixed(1)}x</p>
+                <p className="text-[7px] text-gray-600">D/S Ratio</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-bold text-amber-400">{gravityResult.demandMomentum.weeksUntilInventoryDepletion}w</p>
+                <p className="text-[7px] text-gray-600">Inventory Life</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Commission Prediction */}
+      {commission && (
+        <div className="premium-card p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <IndianRupee className="w-3.5 h-3.5 text-luxury-gold-400" />
+            <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Commission Prediction</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="glass-card p-2 text-center">
+              <p className="text-xs font-bold text-emerald-400">{commission.formatted}</p>
+              <p className="text-[7px] text-gray-600">Est. Deal Value</p>
+            </div>
+            <div className="glass-card p-2 text-center">
+              <p className="text-xs font-bold text-luxury-gold-400">{commission.expectedFormatted}</p>
+              <p className="text-[7px] text-gray-600">Expected Commission</p>
+            </div>
+            <div className="glass-card p-2 text-center">
+              <p className="text-xs font-bold text-white">{commission.dealProbability}%</p>
+              <p className="text-[7px] text-gray-600">Deal Probability</p>
+            </div>
+            <div className="glass-card p-2 text-center">
+              <p className="text-xs font-bold text-amber-400">{commission.totalFormatted}</p>
+              <p className="text-[7px] text-gray-600">Total Addressable</p>
+            </div>
+          </div>
+          <div className="mt-2 flex items-center justify-between text-[8px] text-gray-600">
+            <span>Rate: {commission.commissionRate * 100}%</span>
+            <span>Market depth: {commission.marketDepth.toLocaleString()} units</span>
+            <span className={cn(
+              'px-1 py-0.5 rounded',
+              commission.confidence === 'high' ? 'bg-emerald-500/10 text-emerald-400' :
+              commission.confidence === 'medium' ? 'bg-amber-500/10 text-amber-400' :
+              'bg-gray-800 text-gray-500'
+            )}>{commission.confidence} confidence</span>
+          </div>
+        </div>
+      )}
+
+      {/* Closing Probability */}
+      {closingProb && (
+        <div className="premium-card p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Percent className="w-3.5 h-3.5 text-luxury-gold-400" />
+            <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Closing Probability</h3>
+          </div>
+          <div className="flex items-center justify-center mb-3">
+            <div className="relative w-20 h-20">
+              <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
+                <circle
+                  cx="40" cy="40" r="34" fill="none"
+                  stroke={closingProb.probability30d >= 50 ? '#34D399' : closingProb.probability30d >= 30 ? '#F59E0B' : '#EF4444'}
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  strokeDasharray={`${(closingProb.probability30d / 100) * 213.6} 213.6`}
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-lg font-bold text-white">{closingProb.probability30d}%</span>
+              </div>
+            </div>
+            <div className="ml-4 space-y-1">
+              <div className="flex items-center gap-2 text-[9px] text-gray-500">
+                <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span>30 days: {closingProb.probability30d}%</span>
+              </div>
+              <div className="flex items-center gap-2 text-[9px] text-gray-500">
+                <div className="w-2 h-2 rounded-full bg-luxury-gold-500" />
+                <span>90 days: {closingProb.probability90d}%</span>
+              </div>
+              <div className="flex items-center gap-2 text-[9px] text-gray-500">
+                <div className="w-2 h-2 rounded-full bg-blue-500" />
+                <span>180 days: {closingProb.probability180d}%</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-[9px] text-gray-600">
+            <Clock className="w-3 h-3" />
+            <span>Est. close: ~{closingProb.estimatedDaysToClose} days</span>
+            <span className="mx-1">·</span>
+            <span>90% CI: {closingProb.confidenceInterval[0]}%–{closingProb.confidenceInterval[1]}%</span>
+          </div>
+        </div>
+      )}
+
+      {/* Enhanced AI Reasoning */}
       <div className="premium-card p-4">
-        <h3 className="text-[10px] font-semibold text-gray-400 mb-2 uppercase tracking-wider">AI Reasoning</h3>
+        <div className="flex items-center gap-2 mb-3">
+          <Info className="w-3.5 h-3.5 text-luxury-gold-400" />
+          <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">AI Reasoning</h3>
+        </div>
         <div className="space-y-1.5">
-          {analysis.reasoning.map((r, i) => (
+          {gravityResult?.reasoning.map((r, i) => (
             <div key={i} className="flex items-start gap-2">
-              <Info className="w-3 h-3 text-luxury-gold-400 mt-0.5 shrink-0" />
-              <p className="text-[10px] text-gray-300 leading-tight">{r}</p>
+              <div className="w-1 h-1 rounded-full bg-luxury-gold-400 mt-1.5 shrink-0" />
+              <p className="text-[9px] text-gray-300 leading-relaxed">{r}</p>
+            </div>
+          ))}
+          {!gravityResult && analysis.reasoning.map((r, i) => (
+            <div key={i} className="flex items-start gap-2">
+              <div className="w-1 h-1 rounded-full bg-luxury-gold-400 mt-1.5 shrink-0" />
+              <p className="text-[9px] text-gray-300 leading-relaxed">{r}</p>
             </div>
           ))}
         </div>
+        {/* Closing recommendation */}
+        {closingProb && (
+          <div className={cn(
+            'mt-3 p-2.5 rounded-lg border text-[9px]',
+            closingProb.probability30d >= 50
+              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+              : closingProb.probability30d >= 30
+              ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+              : 'bg-blue-500/10 border-blue-500/20 text-blue-400'
+          )}>
+            {closingProb.recommendation}
+          </div>
+        )}
       </div>
 
       {/* Actions */}
