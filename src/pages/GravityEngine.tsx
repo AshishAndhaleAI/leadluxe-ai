@@ -30,6 +30,7 @@ import {
 export function GravityEngine() {
   const navigate = useNavigate();
   const [selectedMarket, setSelectedMarket] = useState<GravityAnalysis | null>(null);
+  const [activeCategory, setActiveCategory] = useState<'top' | 'emerging' | 'undervalued' | 'momentum'>('top');
   const [filterRisk, setFilterRisk] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [watchlist, setWatchlist] = useState(getWatchlist());
@@ -45,9 +46,20 @@ export function GravityEngine() {
     }
   }, [watchlist]);
 
+  // Get the source list based on active category
+  const categorySource = useMemo(() => {
+    switch (activeCategory) {
+      case 'top': return rankings.topMarkets;
+      case 'emerging': return rankings.emergingMarkets;
+      case 'undervalued': return rankings.undervaluedMarkets;
+      case 'momentum': return rankings.highestMomentum;
+      default: return rankings.topMarkets;
+    }
+  }, [rankings, activeCategory]);
+
   // Filter markets by risk level and search
-  const filteredTopMarkets = useMemo(() => {
-    let markets = rankings.topMarkets;
+  const filteredMarkets = useMemo(() => {
+    let markets = categorySource;
     if (filterRisk !== 'all') {
       markets = markets.filter(m => m.microMarket.riskLevel === filterRisk);
     }
@@ -59,7 +71,7 @@ export function GravityEngine() {
       );
     }
     return markets;
-  }, [rankings, filterRisk, searchQuery]);
+  }, [categorySource, filterRisk, searchQuery]);
 
   const selectedAnalysis = useMemo(() => {
     if (!selectedMarket) return null;
@@ -114,30 +126,77 @@ export function GravityEngine() {
         </div>
       </div>
 
-      {/* Summary KPI Cards */}
+      {/* Category Tabs — clickable KPI cards that switch the active list */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {([
-          { label: 'Top Gravity Markets', value: rankings.topMarkets.length, sub: 'Score ≥ 75', icon: Star, color: 'text-luxury-gold-400', bg: 'bg-luxury-gold-500/10' },
-          { label: 'Emerging Opportunities', value: rankings.emergingMarkets.length, sub: 'Score 60-74, low price', icon: TrendingUp, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-          { label: 'Undervalued Markets', value: rankings.undervaluedMarkets.length, sub: 'Gravity > Confidence', icon: Target, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-          { label: 'Highest Momentum', value: rankings.highestMomentum[0]?.microMarket.priceTrend.toFixed(1) + '%', sub: 'Fastest price acceleration', icon: Zap, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+          { key: 'top' as const, label: 'Top Gravity Markets', value: rankings.topMarkets.length, sub: 'Score ≥ 75', icon: Star, color: 'text-luxury-gold-400', bg: 'bg-luxury-gold-500/10' },
+          { key: 'emerging' as const, label: 'Emerging Opportunities', value: rankings.emergingMarkets.length, sub: 'Score 60-74, low price', icon: TrendingUp, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+          { key: 'undervalued' as const, label: 'Undervalued Markets', value: rankings.undervaluedMarkets.length, sub: 'Gravity > Confidence', icon: Target, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+          { key: 'momentum' as const, label: 'Highest Momentum', value: rankings.highestMomentum[0]?.microMarket.priceTrend.toFixed(1) + '%', sub: 'Fastest price acceleration', icon: Zap, color: 'text-blue-400', bg: 'bg-blue-500/10' },
           ] as const).map((stat, i) => (
-          <motion.div
+          <motion.button
             key={stat.label}
+            onClick={() => setActiveCategory(stat.key)}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="premium-card p-4"
+            className={cn(
+              'premium-card p-4 text-left transition-all cursor-pointer',
+              activeCategory === stat.key
+                ? 'ring-2 ring-luxury-gold-500/40 border-luxury-gold-500/30'
+                : 'hover:border-gray-600/50 hover:bg-white/[0.02]'
+            )}
           >
             <div className="flex items-center gap-2 mb-2">
               <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center', stat.bg)}>
                 <stat.icon className={cn('w-4 h-4', stat.color)} />
               </div>
               <p className="text-xs text-gray-400">{stat.label}</p>
+              {activeCategory === stat.key && (
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-luxury-gold-400 animate-pulse" />
+              )}
             </div>
             <p className="text-2xl font-bold text-white">{stat.value}</p>
             <p className="text-[10px] text-gray-600">{stat.sub}</p>
-          </motion.div>
+          </motion.button>
+        ))}
+      </div>
+
+      {/* Category Tab Bar */}
+      <div className="flex items-center gap-1 p-1 rounded-xl bg-gray-900/60 border border-gray-800/50 w-fit">
+        {[
+          { key: 'top' as const, label: 'Top Markets', count: rankings.topMarkets.length },
+          { key: 'emerging' as const, label: 'Emerging', count: rankings.emergingMarkets.length },
+          { key: 'undervalued' as const, label: 'Undervalued', count: rankings.undervaluedMarkets.length },
+          { key: 'momentum' as const, label: 'Momentum', count: rankings.highestMomentum.length },
+        ].map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveCategory(tab.key)}
+            className={cn(
+              'relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-medium transition-all',
+              activeCategory === tab.key
+                ? 'bg-luxury-gold-500/15 text-luxury-gold-400 shadow-sm'
+                : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'
+            )}
+          >
+            {tab.label}
+            <span className={cn(
+              'px-1.5 py-0.5 rounded text-[8px] font-bold',
+              activeCategory === tab.key
+                ? 'bg-luxury-gold-500/20 text-luxury-gold-300'
+                : 'bg-gray-800 text-gray-500'
+            )}>
+              {tab.count}
+            </span>
+            {activeCategory === tab.key && (
+              <motion.div
+                layoutId="tab-active"
+                className="absolute inset-0 rounded-lg border border-luxury-gold-500/20 pointer-events-none"
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              />
+            )}
+          </button>
         ))}
       </div>
 
@@ -177,13 +236,13 @@ export function GravityEngine() {
 
           {/* Market Cards */}
           <div className="space-y-2">
-            {filteredTopMarkets.length === 0 ? (
+            {filteredMarkets.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-gray-600" />
                 <p className="text-sm">No markets match your filter criteria</p>
               </div>
             ) : (
-              filteredTopMarkets.map((analysis, i) => (
+              filteredMarkets.map((analysis, i) => (
                 <MarketCard
                   key={analysis.microMarket.id}
                   analysis={analysis}
