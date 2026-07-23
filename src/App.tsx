@@ -23,6 +23,10 @@ import { GravityBriefing } from './pages/GravityBriefing';
 import { Portfolio } from './pages/Portfolio';
 import { DealCompass } from './pages/DealCompass';
 import { TwinDashboard } from './pages/TwinDashboard';
+import { Enterprise } from './pages/Enterprise';
+import { Pilot } from './pages/Pilot';
+import { TractionDashboard } from './pages/TractionDashboard';
+import { BookDemo } from './pages/BookDemo';
 import { AIGovernancePanel } from './components/investor/AIGovernancePanel';
 import { NeuralCapitalMap } from './pages/NeuralCapitalMap';
 import { TimeMachine } from './pages/TimeMachine';
@@ -102,6 +106,11 @@ function AppRoutes() {
         <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
 
+        {/* Public Business pages — no auth required */}
+        <Route path="/enterprise" element={<Enterprise />} />
+        <Route path="/pilot" element={<Pilot />} />
+        <Route path="/book-demo" element={<BookDemo />} />
+
         {/* Public SEO pages — no auth required */}
         <Route path="/property/:slug" element={<PropertyDetail />} />
         <Route path="/country/:countryCode" element={<CountryLanding />} />
@@ -138,6 +147,7 @@ function AppRoutes() {
           <Route path="/negotiation-lab" element={<NegotiationLab />} />
           <Route path="/agent-console" element={<AgentConsole />} />
           <Route path="/twin" element={<TwinDashboard />} />
+          <Route path="/traction" element={<TractionDashboard />} />
           <Route path="/governance" element={<AIGovernancePanel />} />
         </Route>
 
