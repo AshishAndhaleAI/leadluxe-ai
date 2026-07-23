@@ -37,6 +37,7 @@ import { TimeMachine } from './pages/TimeMachine';
 import { NegotiationLab } from './pages/NegotiationLab';
 import { AgentConsole } from './pages/AgentConsole';
 import { PropertyDetail } from './pages/PropertyDetail';
+import { PropertyExperience } from './pages/PropertyExperience';
 import { DigitalTwinPage } from './pages/DigitalTwinPage';
 import { CountryLanding } from './pages/CountryLanding';
 import { CityLanding } from './pages/CityLanding';
@@ -124,6 +125,7 @@ function AppRoutes() {
 
         {/* Public SEO pages — no auth required */}
         <Route path="/property/:slug" element={<PropertyDetail />} />
+        <Route path="/experience/:slug" element={<PropertyExperience />} />
         <Route path="/research/:slug" element={<DigitalTwinPage />} />
         <Route path="/country/:countryCode" element={<CountryLanding />} />
         <Route path="/city/:citySlug" element={<CityLanding />} />
