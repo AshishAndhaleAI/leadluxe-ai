@@ -11,6 +11,7 @@ interface SidebarProps {
   isCollapsed: boolean;
   onToggle: () => void;
   onMobileClose?: () => void;
+  unreadAlertCount?: number;
 }
 
 const navItems = [
@@ -28,7 +29,7 @@ const navItems = [
   { path: '/settings', label: 'Settings', icon: Settings },
 ];
 
-export function Sidebar({ isCollapsed, onToggle, onMobileClose }: SidebarProps) {
+export function Sidebar({ isCollapsed, onToggle, onMobileClose, unreadAlertCount = 0 }: SidebarProps) {
   const { user } = useAuth();
   const location = useLocation();
 
@@ -92,8 +93,24 @@ export function Sidebar({ isCollapsed, onToggle, onMobileClose }: SidebarProps) 
                     : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
                 )}
               >
-                <item.icon className={cn('w-5 h-5 flex-shrink-0', isActive && 'text-luxury-gold-400')} />
-                {!isCollapsed && <span>{item.label}</span>}
+                <div className="relative">
+                  <item.icon className={cn('w-5 h-5 flex-shrink-0', isActive && 'text-luxury-gold-400')} />
+                  {item.path === '/briefing' && unreadAlertCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-luxury-gold-500 text-[8px] font-bold text-black flex items-center justify-center shadow-lg shadow-luxury-gold-500/30">
+                      {unreadAlertCount > 9 ? '9+' : unreadAlertCount}
+                    </span>
+                  )}
+                </div>
+                {!isCollapsed && (
+                  <div className="flex items-center justify-between flex-1 min-w-0">
+                    <span>{item.label}</span>
+                    {item.path === '/briefing' && unreadAlertCount > 0 && (
+                      <span className="px-1.5 py-0.5 rounded-full bg-luxury-gold-500/20 text-luxury-gold-400 text-[8px] font-bold border border-luxury-gold-500/30">
+                        {unreadAlertCount > 9 ? '9+' : unreadAlertCount}
+                      </span>
+                    )}
+                  </div>
+                )}
               </NavLink>
             );
           })}
