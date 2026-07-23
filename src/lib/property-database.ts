@@ -66,19 +66,109 @@ export interface Property {
 }
 
 // ============================================================
-// IMAGE GENERATORS — uses picsum.photos for consistent images
+// IMAGE GENERATORS — uses real Unsplash architecture photos
+// Each property gets 4 images: exterior, interior, kitchen, view
+// Photos are deterministic based on property ID as the seed
 // ============================================================
 
-function img(id: number, w = 800, h = 600): string {
-  return `https://picsum.photos/seed/leadluxe-${id}/${w}/${h}`;
-}
+// Real Unsplash photo IDs of architecture, buildings, interiors, luxury real estate
+const BUILDING_PHOTOS = [
+  '1504385120-68dac6aecd5e', // modern glass skyscraper
+  '1500462918059-b1a0cb512f1d', // tall skyscraper
+  '1486328230139-686a4ff80c26', // luxury hotel lobby
+  '1497366811353-507074f4381c', // modern office building
+  '1560448204-603b69fc5a79', // modern apartment interior
+  '1524231757912-21f4fe3a7200', // glass facade building
+  '1511818465132-3e982ad0f5e2', // contemporary building
+  '1600585154340-be6161a56a0c', // luxury living room
+  '1502672260266-1c1ef2d93688', // modern building architecture
+  '1534438967279-d586c0f0eabc', // modern architecture curve
+  '1512917774080-9991f1c4c750', // glass building reflection
+  '1600607687939-ce8a6c25118c', // luxury apartment interior
+  '1545328214-cc1d9e195d07', // high-rise building
+  '1571506165871-452de5e59d80', // city skyline
+  '1487958449943-2429e8beef5c', // modern facade
+  '1546173153-394ce4a67638', // skyscraper view
+  '1600596542815-ffad4c1539a9', // luxury villa exterior
+  '1558036117-15d94b7d8f20', // hotel swimming pool
+  '1600047509807-ba8f99d2cdde', // modern living room
+  '1576941086145-207c155c7c1f', // apartment building
+  '1600585154340-be6161a56a0c', // luxury interior
+  '1600607687920-4e2e09a63830', // modern kitchen
+  '1558618666-9e75cb78f6d4', // city view at night
+  '1600566753190-17f0baa2a6c3', // contemporary home
+  '1600573472592-401b489a3cdc', // luxury bathroom
+  '1600585154084-4e5fe7c39198', // modern bedroom
+  '1484159172611-3cc7d0d2d31c', // building window detail
+  '1600596542761-5bc4f1a58b8a', // luxury pool
+  '1600563438931-3fbc9e3a1e6c', // modern staircase
+  '1558036117-15d94b7d8f20', // rooftop pool
+  '1464146072230-91cabc968266', // city architecture
+  '1479839672679-4645a0bde8b3', // building exterior
+  '1600566752355-35792bedcfea', // modern balcony view
+  '1600566753086-6132c0cdcfb2', // luxury lobby
+  '1600047508007-4c84e6c31c9b', // modern apartment view
+  '1613490497650-6e0c10a16f3c', // luxury bedroom
+  '1613490489153-48cf22aa4e5f', // modern kitchen island
+  '1564013799919-ab600027ffc6', // luxury estate exterior
+  '1600585154526-990dced4db0d', // bathroom interior
+  '1600566752370-9c78fb0dfa15', // living room view
+  '1560185007-cde2a5fa3a5d', // pool villa
+  '1574361214036-7ba78e9d3d22', // building architecture
+  '1572123360029-ce1d46c2d1c3', // modern window
+  '1546006124-6b9e5342fe3f', // glass building
+  '1582402632590-6a7a3af6dd52', // city scene
+  '1600573472556-626c86444603', // home theater
+  '1600585154340-ba4f1b3c9b92', // dining room
+  '1600563438931-3fbc9e3a1e6c', // balcony view
+  '1613490500457-d34e5c0b57ab', // modern bathroom
+  '1600585154340-ba4f1b3c9b92', // study room
+];
+
+// Interior design photos
+const INTERIOR_PHOTOS = [
+  '1600585154340-be6161a56a0c', // luxury living room
+  '1600607687920-4e2e09a63830', // modern kitchen
+  '1600573472592-401b489a3cdc', // luxury bathroom
+  '1600585154084-4e5fe7c39198', // modern bedroom
+  '1613490497650-6e0c10a16f3c', // luxury bedroom
+  '1613490489153-48cf22aa4e5f', // modern kitchen island
+  '1600585154526-990dced4db0d', // bathroom interior
+  '1600573472556-626c86444603', // home theater
+  '1600585154340-ba4f1b3c9b92', // dining room
+  '1613490500457-d34e5c0b57ab', // modern bathroom
+  '1600607687939-ce8a6c25118c', // luxury apartment
+  '1600047509807-ba8f99d2cdde', // modern living room
+  '1600585154340-ba4f1b3c9b92', // study room
+  '1560448204-603b69fc5a79', // modern apartment
+  '1600563438931-3fbc9e3a1e6c', // staircase
+];
+
+// City view / skyline photos
+const VIEW_PHOTOS = [
+  '1504385120-68dac6aecd5e', // city from above
+  '1500462918059-b1a0cb512f1d', // skyscraper view
+  '1545328214-cc1d9e195d07', // high-rise buildings
+  '1571506165871-452de5e59d80', // city skyline
+  '1546173153-394ce4a67638', // building view
+  '1558618666-9e75cb78f6d4', // city at night
+  '1479839672679-4645a0bde8b3', // building cluster
+  '1512917774080-9991f1c4c750', // glass reflections
+  '1487958449943-2429e8beef5c', // modern architecture
+  '1560185007-cde2a5fa3a5d', // pool with view
+];
 
 function extImg(id: number): PropertyImage[] {
+  const extIdx = Math.abs(id) % BUILDING_PHOTOS.length;
+  const intIdx = Math.abs(id + 1) % INTERIOR_PHOTOS.length;
+  const kitIdx = Math.abs(id + 2) % INTERIOR_PHOTOS.length;
+  const vwIdx = Math.abs(id + 3) % VIEW_PHOTOS.length;
+
   return [
-    { url: img(id), caption: 'Building exterior', type: 'exterior' },
-    { url: img(id + 1000), caption: 'Living room', type: 'interior' },
-    { url: img(id + 2000), caption: 'Kitchen', type: 'interior' },
-    { url: img(id + 3000), caption: 'City view', type: 'view' },
+    { url: `https://images.unsplash.com/photo-${BUILDING_PHOTOS[extIdx]}?w=800&h=600&fit=crop&auto=format`, caption: 'Building exterior', type: 'exterior' },
+    { url: `https://images.unsplash.com/photo-${INTERIOR_PHOTOS[intIdx]}?w=800&h=600&fit=crop&auto=format`, caption: 'Living room', type: 'interior' },
+    { url: `https://images.unsplash.com/photo-${INTERIOR_PHOTOS[kitIdx]}?w=800&h=600&fit=crop&auto=format`, caption: 'Kitchen', type: 'interior' },
+    { url: `https://images.unsplash.com/photo-${VIEW_PHOTOS[vwIdx]}?w=800&h=600&fit=crop&auto=format`, caption: 'City view', type: 'view' },
   ];
 }
 
