@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { DashboardLayout } from './components/layout/DashboardLayout';
@@ -21,6 +22,8 @@ import { GravityEngine } from './pages/GravityEngine';
 import { GravityBriefing } from './pages/GravityBriefing';
 import { Portfolio } from './pages/Portfolio';
 import { DealCompass } from './pages/DealCompass';
+import { PropertyDetail } from './pages/PropertyDetail';
+import { SEOHelmet, OrganizationLD } from './components/seo/SEOHelmet';
 import type { ReactNode } from 'react';
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
@@ -41,53 +44,63 @@ function PublicRoute({ children }: { children: ReactNode }) {
 
 function AppRoutes() {
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
-      <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+    <>
+      {/* Global SEO meta and structured data */}
+      <SEOHelmet />
+      <OrganizationLD />
 
-      {/* Protected — Standard Dashboard Layout (with sidebar) */}
-      <Route
-        element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        {/* /dashboard renders the detailed KPI dashboard */}
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/opportunities" element={<Opportunities />} />
-        <Route path="/opportunity/:id" element={<OpportunityDetail />} />
-        <Route path="/signals" element={<Signals />} />
-        <Route path="/competitors" element={<Competitors />} />
-        <Route path="/forecasts" element={<Forecasts />} />
-        <Route path="/coach" element={<Coach />} />
-        <Route path="/global-map" element={<GlobalMap />} />
-        <Route path="/match" element={<Match />} />
-        <Route path="/gravity" element={<GravityEngine />} />
-        <Route path="/briefing" element={<GravityBriefing />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/commission" element={<CommissionDashboard />} />
-        <Route path="/deal-room" element={<DealRoom />} />
-        <Route path="/portfolio" element={<Portfolio />} />
-        <Route path="/deal-compass" element={<DealCompass />} />
-      </Route>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
+        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
 
-      {/* 404 */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+        {/* Public property detail page — no auth required for SEO */}
+        <Route path="/property/:slug" element={<PropertyDetail />} />
+
+        {/* Protected — Standard Dashboard Layout (with sidebar) */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/opportunities" element={<Opportunities />} />
+          <Route path="/opportunity/:id" element={<OpportunityDetail />} />
+          <Route path="/signals" element={<Signals />} />
+          <Route path="/competitors" element={<Competitors />} />
+          <Route path="/forecasts" element={<Forecasts />} />
+          <Route path="/coach" element={<Coach />} />
+          <Route path="/global-map" element={<GlobalMap />} />
+          <Route path="/match" element={<Match />} />
+          <Route path="/gravity" element={<GravityEngine />} />
+          <Route path="/briefing" element={<GravityBriefing />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/commission" element={<CommissionDashboard />} />
+          <Route path="/deal-room" element={<DealRoom />} />
+          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/deal-compass" element={<DealCompass />} />
+        </Route>
+
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
   );
 }
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <NotificationProvider>
-          <AppRoutes />
-        </NotificationProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <HelmetProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <NotificationProvider>
+            <AppRoutes />
+          </NotificationProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </HelmetProvider>
   );
 }
 

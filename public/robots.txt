@@ -1,0 +1,20 @@
+# LeadLuxe AI — Robots.txt
+# https://leadluxe-ai.vercel.app/
+
+User-agent: *
+Allow: /
+Allow: /property/
+Allow: /deal-room
+Allow: /global-map
+Disallow: /login
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /portfolio
+Disallow: /commission
+Disallow: /opportunity/
+Disallow: /api/
+
+Sitemap: https://leadluxe-ai.vercel.app/sitemap.xml
+
+# Crawl delay for responsible crawling
+Crawl-delay: 10
