@@ -1,6 +1,11 @@
 {
   "rewrites": [
-    { "source": "/((?!.*\\.\\w+$).*)", "destination": "/index.html" }
+    { "source": "/sitemap.xml", "destination": "/sitemap.xml" },
+    { "source": "/robots.txt", "destination": "/robots.txt" },
+    { "source": "/google77ad955a2916a050.html", "destination": "/google77ad955a2916a050.html" },
+    { "source": "/favicon.svg", "destination": "/favicon.svg" },
+    { "source": "/site.webmanifest", "destination": "/site.webmanifest" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
