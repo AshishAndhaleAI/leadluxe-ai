@@ -11,15 +11,18 @@ import { useNavigate } from 'react-router-dom';
 import {
   Compass, MapPin, TrendingUp, TrendingDown, Zap, Target,
   Globe, ChevronRight, Sparkles, Eye, Star,
-  BarChart3, Building2,
+  BarChart3, Building2, Layers, CheckCircle, SlidersHorizontal,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { COUNTRIES, CITIES } from '../lib/global-data';
-import { formatIndianCurrency } from '../lib/format';
 import { useOpportunityEngine } from '../hooks/useOpportunityEngine';
+import { RadarChart, ComparisonTable } from '../components/charts/RadarChart';
+import type { RadarMetric, RadarDataPoint } from '../components/charts/RadarChart';
 
 type CompassMode = 'hot-markets' | 'emerging' | 'undervalued' | 'high-growth';
 type SortKey = 'confidence' | 'growth' | 'value' | 'opportunities';
+
+const CHART_COLORS = ['#d4a030', '#22c55e', '#3b82f6', '#a855f7', '#f59e0b'];
 
 interface MarketIntelligence {
   countryCode: string;
@@ -42,10 +45,12 @@ interface MarketIntelligence {
 
 export function DealCompass() {
   const navigate = useNavigate();
-  const { opportunities, loading } = useOpportunityEngine();
+  const { opportunities } = useOpportunityEngine();
   const [mode, setMode] = useState<CompassMode>('hot-markets');
   const [sortBy, setSortBy] = useState<SortKey>('confidence');
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [isComparing, setIsComparing] = useState(false);
+  const [selectedForCompare, setSelectedForCompare] = useState<Set<string>>(new Set());
 
   // Build market intelligence from global data
   const markets = useMemo((): MarketIntelligence[] => {
@@ -149,6 +154,66 @@ export function DealCompass() {
     return list;
   }, [markets, mode, sortBy]);
 
+  // Comparison data
+  const compareMetrics: RadarMetric[] = [
+    { key: 'confidence', label: 'Confidence', maxValue: 100 },
+    { key: 'growth', label: 'Growth %', maxValue: 25 },
+    { key: 'foreignDemand', label: 'Foreign Demand', maxValue: 100 },
+    { key: 'investorInterest', label: 'Investor Interest', maxValue: 100 },
+    { key: 'marketScore', label: 'Market Score', maxValue: 100 },
+  ];
+
+  const compareDataPoints: RadarDataPoint[] = useMemo(() => {
+    const result: RadarDataPoint[] = [];
+    const codes = Array.from(selectedForCompare);
+    for (let ci = 0; ci < codes.length; ci++) {
+      const code = codes[ci];
+      const market = filteredMarkets.find(m => m.countryCode === code);
+      if (!market) continue;
+      result.push({
+        id: market.countryCode,
+        label: `${market.flag} ${market.countryName}`,
+        color: CHART_COLORS[ci % CHART_COLORS.length],
+        values: {
+          confidence: market.avgConfidence,
+          growth: market.avgGrowth,
+          foreignDemand: market.foreignDemand,
+          investorInterest: market.investorInterest,
+          marketScore: market.marketScore,
+        },
+      });
+    }
+    return result;
+  }, [selectedForCompare, filteredMarkets]);
+
+  const toggleCompare = (countryCode: string) => {
+    setSelectedForCompare(prev => {
+      const next = new Set(prev);
+      if (next.has(countryCode)) {
+        next.delete(countryCode);
+      } else if (next.size < 5) {
+        next.add(countryCode);
+      }
+      return next;
+    });
+  };
+
+  const selectAllInView = () => {
+    setSelectedForCompare(new Set(filteredMarkets.map(m => m.countryCode).slice(0, 5)));
+  };
+
+  const clearCompare = () => {
+    setSelectedForCompare(new Set());
+  };
+
+  const removeFromCompare = (code: string) => {
+    setSelectedForCompare(prev => {
+      const next = new Set(prev);
+      next.delete(code);
+      return next;
+    });
+  };
+
   // Stats summary
   const stats = useMemo(() => ({
     totalCountries: filteredMarkets.length,
@@ -211,6 +276,112 @@ export function DealCompass() {
         ))}
       </div>
 
+      {/* Compare Mode Toggle */}
+      <div className="flex items-center justify-between">
+        <div />
+        <div className="flex items-center gap-2">
+          {isComparing && selectedForCompare.size >= 2 && (
+            <span className="text-[10px] text-gray-500">
+              {selectedForCompare.size} of 5 selected
+            </span>
+          )}
+          <button
+            onClick={() => {
+              setIsComparing(!isComparing);
+              if (isComparing) clearCompare();
+            }}
+            className={cn(
+              'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-medium transition-all border',
+              isComparing
+                ? 'bg-luxury-gold-500/15 text-luxury-gold-400 border-luxury-gold-500/30'
+                : 'text-gray-500 hover:text-gray-300 border-transparent hover:border-gray-800'
+            )}
+          >
+            <SlidersHorizontal className="w-3 h-3" />
+            {isComparing ? 'Exit Compare' : 'Compare Markets'}
+          </button>
+        </div>
+      </div>
+
+      {/* Comparison Panel */}
+      {isComparing && selectedForCompare.size >= 2 && (
+        <motion.div
+          initial={{ opacity: 0, y: -10, height: 0 }}
+          animate={{ opacity: 1, y: 0, height: 'auto' }}
+          className="premium-card p-6 overflow-hidden"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Layers className="w-4 h-4 text-luxury-gold-400" />
+              <h3 className="text-sm font-semibold text-white">Market Comparison</h3>
+              <span className="text-[9px] text-gray-600">
+                {selectedForCompare.size} markets · Hover chart for values
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={selectAllInView}
+                className="text-[9px] text-emerald-400 hover:text-emerald-300 transition-colors"
+              >
+                Select Top 5 in View
+              </button>
+              <button
+                onClick={clearCompare}
+                className="text-[9px] text-gray-500 hover:text-gray-300 transition-colors"
+              >
+                Clear All
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Radar Chart */}
+            <div className="flex justify-center">
+              <RadarChart
+                metrics={compareMetrics}
+                dataPoints={compareDataPoints}
+                size={380}
+              />
+            </div>
+
+            {/* Comparison Table */}
+            <div>
+              <ComparisonTable
+                metrics={compareMetrics}
+                dataPoints={compareDataPoints}
+                onRemove={removeFromCompare}
+              />
+
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {compareDataPoints.map(dp => {
+                  const market = filteredMarkets.find(m => m.countryCode === dp.id);
+                  const avgScore = Object.values(dp.values).reduce((s, v) => s + v, 0) / Object.values(dp.values).length;
+                  return (
+                    <div
+                      key={dp.id}
+                      className="glass-card p-3 text-center border-luxury-gold-500/10"
+                    >
+                      <p className="text-xs font-medium text-white">{dp.label}</p>
+                      <p className="text-lg font-bold mt-1" style={{ color: dp.color }}>
+                        {Math.round(avgScore)}
+                      </p>
+                      <p className="text-[9px] text-gray-600">Avg Score</p>
+                      {market && (
+                        <p className="text-[9px] text-gray-600 mt-1">
+                          {market.primarySegment} · ₹{market.avgPricePerSqft >= 1000
+                            ? `${(market.avgPricePerSqft / 1000).toFixed(1)}K`
+                            : market.avgPricePerSqft}/sqft
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Stats Summary */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
@@ -267,22 +438,46 @@ export function DealCompass() {
 
       {/* Market Cards */}
       <div className="grid gap-3">
-        {filteredMarkets.map((market, i) => (
+        {filteredMarkets.map((market, i) => {
+          const isSelected = selectedForCompare.has(market.countryCode);
+          return (
           <motion.div
             key={market.countryCode}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.02 }}
             className={cn(
-              'premium-card p-5 cursor-pointer group transition-all',
-              selectedCountry === market.countryCode && 'border-luxury-gold-500/40'
+              'premium-card p-5 group transition-all',
+              isComparing ? 'cursor-pointer' : 'cursor-pointer',
+              isSelected && 'border-luxury-gold-500/50 ring-1 ring-luxury-gold-500/30',
+              !isComparing && selectedCountry === market.countryCode && 'border-luxury-gold-500/40'
             )}
-            onClick={() => setSelectedCountry(
-              selectedCountry === market.countryCode ? null : market.countryCode
-            )}
+            onClick={() => {
+              if (isComparing) {
+                toggleCompare(market.countryCode);
+              } else {
+                setSelectedCountry(
+                  selectedCountry === market.countryCode ? null : market.countryCode
+                );
+              }
+            }}
           >
             {/* Main Row */}
             <div className="flex items-start gap-4">
+              {/* Selection Checkbox (compare mode) */}
+              {isComparing && (
+                <div className="flex items-center justify-center mt-1">
+                  <div className={cn(
+                    'w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all',
+                    isSelected
+                      ? 'bg-luxury-gold-500 border-luxury-gold-500 shadow-gold'
+                      : 'border-gray-700 hover:border-gray-500'
+                  )}>
+                    {isSelected && <CheckCircle className="w-4 h-4 text-black" />}
+                  </div>
+                </div>
+              )}
+
               {/* Flag + Country */}
               <div className="flex items-center gap-3 min-w-[180px]">
                 <span className="text-3xl">{market.flag}</span>
@@ -445,7 +640,8 @@ export function DealCompass() {
               )}
             </AnimatePresence>
           </motion.div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Bottom CTA */}
