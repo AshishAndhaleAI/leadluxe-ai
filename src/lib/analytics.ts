@@ -23,6 +23,14 @@ function track(eventName: string, params?: Record<string, any>) {
   }
 }
 
+/**
+ * Generic trackEvent export — fires any named GA4 event.
+ * Used by the Investor Twin system and other feature modules.
+ */
+export function trackEvent(eventName: string, params?: Record<string, any>) {
+  track(eventName, params);
+}
+
 // ============================================================
 // EVENT TRACKERS
 // ============================================================

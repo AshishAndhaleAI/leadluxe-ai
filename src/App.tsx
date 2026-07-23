@@ -22,6 +22,7 @@ import { GravityEngine } from './pages/GravityEngine';
 import { GravityBriefing } from './pages/GravityBriefing';
 import { Portfolio } from './pages/Portfolio';
 import { DealCompass } from './pages/DealCompass';
+import { TwinDashboard } from './pages/TwinDashboard';
 import { AIGovernancePanel } from './components/investor/AIGovernancePanel';
 import { NeuralCapitalMap } from './pages/NeuralCapitalMap';
 import { TimeMachine } from './pages/TimeMachine';
@@ -136,6 +137,7 @@ function AppRoutes() {
           <Route path="/time-machine" element={<TimeMachine />} />
           <Route path="/negotiation-lab" element={<NegotiationLab />} />
           <Route path="/agent-console" element={<AgentConsole />} />
+          <Route path="/twin" element={<TwinDashboard />} />
           <Route path="/governance" element={<AIGovernancePanel />} />
         </Route>
 

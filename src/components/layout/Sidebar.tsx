@@ -22,6 +22,7 @@ const navItems = [
   { path: '/agent-console', label: 'Agent Console', icon: Cpu },
   { path: '/deal-room', label: 'Deal Room', icon: Building2 },
   { path: '/portfolio', label: 'Portfolio', icon: Briefcase },
+  { path: '/twin', label: 'AI Twin', icon: Bot },
   { path: '/deal-compass', label: 'Deal Compass', icon: Target },
   { path: '/gravity', label: 'Gravity Engine', icon: TrendingUp },
   { path: '/briefing', label: 'Daily Briefing', icon: Bell },
