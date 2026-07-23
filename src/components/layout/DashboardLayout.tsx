@@ -6,6 +6,7 @@ import { cn } from '../../lib/utils';
 import { useNotifications, type AppNotification } from '../../context/NotificationContext';
 import { getWatchlist, getGravityDelta } from '../../lib/gravity/alerts';
 import { computeGravityRankings } from '../../lib/gravity/engine';
+import { InvestorCommandBar } from '../command/InvestorCommandBar';
 
 export function DashboardLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -109,6 +110,10 @@ export function DashboardLayout() {
         )}
       >
         <Header onMenuToggle={handleToggle} />
+        {/* AI Investor Command Bar — persistent across all pages */}
+        <div className="px-4 lg:px-6 pt-3">
+          <InvestorCommandBar />
+        </div>
         <main className="p-4 lg:p-6">
           <Outlet />
         </main>

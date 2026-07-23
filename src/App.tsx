@@ -22,6 +22,7 @@ import { GravityEngine } from './pages/GravityEngine';
 import { GravityBriefing } from './pages/GravityBriefing';
 import { Portfolio } from './pages/Portfolio';
 import { DealCompass } from './pages/DealCompass';
+import { AIGovernancePanel } from './components/investor/AIGovernancePanel';
 import { PropertyDetail } from './pages/PropertyDetail';
 import { CountryLanding } from './pages/CountryLanding';
 import { CityLanding } from './pages/CityLanding';
@@ -127,6 +128,7 @@ function AppRoutes() {
           <Route path="/deal-room" element={<DealRoom />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/deal-compass" element={<DealCompass />} />
+          <Route path="/governance" element={<AIGovernancePanel />} />
         </Route>
 
         {/* 404 */}
