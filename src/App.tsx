@@ -19,6 +19,7 @@ import { GlobalMap } from './pages/GlobalMap';
 import { Match } from './pages/Match';
 import { GravityEngine } from './pages/GravityEngine';
 import { GravityBriefing } from './pages/GravityBriefing';
+import { Portfolio } from './pages/Portfolio';
 import type { ReactNode } from 'react';
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
@@ -67,6 +68,7 @@ function AppRoutes() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/commission" element={<CommissionDashboard />} />
         <Route path="/deal-room" element={<DealRoom />} />
+        <Route path="/portfolio" element={<Portfolio />} />
       </Route>
 
       {/* 404 */}

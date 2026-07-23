@@ -129,7 +129,12 @@ export function DealRoom() {
   const allProperties = useMemo(() => getPropertyDatabase(), []);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [favorites, setFavorites] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('leadluxe-favorites');
+      return saved ? new Set<string>(JSON.parse(saved)) : new Set<string>();
+    } catch { return new Set<string>(); }
+  });
   const [interestModal, setInterestModal] = useState<ModalState>({ open: false, property: null });
   const [detailModal, setDetailModal] = useState<ModalState>({ open: false, property: null });
   const [savedDeals, setSavedDeals] = useState<any[]>(() => {
@@ -198,6 +203,7 @@ export function DealRoom() {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
+      localStorage.setItem('leadluxe-favorites', JSON.stringify([...next]));
       return next;
     });
   }, []);
