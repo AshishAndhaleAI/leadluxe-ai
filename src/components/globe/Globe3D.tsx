@@ -1,8 +1,12 @@
+// ============================================================
+// LeadLuxe AI — Globe 3D Entry Point (SSR-safe)
+// Provides lazy-loaded globe component with Suspense fallback.
+// ============================================================
+
 import { lazy, Suspense } from 'react';
 import type { GlobeSceneProps } from './GlobeScene';
 
-// Lazy-load the globe component for SSR safety and code splitting
-const GlobeSceneInner = lazy(() => 
+const GlobeSceneInner = lazy(() =>
   import('./GlobeScene').then(m => ({ default: m.GlobeScene }))
 );
 
@@ -27,12 +31,10 @@ export function InteractiveGlobe(props: GlobeSceneProps) {
   );
 }
 
-// Re-export types for convenience
+// Re-export types and hooks for convenience
 export type { GlobeSceneProps } from './GlobeScene';
 export { useGlobeCities, formatCityLabel } from './CityClusters';
 export { usePropertyHotspots, formatHotspotLabel } from './PropertyHotspots';
 export { useInvestmentArcs } from './InvestmentArcs';
 export { useCountryData } from './CountryLayer';
-
-// Old components kept for backward compatibility
 export { GlobeScene } from './GlobeScene';

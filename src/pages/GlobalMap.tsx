@@ -204,7 +204,6 @@ export function GlobalMap() {
           <InteractiveGlobe
             onCitySelect={handleGlobeCitySelect}
             onCountrySelect={handleGlobeCountrySelect}
-            onBackToWorld={() => { setViewLevel('world'); setSelectedCountry(null); setSelectedCity(null); }}
           />
         </div>
       </div>
