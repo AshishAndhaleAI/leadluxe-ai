@@ -14,11 +14,12 @@ import {
   CheckCircle, X, Star, ChevronRight, Sparkles, Percent,
   Camera, Bath, Bed, Maximize, Shield, Zap, Eye,
   ExternalLink, MessageSquare, Share2, Globe, Layers,
-  BarChart3, Target, AlertCircle, ChevronDown,
+  BarChart3, Target, AlertCircle, ChevronDown, Phone, Mail,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { getPropertyDatabase, searchProperties, getPropertiesByCountry, getHotProperties, getPreLaunchProperties, getHighValueProperties } from '../lib/property-database';
+import { getPropertyDatabase } from '../lib/property-database';
 import type { Property, PropertyStatus, PropertyType, PropertyImage, PropertyUnit } from '../lib/property-database';
+import { getEnrichedPropertyById } from '../services/property-enrichment';
 
 // ============================================================
 // TYPES
@@ -558,6 +559,14 @@ function PropertyDetailModalInner({ property, isFavorite, onToggleFavorite, onEx
   onExpressInterest: () => void;
   onClose: () => void;
 }) {
+  // Try to load enriched data for this property
+  const enriched = getEnrichedPropertyById(property.id);
+  const images = enriched?.curatedImages.images || property.images;
+  const heroUrl = enriched?.curatedImages.hero_url || property.hero_url;
+  const builderContact = enriched?.builder;
+  const projectDetails = enriched?.propertyDetails;
+  const address = enriched?.address;
+
   const [activeImage, setActiveImage] = useState(0);
   const [scrollY, setScrollY] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -600,14 +609,14 @@ function PropertyDetailModalInner({ property, isFavorite, onToggleFavorite, onEx
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
             <img
-              src={property.hero_url}
+              src={heroUrl}
               alt={property.name}
               className="w-full h-[150%] object-cover"
               style={{ objectPosition: '50% 30%' }}
             />
           </div>
           <img
-            src={property.hero_url}
+            src={heroUrl}
             alt={property.name}
             className="w-full h-full object-cover"
           />
@@ -633,15 +642,28 @@ function PropertyDetailModalInner({ property, isFavorite, onToggleFavorite, onEx
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-0">
           {/* Left: Images & Amenities */}
           <div className="lg:col-span-3 p-4 space-y-4">
-            {/* Image gallery */}
+            {/* Image gallery — using enriched curated images */}
             <div className="relative h-56 rounded-xl overflow-hidden bg-gray-900">
-              <img src={property.images[activeImage]?.url || ''} alt={property.name} className="w-full h-full object-cover" />
+              <img src={images[activeImage]?.url || ''} alt={property.name} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
               <div className="absolute bottom-3 left-3 flex gap-1">
-                {property.images.map((img, i) => (
+                {images.map((img, i) => (
                   <button key={i} onClick={() => setActiveImage(i)} className={cn('w-2 h-2 rounded-full transition-all', i === activeImage ? 'bg-luxury-gold-400 w-4' : 'bg-white/40')} />
                 ))}
               </div>
+              {address && (
+                <div className="absolute top-3 right-3">
+                  <a
+                    href={address.googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2 py-1 rounded-lg bg-black/60 backdrop-blur-sm text-[9px] text-luxury-gold-400 hover:bg-black/80 transition-colors inline-flex items-center gap-1"
+                  >
+                    <MapPin className="w-2.5 h-2.5" />
+                    {address.district}, {property.city}
+                  </a>
+                </div>
+              )}
             </div>
 
             {/* Description */}
@@ -736,10 +758,10 @@ function PropertyDetailModalInner({ property, isFavorite, onToggleFavorite, onEx
               </div>
             </div>
 
-            {/* Developer */}
+            {/* Developer — with real contact info */}
             <div className="premium-card p-4">
               <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Developer</h3>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 mb-2">
                 <div className="w-8 h-8 rounded-lg bg-luxury-gold-500/20 flex items-center justify-center">
                   <Building2 className="w-4 h-4 text-luxury-gold-400" />
                 </div>
@@ -748,9 +770,21 @@ function PropertyDetailModalInner({ property, isFavorite, onToggleFavorite, onEx
                   <p className="text-[9px] text-gray-500 capitalize">{property.developer_type} company</p>
                 </div>
               </div>
+              {builderContact && (
+                <div className="space-y-1.5 text-[10px]">
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <Phone className="w-3 h-3 text-emerald-400" />
+                    <a href={`tel:${builderContact.salesPhone.replace(/\s/g, '')}`} className="hover:text-white transition-colors">{builderContact.salesPhone}</a>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <Mail className="w-3 h-3 text-luxury-gold-400" />
+                    <a href={`mailto:${builderContact.salesEmail}`} className="hover:text-white transition-colors">{builderContact.salesEmail}</a>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Details */}
+            {/* Details — with enriched data */}
             <div className="premium-card p-4">
               <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Details</h3>
               <div className="space-y-1.5 text-[10px]">
@@ -759,7 +793,10 @@ function PropertyDetailModalInner({ property, isFavorite, onToggleFavorite, onEx
                 <div className="flex justify-between"><span className="text-gray-500">RERA</span><span className={cn('capitalize', property.rera_status === 'approved' ? 'text-emerald-400' : 'text-amber-400')}>{property.rera_status}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Bedrooms</span><span className="text-white">{property.bedrooms.join(', ')} BHK</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Size Range</span><span className="text-white">{property.min_size_sqft.toLocaleString()} - {property.max_size_sqft.toLocaleString()} sqft</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Completion</span><span className="text-white">{property.completion_date}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Completion</span><span className="text-white">{projectDetails?.possessionStatus || property.completion_date}</span></div>
+                {address && <div className="flex justify-between"><span className="text-gray-500">Location</span><span className="text-white text-right text-[9px]">{address.district}, {property.city}</span></div>}
+                {projectDetails && <div className="flex justify-between"><span className="text-gray-500">Project Area</span><span className="text-white">{projectDetails.projectArea}</span></div>}
+                {projectDetails && <div className="flex justify-between"><span className="text-gray-500">Floors</span><span className="text-white">{projectDetails.floorCount}</span></div>}
               </div>
             </div>
 
