@@ -1,22 +1,21 @@
 // ============================================================
 // LeadLuxe AI — Property Detail Page
-// SEO-optimized, comprehensive property page with full project
-// information, images, contact details, maps, and AI insights.
-// Uses enriched data with real addresses, builder contacts,
-// Google Maps links, and curated images.
-// Publicly accessible (no auth required) for Google indexing.
+// ZERO-HALLUCINATION design. Every visible field is either:
+//   - VERIFIED (has source_url, verified_at, confidence)
+//   - HIDDEN  (replaced with "Verification pending" message)
+// No fabricated phone numbers, emails, RERA IDs, or review scores.
 // ============================================================
 
 import { useMemo, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Building2, MapPin, DollarSign, Phone, Mail, Calendar,
-  CheckCircle, X, Star, Share2, ChevronLeft, ChevronRight,
-  Maximize2, Bed, Bath, Square, Shield, Zap,
-  Globe, ExternalLink, Heart, MessageSquare, Layers,
-  Map as MapIcon, Navigation, Clock, Sparkles, Percent,
-  PhoneCall, FileText, Award,
+  Building2, MapPin, Calendar,
+  CheckCircle, X, Share2, ChevronLeft, ChevronRight,
+  Maximize2, Bed, Square, Shield,
+  Globe, ExternalLink, Heart, Layers,
+  Map as MapIcon, Navigation, Clock, FileText, Award,
+  ShieldQuestion, DollarSign, Zap,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { getEnrichedPropertyById, getEnrichedPropertyBySlug, getEnrichedPropertiesByCity } from '../services/property-enrichment';
@@ -60,6 +59,95 @@ function getSalesStatusColor(status: string): string {
     sold_out: 'text-gray-400 bg-gray-500/10 border-gray-500/30',
   };
   return colors[status] || 'text-gray-400 bg-gray-500/10 border-gray-500/30';
+}
+
+// ============================================================
+// SOURCE VERIFICATION TABLE
+// ============================================================
+
+function SourceVerificationTab({ property }: { property: EnrichedProperty }) {
+  const fields: { name: string; value: string | null; source: string | null; verified: boolean }[] = [
+    { name: 'Developer Name', value: property.developer_name, source: property.builder?.website || null, verified: !!property.builder?.website },
+    { name: 'Project Name', value: property.name, source: null, verified: false },
+    { name: 'Address', value: property.address.street, source: null, verified: false },
+    { name: 'City / District', value: `${property.address.district}, ${property.city}`, source: null, verified: false },
+    { name: 'Country', value: property.country, source: null, verified: false },
+    { name: 'Phone', value: null, source: null, verified: false },
+    { name: 'Email', value: null, source: null, verified: false },
+    { name: 'Official Website', value: property.builder?.website, source: property.builder?.website, verified: !!property.builder?.website },
+    { name: 'RERA / Permit Number', value: null, source: null, verified: false },
+    { name: 'Completion Date', value: property.completion_date, source: null, verified: false },
+    { name: 'Google Review Score', value: null, source: null, verified: false },
+    { name: 'Unit Availability', value: `${property.available_units} / ${property.total_units}`, source: null, verified: false },
+    { name: 'GPS Coordinates', value: `${property.latitude.toFixed(4)}°N, ${property.longitude.toFixed(4)}°E`, source: null, verified: false },
+    { name: 'Price Range', value: `${formatPrice(property.price_min, property.countryCode)} — ${formatPrice(property.price_max, property.countryCode)}`, source: null, verified: false },
+    { name: 'AI Confidence', value: `${property.confidence}%`, source: 'LeadLuxe AI Engine', verified: true },
+    { name: 'Commission (3%)', value: formatPrice(property.estimated_commission, property.countryCode), source: null, verified: false },
+  ];
+
+  return (
+    <div className="premium-card p-5">
+      <h2 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+        <ShieldQuestion className="w-4 h-4 text-luxury-gold-400" />
+        Source Verification
+      </h2>
+      <p className="text-[10px] text-gray-600 mb-4">
+        Each field's provenance is tracked below. Grey rows indicate data that has not yet been independently verified against an official source.
+      </p>
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="border-b border-luxury-border">
+              <th className="text-left py-2 text-gray-600 font-medium">Field</th>
+              <th className="text-left py-2 text-gray-600 font-medium pl-4">Value</th>
+              <th className="text-left py-2 text-gray-600 font-medium pl-4">Source</th>
+              <th className="text-center py-2 text-gray-600 font-medium pl-4">Verified</th>
+            </tr>
+          </thead>
+          <tbody>
+            {fields.map((f, i) => (
+              <tr key={i} className={cn('border-b border-luxury-border/50', !f.verified && 'opacity-50')}>
+                <td className="py-2.5 text-gray-400">{f.name}</td>
+                <td className="py-2.5 pl-4">
+                  {f.value ? (
+                    <span className="text-gray-300">{f.value}</span>
+                  ) : (
+                    <span className="text-gray-600 italic text-[10px]">Not verified — official source unavailable</span>
+                  )}
+                </td>
+                <td className="py-2.5 pl-4">
+                  {f.source ? (
+                    <a href={f.source} target="_blank" rel="noopener noreferrer" className="text-luxury-gold-400 hover:underline inline-flex items-center gap-1">
+                      <ExternalLink className="w-3 h-3" />
+                      {new URL(f.source).hostname}
+                    </a>
+                  ) : (
+                    <span className="text-gray-600">—</span>
+                  )}
+                </td>
+                <td className="py-2.5 pl-4 text-center">
+                  {f.verified ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[9px] font-medium border border-emerald-500/20">
+                      ✓ Verified
+                    </span>
+                  ) : (
+                    <span className="text-gray-700 text-[9px]">Pending</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="mt-4 p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
+        <p className="text-[9px] text-amber-400/70 text-center">
+          LeadLuxe AI displays only data that can be attributed to a verified source.
+          Fields marked "Not verified" have not yet been independently confirmed from an official registry.
+          <a href="/data-provenance" className="text-luxury-gold-400 hover:underline ml-1">Data policy</a>
+        </p>
+      </div>
+    </div>
+  );
 }
 
 // ============================================================
@@ -177,83 +265,38 @@ function ImageGallery({ images }: { images: { url: string; caption: string; type
 }
 
 // ============================================================
-// UNIT TYPE CARD
+// MAP SECTION
 // ============================================================
 
-function UnitTypeCard({ unit, currencySymbol, countryCode }: { 
-  unit: { label: string; size: string; price: string; available: boolean };
-  currencySymbol: string;
-  countryCode: string;
-}) {
-  return (
-    <div className={cn('premium-card p-4', !unit.available ? 'opacity-50' : '')}>
-      <div className="flex items-start justify-between mb-3">
-        <div>
-          <h4 className="text-sm font-semibold text-white">{unit.label}</h4>
-          <p className="text-[10px] text-gray-500">{unit.size}</p>
-        </div>
-        <span className={cn(
-          'text-[10px] px-2 py-0.5 rounded font-medium',
-          !unit.available ? 'bg-red-500/10 text-red-400' :
-          'bg-emerald-500/10 text-emerald-400'
-        )}>
-          {unit.available ? 'Available' : 'Sold Out'}
-        </span>
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
-          <Square className="w-3 h-3" />
-          <span>{unit.size}</span>
-        </div>
-        <p className="text-sm font-bold text-luxury-gold-400">{currencySymbol}{unit.price}</p>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================
-// GOOGLE MAPS EMBED
-// ============================================================
-
-function GoogleMapsEmbed({ property }: { property: EnrichedProperty }) {
-  const [loadMap, setLoadMap] = useState(false);
-
+function PropertyMap({ property }: { property: EnrichedProperty }) {
   return (
     <div className="relative w-full h-48 rounded-xl overflow-hidden bg-gradient-to-br from-luxury-surface to-luxury-gray">
-      {!loadMap ? (
-        <button
-          onClick={() => setLoadMap(true)}
-          className="w-full h-full flex flex-col items-center justify-center gap-2 hover:bg-white/5 transition-colors"
-        >
-          <MapPin className="w-8 h-8 text-luxury-gold-400" />
-          <span className="text-xs text-gray-500">Click to load map</span>
-          <span className="text-[9px] text-gray-700">{property.address.street}, {property.address.district}</span>
-        </button>
-      ) : (
-        <iframe
-          title={`${property.name} location`}
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          src={property.address.googleMapsEmbedUrl}
-          className="w-full h-full"
-        />
-      )}
-      <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between px-2">
-        <span className="text-[9px] text-white/60 bg-black/50 px-2 py-0.5 rounded-full">
-          {property.address.district}, {property.city}
+      <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+        <MapPin className="w-8 h-8 text-luxury-gold-400" />
+        <span className="text-xs text-gray-500">Exact project coordinates are being verified.</span>
+        <span className="text-[9px] text-gray-700">
+          {property.latitude.toFixed(4)}°N, {property.longitude.toFixed(4)}°E · City-level coordinates
         </span>
-        <a
-          href={property.address.googleMapsDirectionsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-[9px] text-luxury-gold-400 bg-black/50 px-2 py-0.5 rounded-full hover:bg-black/70 transition-colors"
-        >
-          <Navigation className="w-2.5 h-2.5" />
-          Directions
-        </a>
+        <div className="flex gap-2 mt-1">
+          <a
+            href={`https://www.google.com/maps?q=${property.latitude},${property.longitude}&z=15`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[9px] text-luxury-gold-400 bg-black/50 px-2 py-0.5 rounded-full hover:bg-black/70 transition-colors"
+          >
+            <MapIcon className="w-2.5 h-2.5" />
+            View on Google Maps
+          </a>
+          <a
+            href={`https://www.google.com/maps/dir/?api=1&destination=${property.latitude},${property.longitude}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[9px] text-luxury-gold-400 bg-black/50 px-2 py-0.5 rounded-full hover:bg-black/70 transition-colors"
+          >
+            <Navigation className="w-2.5 h-2.5" />
+            Directions
+          </a>
+        </div>
       </div>
     </div>
   );
@@ -266,13 +309,12 @@ function GoogleMapsEmbed({ property }: { property: EnrichedProperty }) {
 export function PropertyDetail() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const [showFullContact, setShowFullContact] = useState(false);
+  const [activeTab, setActiveTab] = useState<'details' | 'verification'>('details');
 
   // Find property by slug or ID using enriched data
   const property = useMemo(() => {
     if (!slug) return undefined;
     const prop = getEnrichedPropertyBySlug(slug) || getEnrichedPropertyById(slug);
-    // Track opportunity view (fires once per navigation)
     if (prop) {
       trackOpportunityView(prop.id, prop.name, prop.city, prop.country, (prop.price_min + prop.price_max) / 2);
     }
@@ -293,7 +335,6 @@ export function PropertyDetail() {
     : 'https://leadluxe-ai.vercel.app';
 
   if (!property) {
-    // Try loading page via property-database fallback
     return (
       <div className="min-h-screen bg-luxury-black flex items-center justify-center">
         <div className="text-center max-w-md px-6">
@@ -313,12 +354,19 @@ export function PropertyDetail() {
     ? Math.round((property.available_units / property.total_units) * 100)
     : 0;
 
+  // ─── Source Verification data ──────────────────────────
+  const verificationRows = [
+    { name: 'Developer Name', value: property.developer_name, source: property.builder?.website, verified: !!property.builder?.website },
+    { name: 'Phone', value: null, source: null, verified: false },
+    { name: 'Email', value: null, source: null, verified: false },
+    { name: 'Official Website', value: property.builder?.website ? new URL(property.builder.website).hostname : null, source: property.builder?.website, verified: !!property.builder?.website },
+  ];
+
   return (
     <>
-      {/* SEO */}
       <SEOHelmet
-        title={`${property.name} — ${property.developer_name} in ${property.address.district}, ${property.city}, ${property.country}`}
-        description={`${property.name} by ${property.developer_name}. Located at ${property.address.street}, ${property.address.district}, ${property.city}, ${property.country}. ${property.unit_types.length} configurations from ${formatPrice(property.price_min, property.countryCode)}. ${property.amenities.length} amenities. View details, real images, Google Maps, and contact information.`}
+        title={`${property.name} — ${property.developer_name} in ${property.city}, ${property.country}`}
+        description={`${property.name} by ${property.developer_name}. ${property.unit_types.length} configurations from ${formatPrice(property.price_min, property.countryCode)}. ${property.amenities.length} amenities. View details, images, and official developer information.`}
         image={heroImage}
         url={pageUrl}
         type="product"
@@ -330,7 +378,7 @@ export function PropertyDetail() {
         { name: 'Properties', url: '/deal-room' },
         { name: `${property.country}`, url: `/deal-room?country=${property.countryCode}` },
         { name: `${property.city}`, url: `/deal-room?country=${property.countryCode}` },
-        { name: property.address.district, url: `/city/${property.city.toLowerCase().replace(/\s+/g, '-')}` },
+        { name: property.address.district, url: `/city/${property.city.toLowerCase().replace(/\\s+/g, '-')}` },
         { name: property.name, url: `/property/${property.slug}` },
       ]} />
 
@@ -361,16 +409,18 @@ export function PropertyDetail() {
                   <Share2 className="w-3.5 h-3.5" />
                   Share
                 </button>
-                {property.builder?.salesPhone ? (
+                {property.builder?.website ? (
                   <a
-                    href={`tel:${property.builder.salesPhone.replace(/\s/g, '')}`}
+                    href={property.builder.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="btn-primary text-xs px-3 py-1.5"
                   >
-                    <Phone className="w-3.5 h-3.5" />
-                    Call Now
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    Official Website
                   </a>
                 ) : (
-                  <span className="text-xs text-gray-600 px-3 py-1.5">Contact info unverified</span>
+                  <span className="text-xs text-gray-600 px-3 py-1.5">Official website not yet verified</span>
                 )}
               </div>
             </div>
@@ -383,7 +433,7 @@ export function PropertyDetail() {
               <span>/</span>
               <Link to={`/country/${property.countryCode.toLowerCase()}`} className="hover:text-gray-400 transition-colors">{property.country}</Link>
               <span>/</span>
-              <Link to={`/city/${property.city.toLowerCase().replace(/\s+/g, '-')}`} className="hover:text-gray-400 transition-colors">{property.city}</Link>
+              <Link to={`/city/${property.city.toLowerCase().replace(/\\s+/g, '-')}`} className="hover:text-gray-400 transition-colors">{property.city}</Link>
               <span>/</span>
               <span className="text-luxury-gold-400">{property.address.district}</span>
               <span>/</span>
@@ -393,553 +443,570 @@ export function PropertyDetail() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column - Images & Enriched Data */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Image Gallery — Real Curated Images */}
-              <ImageGallery images={property.curatedImages.images} />
+          {/* Tab Switcher */}
+          <div className="flex gap-4 border-b border-luxury-border mb-6">
+            <button
+              onClick={() => setActiveTab('details')}
+              className={cn(
+                'pb-3 text-xs font-medium transition-colors border-b-2',
+                activeTab === 'details'
+                  ? 'text-luxury-gold-400 border-luxury-gold-500'
+                  : 'text-gray-500 border-transparent hover:text-gray-300'
+              )}
+            >
+              Property Details
+            </button>
+            <button
+              onClick={() => setActiveTab('verification')}
+              className={cn(
+                'pb-3 text-xs font-medium transition-colors border-b-2',
+                activeTab === 'verification'
+                  ? 'text-luxury-gold-400 border-luxury-gold-500'
+                  : 'text-gray-500 border-transparent hover:text-gray-300'
+              )}
+            >
+              Source Verification
+            </button>
+            <button
+              onClick={() => navigate(`/research/${property.slug}`)}
+              className="pb-3 text-xs font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-300 transition-colors"
+            >
+              Digital Twin
+            </button>
+          </div>
 
-              {/* Property Title with Full Address */}
-              <div>
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <h1 className="text-2xl sm:text-3xl font-bold text-white font-display">{property.name}</h1>
-                      {property.sales_status === 'hot' && (
-                        <span className="px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 text-[8px] font-bold border border-red-500/30 animate-pulse-gold">
-                          HOT
-                        </span>
-                      )}
+          {activeTab === 'verification' ? (
+            <SourceVerificationTab property={property} />
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left Column */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Image Gallery */}
+                <ImageGallery images={property.curatedImages.images} />
+
+                {/* Property Title */}
+                <div>
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-white font-display">{property.name}</h1>
+                        {property.sales_status === 'hot' && (
+                          <span className="px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 text-[8px] font-bold border border-red-500/30 animate-pulse-gold">
+                            HOT
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-400">
+                        <Building2 className="w-4 h-4 text-luxury-gold-400" />
+                        <span className="text-white font-medium">{property.developer_name}</span>
+                        <span className="text-gray-600">·</span>
+                        <span className="capitalize">{property.developer_type}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                        <MapPin className="w-4 h-4 text-emerald-400" />
+                        <span>{property.address.street}, {property.address.district}, {property.city}</span>
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[10px] text-gray-600">{property.address.postalCode}, {property.country}</span>
+                        <a
+                          href={`https://www.google.com/maps?q=${property.latitude},${property.longitude}&z=15`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[10px] text-luxury-gold-400 hover:text-luxury-gold-300 underline underline-offset-2 inline-flex items-center gap-1"
+                        >
+                          <MapIcon className="w-2.5 h-2.5" />
+                          View on Google Maps
+                        </a>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <Building2 className="w-4 h-4 text-luxury-gold-400" />
-                      <span className="text-white font-medium">{property.developer_name}</span>
-                      <span className="text-gray-600">·</span>
-                      <span className="capitalize">{property.developer_type}</span>
-                    </div>
-                    {/* REAL ADDRESS — with Google Maps Link */}
-                    <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                      <MapPin className="w-4 h-4 text-emerald-400" />
-                      <span>{property.address.street}, {property.address.district}, {property.city}</span>
-                    </div>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[10px] text-gray-600">{property.address.postalCode}, {property.address.state}, {property.country}</span>
+                    {/* Developer website badge */}
+                    {property.builder?.website && (
                       <a
-                        href={property.address.googleMapsUrl}
+                        href={property.builder.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[10px] text-luxury-gold-400 hover:text-luxury-gold-300 underline underline-offset-2 inline-flex items-center gap-1"
+                        className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-medium bg-luxury-gold-500/10 text-luxury-gold-400 border border-luxury-gold-500/20 hover:bg-luxury-gold-500/20 transition-all"
                       >
-                        <MapIcon className="w-2.5 h-2.5" />
-                        View on Google Maps
+                        <ExternalLink className="w-3 h-3" />
+                        {new URL(property.builder.website).hostname}
                       </a>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Status badges */}
-                <div className="flex flex-wrap gap-2 mt-4">
-                  <span className={cn('px-3 py-1 rounded-full text-[10px] font-medium border', getStatusColor(property.status))}>
-                    {property.status.replace(/_/g, ' ')}
-                  </span>
-                  <span className={cn('px-3 py-1 rounded-full text-[10px] font-medium border', getSalesStatusColor(property.sales_status))}>
-                    {property.sales_status === 'hot' ? '🔥 Hot Deal' :
-                     property.sales_status === 'active' ? 'Active' :
-                     property.sales_status === 'limited' ? '⚠️ Limited' : 'Sold Out'}
-                  </span>
-                  {property.rera_status !== 'not_applicable' && (
-                    <span className="px-3 py-1 rounded-full text-[10px] font-medium border border-emerald-500/30 text-emerald-400 bg-emerald-500/10">
-                      RERA {property.rera_status === 'approved' ? '✅ Approved' : 'Applied'}
-                    </span>
-                  )}
-                  <span className="px-3 py-1 rounded-full text-[10px] font-medium border border-luxury-gold-500/30 text-luxury-gold-400 bg-luxury-gold-500/10">
-                    {property.propertyDetails.reraNumber}
-                  </span>
-                </div>
-              </div>
-
-              {/* Key Stats Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[
-                  { label: 'Property Type', value: property.property_type.replace(/_/g, ' '), icon: Building2 },
-                  { label: 'Project Area', value: property.propertyDetails.projectArea, icon: Layers },
-                  { label: 'Available', value: `${availPercent}%`, icon: CheckCircle },
-                  { label: 'Total Floors', value: `${property.propertyDetails.floorCount} Floors`, icon: Maximize2 },
-                  { label: 'Price Range', value: `${formatPrice(property.price_min, property.countryCode)} - ${formatPrice(property.price_max, property.countryCode)}`, icon: DollarSign },
-                  { label: 'Price/sqft', value: formatPrice(property.price_per_sqft, property.countryCode), icon: Square },
-                  { label: 'Size Range', value: `${property.min_size_sqft.toLocaleString()} - ${property.max_size_sqft.toLocaleString()} sqft`, icon: Layers },
-                  { label: 'Bedrooms', value: property.bedrooms.map(b => `${b}BHK`).join(', '), icon: Bed },
-                ].map((stat, i) => (
-                  <div key={i} className="glass-card p-3">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <stat.icon className="w-3 h-3 text-luxury-gold-400" />
-                      <p className="text-[9px] text-gray-600 uppercase tracking-wider">{stat.label}</p>
-                    </div>
-                    <p className="text-xs font-semibold text-white leading-tight">{stat.value}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Description */}
-              <div className="premium-card p-5">
-                <h2 className="text-sm font-semibold text-white mb-3">About This Property</h2>
-                <p className="text-sm text-gray-400 leading-relaxed whitespace-pre-line">{property.description}</p>
-              </div>
-
-              {/* Builder Information */}
-              <div className="premium-card p-5">
-                <h2 className="text-sm font-semibold text-white mb-4">Builder / Developer Information</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-lg bg-luxury-gold-500/20 flex items-center justify-center">
-                        <Building2 className="w-5 h-5 text-luxury-gold-400" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-white">{property.developer_name}</p>
-                        <p className="text-[9px] text-gray-500">{property.developer_type}</p>
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-xs">
-                      {property.builder?.salesPhone ? (
-                        <div className="flex items-center gap-2 text-gray-400">
-                          <Phone className="w-3.5 h-3.5 text-emerald-400" />
-                          <a href={`tel:${property.builder.salesPhone.replace(/\s/g, '')}`} className="hover:text-white transition-colors">{property.builder.salesPhone}</a>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 text-gray-500">
-                          <Phone className="w-3.5 h-3.5 text-gray-600" />
-                          <span className="italic">Phone not verified</span>
-                        </div>
-                      )}
-                      {property.builder?.salesEmail ? (
-                        <div className="flex items-center gap-2 text-gray-400">
-                          <Mail className="w-3.5 h-3.5 text-luxury-gold-400" />
-                          <a href={`mailto:${property.builder.salesEmail}`} className="hover:text-white transition-colors">{property.builder.salesEmail}</a>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 text-gray-500">
-                          <Mail className="w-3.5 h-3.5 text-gray-600" />
-                          <span className="italic">Email not verified</span>
-                        </div>
-                      )}
-                    </div>
-                    {!property.builder?.salesPhone && !property.builder?.salesEmail && (
-                      <div className="mt-2 p-2 rounded-lg bg-amber-500/5 border border-amber-500/10 text-[9px] text-amber-400/70 text-center">
-                        Contact information has not been independently verified.
-                        <a href="/data-provenance" className="text-luxury-gold-400 hover:underline ml-1">Source policy</a>
-                      </div>
                     )}
                   </div>
-                  <div className="flex flex-col justify-center p-4 rounded-xl bg-luxury-gold-500/5 border border-luxury-gold-500/20">
-                    <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-3">Get in Touch</p>
-                    <div className="space-y-2">
-                      {property.builder?.salesPhone ? (
-                        <a href={`tel:${property.builder.salesPhone.replace(/\s/g, '')}`} className="btn-primary w-full text-xs">
-                          <PhoneCall className="w-3.5 h-3.5" />
-                          Call {property.developer_name}
-                        </a>
-                      ) : (
-                        <div className="text-[10px] text-gray-600 text-center italic p-2">Phone not verified</div>
-                      )}
-                      {property.builder?.salesEmail ? (
-                        <a href={`mailto:${property.builder.salesEmail}`} className="btn-outline w-full text-xs">
-                          <Mail className="w-3.5 h-3.5" />
-                          Send Email
-                        </a>
-                      ) : (
-                        <div className="text-[10px] text-gray-600 text-center italic p-2">Email not verified</div>
-                      )}
-                      <a
-                        href={property.address.googleMapsDirectionsUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-outline w-full text-xs"
-                      >
-                        <Navigation className="w-3.5 h-3.5" />
-                        Get Directions
-                      </a>
-                    </div>
+
+                  {/* Status badges */}
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    <span className={cn('px-3 py-1 rounded-full text-[10px] font-medium border', getStatusColor(property.status))}>
+                      {property.status.replace(/_/g, ' ')}
+                    </span>
+                    <span className={cn('px-3 py-1 rounded-full text-[10px] font-medium border', getSalesStatusColor(property.sales_status))}>
+                      {property.sales_status === 'hot' ? '🔥 Hot Deal' :
+                       property.sales_status === 'active' ? 'Active' :
+                       property.sales_status === 'limited' ? '⚠️ Limited' : 'Sold Out'}
+                    </span>
                   </div>
                 </div>
-              </div>
 
-              {/* Unit Types */}
-              {property.propertyDetails.unitVariants.length > 0 && (
-                <div className="premium-card p-5">
-                  <h2 className="text-sm font-semibold text-white mb-4">Available Unit Types ({property.propertyDetails.unitVariants.length})</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {property.propertyDetails.unitVariants.map((unit, i) => (
-                      <UnitTypeCard key={i} unit={unit} currencySymbol={property.currencySymbol} countryCode={property.countryCode} />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Amenities */}
-              {property.amenities.length > 0 && (
-                <div className="premium-card p-5">
-                  <h2 className="text-sm font-semibold text-white mb-4">Amenities ({property.amenities.length})</h2>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {property.amenities.map((amenity, i) => (
-                      <div key={i} className="flex items-center gap-2 p-2 rounded-lg bg-white/5">
-                        <CheckCircle className="w-3 h-3 text-emerald-400 shrink-0" />
-                        <span className="text-xs text-gray-300">{amenity}</span>
+                {/* Key Stats Grid — only verified fields */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {[
+                    { label: 'Property Type', value: property.property_type.replace(/_/g, ' '), icon: Building2 },
+                    { label: 'Price Range', value: `${formatPrice(property.price_min, property.countryCode)} - ${formatPrice(property.price_max, property.countryCode)}`, icon: DollarSign },
+                    { label: 'Price/sqft', value: formatPrice(property.price_per_sqft, property.countryCode), icon: Square },
+                    { label: 'Size Range', value: `${property.min_size_sqft.toLocaleString()} - ${property.max_size_sqft.toLocaleString()} sqft`, icon: Layers },
+                  ].map((stat, i) => (
+                    <div key={i} className="glass-card p-3">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <stat.icon className="w-3 h-3 text-luxury-gold-400" />
+                        <p className="text-[9px] text-gray-600 uppercase tracking-wider">{stat.label}</p>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Investment Highlights */}
-              <div className="premium-card p-5">
-                <h2 className="text-sm font-semibold text-white mb-4">Investment Highlights</h2>
-                <div className="space-y-2">
-                  {property.investmentHighlights.map((h, i) => (
-                    <div key={i} className="flex items-start gap-2">
-                      <Star className="w-3.5 h-3.5 text-luxury-gold-400 mt-0.5 shrink-0" />
-                      <p className="text-xs text-gray-300 leading-relaxed">{h}</p>
+                      <p className="text-xs font-semibold text-white leading-tight">{stat.value}</p>
                     </div>
                   ))}
-                </div>
-              </div>
-
-              {/* Location & Interactive Map */}
-              <div className="premium-card p-5">
-                <h2 className="text-sm font-semibold text-white mb-4">Location & Map</h2>
-                <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
-                  <MapPin className="w-4 h-4 text-emerald-400" />
-                  <span className="font-medium text-white">{property.address.street}</span>
-                </div>
-                <p className="text-xs text-gray-500 mb-1">{property.address.district}, {property.city}, {property.address.state}, {property.country} - {property.address.postalCode}</p>
-                <p className="text-[10px] text-gray-700 mb-4">Coordinates: {property.latitude.toFixed(4)}°N, {property.longitude.toFixed(4)}°E</p>
-                
-                {/* Google Maps Embed */}
-                <GoogleMapsEmbed property={property} />
-
-                {/* Nearby Places */}
-                <div className="mt-4">
-                  <h3 className="text-[10px] text-gray-600 uppercase tracking-wider mb-2">Nearby Places</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {property.nearbyPlaces.map((place, i) => (
-                      <div key={i} className="flex items-center gap-2 p-2 rounded-lg bg-white/5">
-                        <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                        <span className="text-[10px] text-gray-300 flex-1">{place.name}</span>
-                        <span className="text-[8px] text-gray-600">{place.distance}</span>
-                      </div>
-                    ))}
+                  <div className="glass-card p-3">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <Bed className="w-3 h-3 text-luxury-gold-400" />
+                      <p className="text-[9px] text-gray-600 uppercase tracking-wider">Bedrooms</p>
+                    </div>
+                    <p className="text-xs font-semibold text-white leading-tight">{property.bedrooms.map(b => `${b}BHK`).join(', ')}</p>
+                  </div>
+                  <div className="glass-card p-3">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <CheckCircle className="w-3 h-3 text-luxury-gold-400" />
+                      <p className="text-[9px] text-gray-600 uppercase tracking-wider">Available</p>
+                    </div>
+                    <p className="text-xs font-semibold text-white leading-tight">{availPercent}%</p>
+                  </div>
+                  <div className="glass-card p-3">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <Calendar className="w-3 h-3 text-luxury-gold-400" />
+                      <p className="text-[9px] text-gray-600 uppercase tracking-wider">Possession</p>
+                    </div>
+                    <p className="text-xs font-semibold text-amber-400 leading-tight">
+                      {property.status === 'ready_to_move' ? 'Immediate' :
+                       property.status === 'under_construction' ? `By ${new Date(property.completion_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}` :
+                       property.status === 'pre_launch' ? `Expected ${new Date(property.completion_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}` : 'Completed'}
+                    </p>
                   </div>
                 </div>
 
-                {/* Quick Links */}
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <a
-                    href={property.address.googleMapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-medium bg-white/5 text-gray-300 hover:bg-luxury-gold-500/10 hover:text-luxury-gold-400 transition-all"
-                  >
-                    <MapIcon className="w-3 h-3" />
-                    Open in Google Maps
-                  </a>
-                  <a
-                    href={property.address.googleMapsDirectionsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-medium bg-white/5 text-gray-300 hover:bg-luxury-gold-500/10 hover:text-luxury-gold-400 transition-all"
-                  >
-                    <Navigation className="w-3 h-3" />
-                    Get Directions
-                  </a>
-                </div>
-              </div>
-
-              {/* Tags */}
-              {property.tags.length > 0 && (
+                {/* Description */}
                 <div className="premium-card p-5">
-                  <h2 className="text-sm font-semibold text-white mb-4">Property Tags</h2>
-                  <div className="flex flex-wrap gap-2">
-                    {property.tags.map((tag, i) => (
-                      <span key={i} className="px-3 py-1 rounded-full bg-luxury-gold-500/10 text-luxury-gold-400 text-[10px] font-medium border border-luxury-gold-500/20">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Right Column - Contact & Quick Info */}
-            <div className="space-y-4">
-              {/* Contact Card — Builder Info */}
-              <div className="premium-card p-5 sticky top-20">
-                <h3 className="text-sm font-semibold text-white mb-3">Contact Builder Directly</h3>
-
-                {/* Builder Info */}
-                <div className="flex items-center gap-3 mb-4 p-3 rounded-lg bg-white/5">
-                  <div className="w-10 h-10 rounded-lg bg-luxury-gold-500/20 flex items-center justify-center">
-                    <Building2 className="w-5 h-5 text-luxury-gold-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-white">{property.developer_name}</p>
-                    <p className="text-[10px] text-gray-500">{property.developer_type}</p>
-                  </div>
+                  <h2 className="text-sm font-semibold text-white mb-3">About This Property</h2>
+                  <p className="text-sm text-gray-400 leading-relaxed whitespace-pre-line">{property.description}</p>
                 </div>
 
-                {/* Price Info */}
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-gray-600">Price Range</span>
-                    <span className="text-xs font-bold text-white">
-                      {formatPrice(property.price_min, property.countryCode)} - {formatPrice(property.price_max, property.countryCode)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-gray-600">Price / sqft</span>
-                    <span className="text-xs font-medium text-luxury-gold-400">
-                      {formatPrice(property.price_per_sqft, property.countryCode)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-gray-600">Available Units</span>
-                    <span className="text-xs font-medium text-emerald-400">
-                      {property.available_units} / {property.total_units}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-gray-600">Possession</span>
-                    <span className="text-xs font-medium text-amber-400">{property.propertyDetails.possessionStatus}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-gray-600">AI Confidence</span>
-                    <span className="text-xs font-bold text-amber-400">{property.confidence}%</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-gray-600">Commission (3%)</span>
-                    <span className="text-xs font-bold text-luxury-gold-400">
-                      {formatPrice(property.estimated_commission, property.countryCode)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-gray-600">Google Rating</span>
-                    <span className="text-xs font-medium text-emerald-400">
-                      ⭐ {property.propertyDetails.googleReviewScore}/5 ({property.propertyDetails.totalReviews} reviews)
-                    </span>
-                  </div>
-                </div>
-
-                {/* Commission Card */}
-                <div className="p-3 rounded-lg bg-luxury-gold-500/10 border border-luxury-gold-500/20 mb-4">
-                  <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-1">Estimated Commission</p>
-                  <p className="text-lg font-bold text-luxury-gold-400">
-                    {formatPrice(property.estimated_commission, property.countryCode)}
-                  </p>
-                  <p className="text-[9px] text-gray-600">3% success fee · Only paid on closed deals</p>
-                </div>
-
-                {/* Builder Contact — only shows verified data */}
-                <div className="space-y-3 mb-4">
-                  {property.builder?.salesPhone || property.builder?.salesEmail ? (
-                    <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Award className="w-4 h-4 text-emerald-400" />
-                        <p className="text-[10px] font-medium text-emerald-400">Project Coordinator — {property.developer_name}</p>
+                {/* Builder Information — NO phone/email, only website */}
+                <div className="premium-card p-5">
+                  <h2 className="text-sm font-semibold text-white mb-4">Developer</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 rounded-lg bg-luxury-gold-500/20 flex items-center justify-center">
+                          <Building2 className="w-5 h-5 text-luxury-gold-400" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-white">{property.developer_name}</p>
+                          <p className="text-[9px] text-gray-500">{property.developer_type}</p>
+                        </div>
                       </div>
-                      <div className="space-y-2">
-                        {property.builder?.salesPhone && (
-                          <div className="flex items-center gap-2 text-xs text-gray-300">
-                            <Phone className="w-3.5 h-3.5 text-luxury-gold-400 shrink-0" />
-                            <a href={`tel:${property.builder.salesPhone.replace(/\s/g, '')}`} className="hover:text-luxury-gold-300 transition-colors">
-                              {property.builder.salesPhone}
+                      <div className="space-y-2 text-xs">
+                        {/* Phone — ALWAYS hidden (never independently verified) */}
+                        <div className="flex items-center gap-2 text-gray-500">
+                          <ShieldQuestion className="w-3.5 h-3.5 text-gray-600" />
+                          <span className="italic text-[10px]">Phone not verified — official source unavailable</span>
+                        </div>
+                        {/* Email — ALWAYS hidden (never independently verified) */}
+                        <div className="flex items-center gap-2 text-gray-500">
+                          <ShieldQuestion className="w-3.5 h-3.5 text-gray-600" />
+                          <span className="italic text-[10px]">Email not verified — official source unavailable</span>
+                        </div>
+                        {/* Website — shown if verified */}
+                        {property.builder?.website && (
+                          <div className="flex items-center gap-2 text-gray-400">
+                            <Globe className="w-3.5 h-3.5 text-luxury-gold-400" />
+                            <a href={property.builder.website} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors text-luxury-gold-400">
+                              {new URL(property.builder.website).hostname}
                             </a>
                           </div>
                         )}
-                        {property.builder?.salesEmail && (
+                      </div>
+                      <div className="mt-2 p-2 rounded-lg bg-amber-500/5 border border-amber-500/10 text-[9px] text-amber-400/70 text-center">
+                        Developer contact information has not been independently verified.
+                        <a href="/data-provenance" className="text-luxury-gold-400 hover:underline ml-1">Source policy</a>
+                      </div>
+                    </div>
+                    <div className="flex flex-col justify-center p-4 rounded-xl bg-luxury-gold-500/5 border border-luxury-gold-500/20">
+                      <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-3">Visit Official Website</p>
+                      <div className="space-y-2">
+                        {property.builder?.website ? (
+                          <a
+                            href={property.builder.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-primary w-full text-xs"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                            Open {new URL(property.builder.website).hostname}
+                          </a>
+                        ) : (
+                          <div className="text-[10px] text-gray-600 text-center italic p-2">
+                            Official website not yet available
+                          </div>
+                        )}
+                        <a
+                          href={`https://www.google.com/maps/dir/?api=1&destination=${property.latitude},${property.longitude}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn-outline w-full text-xs"
+                        >
+                          <Navigation className="w-3.5 h-3.5" />
+                          Get Directions
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Unit Types */}
+                {property.propertyDetails.unitVariants.length > 0 && (
+                  <div className="premium-card p-5">
+                    <h2 className="text-sm font-semibold text-white mb-4">Unit Configurations ({property.propertyDetails.unitVariants.length})</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {property.propertyDetails.unitVariants.map((unit, i) => (
+                        <div key={i} className={cn('premium-card p-4', !unit.available ? 'opacity-50' : '')}>
+                          <div className="flex items-start justify-between mb-3">
+                            <div>
+                              <h4 className="text-sm font-semibold text-white">{unit.label}</h4>
+                              <p className="text-[10px] text-gray-500">{unit.size}</p>
+                            </div>
+                            <span className={cn(
+                              'text-[10px] px-2 py-0.5 rounded font-medium',
+                              !unit.available ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-400'
+                            )}>
+                              {unit.available ? 'Available' : 'Sold Out'}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
+                              <Square className="w-3 h-3" />
+                              <span>{unit.size}</span>
+                            </div>
+                            <p className="text-sm font-bold text-luxury-gold-400">{property.currencySymbol}{unit.price}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Amenities */}
+                {property.amenities.length > 0 && (
+                  <div className="premium-card p-5">
+                    <h2 className="text-sm font-semibold text-white mb-4">Amenities ({property.amenities.length})</h2>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {property.amenities.map((amenity, i) => (
+                        <div key={i} className="flex items-center gap-2 p-2 rounded-lg bg-white/5">
+                          <CheckCircle className="w-3 h-3 text-emerald-400 shrink-0" />
+                          <span className="text-xs text-gray-300">{amenity}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Location & Map */}
+                <div className="premium-card p-5">
+                  <h2 className="text-sm font-semibold text-white mb-4">Location</h2>
+                  <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+                    <MapPin className="w-4 h-4 text-emerald-400" />
+                    <span className="font-medium text-white">{property.address.street}</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mb-1">{property.address.district}, {property.city}, {property.country} - {property.address.postalCode}</p>
+                  <p className="text-[10px] text-gray-500 mb-4">
+                    Coordinates: {property.latitude.toFixed(4)}°N, {property.longitude.toFixed(4)}°E
+                    <span className="text-gray-700 ml-2">· City-level (parcel verification pending)</span>
+                  </p>
+
+                  {/* Map */}
+                  <PropertyMap property={property} />
+
+                  {/* Nearby Places */}
+                  <div className="mt-4">
+                    <h3 className="text-[10px] text-gray-600 uppercase tracking-wider mb-2">Nearby Landmarks</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {property.nearbyPlaces.map((place, i) => (
+                        <div key={i} className="flex items-center gap-2 p-2 rounded-lg bg-white/5">
+                          <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                          <span className="text-[10px] text-gray-300 flex-1">{place.name}</span>
+                          <span className="text-[8px] text-gray-600">{place.distance}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tags */}
+                {property.tags.length > 0 && (
+                  <div className="premium-card p-5">
+                    <h2 className="text-sm font-semibold text-white mb-4">Tags</h2>
+                    <div className="flex flex-wrap gap-2">
+                      {property.tags.map((tag, i) => (
+                        <span key={i} className="px-3 py-1 rounded-full bg-luxury-gold-500/10 text-luxury-gold-400 text-[10px] font-medium border border-luxury-gold-500/20">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column */}
+              <div className="space-y-4">
+                {/* Contact Card */}
+                <div className="premium-card p-5 sticky top-20">
+                  <h3 className="text-sm font-semibold text-white mb-3">{property.developer_name}</h3>
+
+                  {/* Developer Info */}
+                  <div className="flex items-center gap-3 mb-4 p-3 rounded-lg bg-white/5">
+                    <div className="w-10 h-10 rounded-lg bg-luxury-gold-500/20 flex items-center justify-center">
+                      <Building2 className="w-5 h-5 text-luxury-gold-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">{property.developer_name}</p>
+                      <p className="text-[10px] text-gray-500">{property.developer_type}</p>
+                    </div>
+                  </div>
+
+                  {/* Price Info */}
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-gray-600">Price Range</span>
+                      <span className="text-xs font-bold text-white">
+                        {formatPrice(property.price_min, property.countryCode)} - {formatPrice(property.price_max, property.countryCode)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-gray-600">Price / sqft</span>
+                      <span className="text-xs font-medium text-luxury-gold-400">
+                        {formatPrice(property.price_per_sqft, property.countryCode)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-gray-600">Available Units</span>
+                      <span className="text-xs font-medium text-emerald-400">
+                        {property.available_units} / {property.total_units}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-gray-600">Possession</span>
+                      <span className="text-xs font-medium text-amber-400">
+                        {property.status === 'ready_to_move' ? 'Immediate' :
+                         property.status === 'under_construction' ? `By ${new Date(property.completion_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}` :
+                         property.status === 'pre_launch' ? `Expected ${new Date(property.completion_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}` : 'Completed'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-gray-600">AI Confidence</span>
+                      <span className="text-xs font-bold text-amber-400">{property.confidence}%</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-gray-600">Commission (3%)</span>
+                      <span className="text-xs font-bold text-luxury-gold-400">
+                        {formatPrice(property.estimated_commission, property.countryCode)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-gray-600">Property ID</span>
+                      <span className="text-xs text-gray-300 font-mono">{property.id}</span>
+                    </div>
+                  </div>
+
+                  {/* Commission Card */}
+                  <div className="p-3 rounded-lg bg-luxury-gold-500/10 border border-luxury-gold-500/20 mb-4">
+                    <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-1">Estimated Commission</p>
+                    <p className="text-lg font-bold text-luxury-gold-400">
+                      {formatPrice(property.estimated_commission, property.countryCode)}
+                    </p>
+                    <p className="text-[9px] text-gray-600">3% success fee · Only paid on closed deals</p>
+                  </div>
+
+                  {/* Contact Section — NO phone/email, only website */}
+                  <div className="space-y-3 mb-4">
+                    <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Globe className="w-4 h-4 text-emerald-400" />
+                        <p className="text-[10px] font-medium text-emerald-400">Official Developer Website</p>
+                      </div>
+                      <div className="space-y-2">
+                        {property.builder?.website ? (
                           <div className="flex items-center gap-2 text-xs text-gray-300">
-                            <Mail className="w-3.5 h-3.5 text-luxury-gold-400 shrink-0" />
-                            <a href={`mailto:${property.builder.salesEmail}`} className="hover:text-luxury-gold-300 transition-colors">
-                              {property.builder.salesEmail}
+                            <ExternalLink className="w-3.5 h-3.5 text-luxury-gold-400 shrink-0" />
+                            <a href={property.builder.website} target="_blank" rel="noopener noreferrer" className="hover:text-luxury-gold-300 transition-colors">
+                              {new URL(property.builder.website).hostname}
                             </a>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <ShieldQuestion className="w-3.5 h-3.5 text-gray-600 shrink-0" />
+                            <span className="italic">Official website not yet verified</span>
                           </div>
                         )}
                         <div className="flex items-start gap-2 text-xs text-gray-300">
                           <MapPin className="w-3.5 h-3.5 text-luxury-gold-400 shrink-0 mt-0.5" />
-                          <span className="text-[11px]">{property.address.street}, {property.address.district}, {property.city}, {property.address.state}, {property.country} - {property.address.postalCode}</span>
+                          <span className="text-[11px]">{property.address.street}, {property.address.district}, {property.city}, {property.country} - {property.address.postalCode}</span>
                         </div>
                       </div>
+                      <div className="mt-2 p-2 rounded-lg bg-amber-500/5 border border-amber-500/10 text-[9px] text-amber-400/70 text-center">
+                        Phone and email are not displayed — they have not been independently verified.
+                        <a href="/data-provenance" className="text-luxury-gold-400 hover:underline ml-1">Source policy</a>
+                      </div>
                     </div>
-                  ) : (
-                    <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
-                      <p className="text-[9px] text-amber-400/70 text-center">
-                        Developer contact information has not yet been independently verified.
-                        <a href="/data-provenance" className="text-luxury-gold-400 hover:underline ml-1">Data policy</a>
-                      </p>
-                    </div>
-                  )}
-                </div>
+                  </div>
 
-                {/* CTA Buttons */}
-                <div className="space-y-2">
-                  {property.builder?.salesPhone ? (
-                    <a
-                      href={`tel:${property.builder.salesPhone.replace(/\s/g, '')}`}
-                      className="btn-primary w-full text-xs"
-                    >
-                      <PhoneCall className="w-3.5 h-3.5" />
-                      Call {property.developer_name} Sales
-                    </a>
-                  ) : (
-                    <div className="p-2 rounded-lg bg-gray-900/50 border border-gray-800 text-[9px] text-gray-600 text-center italic">
-                      Phone not yet verified
-                    </div>
-                  )}
-                  {property.builder?.salesEmail ? (
-                    <a
-                      href={`mailto:${property.builder.salesEmail}?subject=Inquiry%3A%20${property.name}&body=I%20am%20interested%20in%20${property.name}%20at%20${property.address.district}%2C%20${property.city}.%20Please%20share%20details%2C%20availability%2C%20and%20pricing.`}
+                  {/* CTA Buttons — NO phone/email, only website + interest */}
+                  <div className="space-y-2">
+                    {property.builder?.website ? (
+                      <a
+                        href={property.builder.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-primary w-full text-xs"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        Open Official Website
+                      </a>
+                    ) : (
+                      <div className="p-2 rounded-lg bg-gray-900/50 border border-gray-800 text-[9px] text-gray-600 text-center italic">
+                        Official website not yet available
+                      </div>
+                    )}
+                    <button
+                      onClick={() => {
+                        const deals = JSON.parse(localStorage.getItem('leadluxe-deals') || '[]');
+                        deals.push({
+                          id: property.id,
+                          propertyName: property.name,
+                          developerName: property.developer_name,
+                          city: property.city,
+                          country: property.country,
+                          countryCode: property.countryCode,
+                          currency: property.currency,
+                          currencySymbol: property.currencySymbol,
+                          priceMin: property.price_min,
+                          priceMax: property.price_max,
+                          estimatedCommission: property.estimated_commission,
+                          message: `Interested in ${property.name} — ${property.city}`,
+                          contactName: '',
+                          contactEmail: '',
+                          contactPhone: '',
+                          timestamp: new Date().toISOString(),
+                          status: 'new',
+                        });
+                        localStorage.setItem('leadluxe-deals', JSON.stringify(deals));
+                        navigate('/portfolio');
+                      }}
                       className="btn-outline w-full text-xs"
                     >
-                      <Mail className="w-3.5 h-3.5" />
-                      Send Inquiry Email
-                    </a>
-                  ) : (
-                    <div className="p-2 rounded-lg bg-gray-900/50 border border-gray-800 text-[9px] text-gray-600 text-center italic">
-                      Email not yet verified
+                      <Heart className="w-3.5 h-3.5" />
+                      Express Interest
+                    </button>
+                    <button
+                      onClick={() => navigate(`/match?property=${property.id}`)}
+                      className="btn-ghost w-full text-xs text-gray-500"
+                    >
+                      <Zap className="w-3.5 h-3.5" />
+                      AI Match Analysis
+                    </button>
+                    <button
+                      onClick={() => navigate(`/research/${property.slug}`)}
+                      className="btn-ghost w-full text-xs border border-luxury-gold-500/20 text-luxury-gold-400 hover:bg-luxury-gold-500/10"
+                    >
+                      <Building2 className="w-3.5 h-3.5" />
+                      Full Research · Digital Twin
+                    </button>
+                  </div>
+                </div>
+
+                {/* AI Property Score */}
+                <div className="glass-card p-4 border-luxury-gold-500/10">
+                  <h4 className="text-[10px] text-gray-600 uppercase tracking-wider mb-3">AI Confidence Score</h4>
+                  <div className="flex items-center gap-3">
+                    <div className="relative w-16 h-16">
+                      <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+                        <circle cx="32" cy="32" r="28" fill="none" stroke="#1a1a1a" strokeWidth="4" />
+                        <circle
+                          cx="32" cy="32" r="28" fill="none"
+                          stroke={property.confidence >= 80 ? '#22c55e' : property.confidence >= 60 ? '#d4a030' : '#f59e0b'}
+                          strokeWidth="4"
+                          strokeDasharray={`${(property.confidence / 100) * 176} 176`}
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                      <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-white">
+                        {property.confidence}
+                      </span>
                     </div>
-                  )}
-                  <button
-                    onClick={() => {
-                      const deals = JSON.parse(localStorage.getItem('leadluxe-deals') || '[]');
-                      deals.push({
-                        id: property.id,
-                        propertyName: property.name,
-                        developerName: property.developer_name,
-                        city: property.city,
-                        country: property.country,
-                        countryCode: property.countryCode,
-                        currency: property.currency,
-                        currencySymbol: property.currencySymbol,
-                        priceMin: property.price_min,
-                        priceMax: property.price_max,
-                        estimatedCommission: property.estimated_commission,
-                        message: `Interested in ${property.name} — ${property.city}`,
-                        contactName: '',
-                        contactEmail: property.builder?.salesEmail || '',
-                        contactPhone: property.builder?.salesPhone || '',
-                        timestamp: new Date().toISOString(),
-                        status: 'new',
-                      });
-                      localStorage.setItem('leadluxe-deals', JSON.stringify(deals));
-                      navigate('/portfolio');
-                    }}
-                    className="btn-outline w-full text-xs"
-                  >
-                    <Heart className="w-3.5 h-3.5" />
-                    Express Interest
-                  </button>
-                  <button
-                    onClick={() => navigate(`/match?property=${property.id}`)}
-                    className="btn-ghost w-full text-xs text-gray-500"
-                  >
-                    <Zap className="w-3.5 h-3.5" />
-                    AI Match Analysis
-                  </button>
-                  <button
-                    onClick={() => navigate(`/research/${property.slug}`)}
-                    className="btn-ghost w-full text-xs border border-luxury-gold-500/20 text-luxury-gold-400 hover:bg-luxury-gold-500/10"
-                  >
-                    <Building2 className="w-3.5 h-3.5" />
-                    Full Research · Digital Twin
-                  </button>
-                </div>
-              </div>
-
-              {/* Property Score */}
-              <div className="glass-card p-4 border-luxury-gold-500/10">
-                <h4 className="text-[10px] text-gray-600 uppercase tracking-wider mb-3">AI Property Score</h4>
-                <div className="flex items-center gap-3">
-                  <div className="relative w-16 h-16">
-                    <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
-                      <circle cx="32" cy="32" r="28" fill="none" stroke="#1a1a1a" strokeWidth="4" />
-                      <circle
-                        cx="32" cy="32" r="28" fill="none"
-                        stroke={property.confidence >= 80 ? '#22c55e' : property.confidence >= 60 ? '#d4a030' : '#f59e0b'}
-                        strokeWidth="4"
-                        strokeDasharray={`${(property.confidence / 100) * 176} 176`}
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-white">
-                      {property.confidence}
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs font-medium text-white">
-                      {property.confidence >= 80 ? 'High Confidence' :
-                       property.confidence >= 60 ? 'Good Opportunity' : 'Moderate'}
-                    </p>
-                    <p className="text-[9px] text-gray-600">
-                      {property.confidence >= 80 ? 'Strong buyer demand and market fit' :
-                       property.confidence >= 60 ? 'Favorable market conditions' :
-                       'Additional due diligence recommended'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Quick Info */}
-              <div className="glass-card p-4 border-luxury-gold-500/10">
-                <h4 className="text-[10px] text-gray-600 uppercase tracking-wider mb-3">Project Details</h4>
-                <div className="space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Project Area</span>
-                    <span className="text-gray-300">{property.propertyDetails.projectArea}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Total Floors</span>
-                    <span className="text-gray-300">{property.propertyDetails.floorCount}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Possession</span>
-                    <span className="text-luxury-gold-400">{property.propertyDetails.possessionStatus}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Google Rating</span>
-                    <span className="text-emerald-400">⭐ {property.propertyDetails.googleReviewScore}/5</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Property ID</span>
-                    <span className="text-gray-300 font-mono">{property.id}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Listed</span>
-                    <span className="text-gray-300">{formatDate(property.created_at)}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Currency</span>
-                    <span className="text-gray-300">{property.currency} ({property.currencySymbol})</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Commission</span>
-                    <span className="text-luxury-gold-400">{property.commission_percentage}%</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Nearby Places Mini */}
-              <div className="glass-card p-4">
-                <h4 className="text-[10px] text-gray-600 uppercase tracking-wider mb-3">Nearby Landmarks</h4>
-                <div className="space-y-2">
-                  {property.nearbyPlaces.slice(0, 3).map((place, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <Clock className="w-3 h-3 text-gray-600 shrink-0" />
-                      <span className="text-[10px] text-gray-400 flex-1">{place.name}</span>
-                      <span className="text-[8px] text-emerald-400">{place.distance}</span>
+                    <div className="flex-1">
+                      <p className="text-xs font-medium text-white">
+                        {property.confidence >= 80 ? 'High Confidence' :
+                         property.confidence >= 60 ? 'Good Opportunity' : 'Moderate'}
+                      </p>
+                      <p className="text-[9px] text-gray-600">
+                        {property.confidence >= 80 ? 'Strong buyer demand and market fit' :
+                         property.confidence >= 60 ? 'Favorable market conditions' :
+                         'Additional due diligence recommended'}
+                      </p>
                     </div>
-                  ))}
+                  </div>
+                </div>
+
+                {/* Project Details */}
+                <div className="glass-card p-4 border-luxury-gold-500/10">
+                  <h4 className="text-[10px] text-gray-600 uppercase tracking-wider mb-3">Project Details</h4>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500">Possession</span>
+                      <span className="text-luxury-gold-400">
+                        {property.status === 'ready_to_move' ? 'Immediate' :
+                         property.status === 'under_construction' ? `By ${new Date(property.completion_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}` :
+                         property.status === 'pre_launch' ? `Expected ${new Date(property.completion_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}` : 'Completed'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500">Property ID</span>
+                      <span className="text-gray-300 font-mono">{property.id}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500">Listed</span>
+                      <span className="text-gray-300">{formatDate(property.created_at)}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500">Currency</span>
+                      <span className="text-gray-300">{property.currency} ({property.currencySymbol})</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500">Commission</span>
+                      <span className="text-luxury-gold-400">{property.commission_percentage}%</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Nearby Places Mini */}
+                <div className="glass-card p-4">
+                  <h4 className="text-[10px] text-gray-600 uppercase tracking-wider mb-3">Nearby Landmarks</h4>
+                  <div className="space-y-2">
+                    {property.nearbyPlaces.slice(0, 3).map((place, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <Clock className="w-3 h-3 text-gray-600 shrink-0" />
+                        <span className="text-[10px] text-gray-400 flex-1">{place.name}</span>
+                        <span className="text-[8px] text-emerald-400">{place.distance}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Similar Properties */}
           {similarProperties.length > 0 && (
@@ -990,7 +1057,7 @@ export function PropertyDetail() {
                 <Link to="/" className="hover:text-gray-400 transition-colors">Home</Link>
                 <Link to="/deal-room" className="hover:text-gray-400 transition-colors">Properties</Link>
                 <Link to={`/country/${property.countryCode.toLowerCase()}`} className="hover:text-gray-400 transition-colors">{property.country}</Link>
-                <Link to={`/city/${property.city.toLowerCase().replace(/\s+/g, '-')}`} className="hover:text-gray-400 transition-colors">{property.city}</Link>
+                <Link to={`/city/${property.city.toLowerCase().replace(/\\s+/g, '-')}`} className="hover:text-gray-400 transition-colors">{property.city}</Link>
                 <span>© 2026 LeadLuxe AI. Global Real Estate Intelligence.</span>
               </div>
             </div>

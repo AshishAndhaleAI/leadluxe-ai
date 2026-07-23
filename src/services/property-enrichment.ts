@@ -17,17 +17,6 @@ import {
   generateOpportunitySummary,
 } from './real-estate-data-enrichment';
 
-// Add hashCode helper to String for deterministic hashing
-function hashCode(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const chr = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + chr;
-    hash |= 0;
-  }
-  return Math.abs(hash);
-}
-
 function formatShort(price: number, countryCode: string): string {
   if (countryCode === 'IN') {
     if (price >= 10000000) return `${(price / 10000000).toFixed(2)} Cr`;
@@ -47,13 +36,13 @@ export interface EnrichedProperty extends Property {
   nearbyPlaces: { name: string; type: string; distance: string }[];
   opportunitySummary: string;
   propertyDetails: {
-    projectArea: string;
-    floorCount: number;
+    projectArea: string | null;
+    floorCount: number | null;
     unitVariants: { label: string; size: string; price: string; available: boolean }[];
     possessionStatus: string;
-    reraNumber: string;
-    googleReviewScore: number;
-    totalReviews: number;
+    reraNumber: string | null;
+    googleReviewScore: number | null;
+    totalReviews: number | null;
   };
 }
 
@@ -67,9 +56,9 @@ function enrichProperty(p: Property): EnrichedProperty {
   const embedUrl = getGoogleMapsEmbedUrl(p);
   const dirUrl = getGoogleMapsDirectionsUrl(p);
 
-  const totalFloors = Math.max(5, Math.min(45, Math.round(p.total_units / 6)));
-  const reraNum = `${p.countryCode.toUpperCase()}/RERA/${p.city.slice(0, 3).toUpperCase()}/${hashCode(p.id) % 9999}/2026`;
-  const gScore = 3.5 + (p.confidence / 100) * 1.5;
+  const totalFloors: number | null = null; // Cannot be verified without official building permit
+  const reraNum: string | null = null; // RERA numbers must come from official RERA registries — never generated
+  const gScore: number | null = null; // Google review scores require a real Google Maps listing
 
   return {
     ...p,
@@ -84,7 +73,7 @@ function enrichProperty(p: Property): EnrichedProperty {
     nearbyPlaces: places,
     opportunitySummary: summary,
     propertyDetails: {
-      projectArea: `${((p.max_size_sqft * p.total_units) / 43560).toFixed(1)} acres`,
+      projectArea: null, // Cannot be verified without official site plan
       floorCount: totalFloors,
       unitVariants: p.unit_types.map(u => ({
         label: u.type,
@@ -94,8 +83,8 @@ function enrichProperty(p: Property): EnrichedProperty {
       })),
       possessionStatus: p.status === 'ready_to_move' ? 'Immediate' : p.status === 'under_construction' ? `By ${new Date(p.completion_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}` : p.status === 'pre_launch' ? `Expected ${new Date(p.completion_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}` : 'Completed',
       reraNumber: reraNum,
-      googleReviewScore: Math.round(gScore * 10) / 10,
-      totalReviews: Math.round(p.total_units * 0.3 + 20),
+      googleReviewScore: gScore,
+      totalReviews: null,
     },
   };
 }
@@ -164,7 +153,7 @@ export function enrichedToOpportunity(p: EnrichedProperty, index: number) {
     id: p.id,
     developer_id: p.developer_slug,
     title: `${p.name} — ${p.developer_name}`,
-    summary: `${p.name} in ${p.address.district}, ${p.city}. ${p.propertyDetails.possessionStatus}. Contact: ${p.builder.salesPhone}`,
+    summary: `${p.name} in ${p.address.district}, ${p.city}. ${p.propertyDetails.possessionStatus}. Visit the official developer website for verified contact information.`,
     estimated_value: totalValue,
     confidence_score: p.confidence,
     priority: p.confidence >= 85 ? 'critical' as const : p.confidence >= 70 ? 'high' as const : p.confidence >= 50 ? 'medium' as const : 'low' as const,
@@ -176,24 +165,23 @@ export function enrichedToOpportunity(p: EnrichedProperty, index: number) {
       `${p.developer_name} — ${p.name} in ${p.address.district}, ${p.city}, ${p.country}`,
       `${p.total_units} ${p.property_type} units | ${p.unit_types.length} configurations`,
       `📍 ${p.address.street} — ${p.address.googleMapsUrl}`,
-      `📞 Contact: ${p.builder.salesPhone} | ${p.builder.salesEmail}`,
       `💰 Est. Commission (3%): ${p.currencySymbol}${formatShort(p.estimated_commission, p.countryCode)}`,
-      `⭐ Google Rating: ${p.propertyDetails.googleReviewScore}/5 (${p.propertyDetails.totalReviews} reviews)`,
-      `🏢 Built by: ${p.developer_name} (est. ${p.builder.yearEstablished})`,
+      `🏢 Built by: ${p.developer_name}`,
+      `🌐 Visit developer website: ${p.builder?.website || 'not yet verified'}`,
       `📈 AI Confidence: ${p.confidence}/100`,
     ],
     recommended_actions: p.status === 'pre_launch' ? [
-      `Call ${p.builder.salesPhone} for early-bird pricing`,
-      `Email ${p.builder.salesEmail} for RERA documents`,
+      `Visit ${p.builder?.website || 'developer website'} for pre-launch pricing`,
+      `Request project brochure from official developer portal`,
       `Visit ${p.address.district}, ${p.city} — view on Google Maps`,
     ] : [
-      `Call ${p.builder.salesPhone} for current availability`,
+      `Check ${p.builder?.website || 'developer website'} for current availability`,
       `Schedule site visit in ${p.city}`,
-      `Check ${p.builder.website} for latest inventory`,
+      `Review project details on official developer portal`,
     ],
     next_best_action: p.status === 'pre_launch'
-      ? `Call ${p.builder.salesPhone} — pre-launch pricing available`
-      : `Contact ${p.builder.salesPhone} for site visit`,
+      ? `Visit developer website for pre-launch pricing`
+      : `Visit official developer website for availability`,
     potential_objections: [],
     is_active: p.sales_status !== 'sold_out',
     signals: [

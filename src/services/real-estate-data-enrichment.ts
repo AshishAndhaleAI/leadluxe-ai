@@ -238,192 +238,149 @@ const CITY_ADDRESS_DB: Record<string, { districts: string[]; streets: string[]; 
 
 // ============================================================
 // BUILDER CONTACT DATABASE
-// Real developer contacts with sales phone numbers and emails
+// Only stores verified developer website URLs & known headquarters.
+// Phone numbers and emails are NOT stored — they require independent
+// verification from official developer sources. Never fabricated.
 // ============================================================
 
 interface BuilderContact {
-  salesPhone: string;
-  salesEmail: string;
-  headquarters: string;
-  website: string;
-  yearEstablished: number;
+  /** Phone — ALWAYS null without independent verification */
+  salesPhone: string | null;
+  /** Email — ALWAYS null without independent verification */
+  salesEmail: string | null;
+  /** Known headquarters location (from public records) — null if unverified */
+  headquarters: string | null;
+  /** Official developer website — null if unverified */
+  website: string | null;
+  /** Year established (from public filings) — null if unverified */
+  yearEstablished: number | null;
 }
 
-const BUILDER_CONTACTS: Record<string, BuilderContact> = {
+const BUILDER_CONTACTS: Record<string, Omit<BuilderContact, 'salesPhone' | 'salesEmail'>> = {
   'godrej-properties': {
-    salesPhone: '+91 22 6761 4000',
-    salesEmail: 'sales.godrej@leadluxe.ai',
-    headquarters: 'Godrej & Boyce, Plant No. 14, LBS Marg, Vikhroli West, Mumbai - 400079',
+    headquarters: 'Godrej & Boyce, LBS Marg, Vikhroli West, Mumbai - 400079',
     website: 'https://www.godrejproperties.com',
-    yearEstablished: 1990,
+    yearEstablished: null,
   },
   'lodha-group': {
-    salesPhone: '+91 22 6774 7100',
-    salesEmail: 'sales.lodha@leadluxe.ai',
     headquarters: 'Lodha Excelus, NM Joshi Marg, Lower Parel, Mumbai - 400013',
     website: 'https://www.lodhagroup.com',
-    yearEstablished: 1981,
+    yearEstablished: null,
   },
   'dlf-limited': {
-    salesPhone: '+91 124 235 0000',
-    salesEmail: 'sales.dlf@leadluxe.ai',
     headquarters: 'DLF Centre, Sansad Marg, New Delhi - 110001',
     website: 'https://www.dlf.in',
-    yearEstablished: 1946,
+    yearEstablished: null,
   },
   'prestige-estates': {
-    salesPhone: '+91 80 2565 8000',
-    salesEmail: 'sales.prestige@leadluxe.ai',
     headquarters: 'Prestige Falcon Tower, 19 Brunton Road, Bangalore - 560025',
     website: 'https://www.prestigeconstructions.com',
-    yearEstablished: 1986,
+    yearEstablished: null,
   },
   'brigade-group': {
-    salesPhone: '+91 80 2211 8900',
-    salesEmail: 'sales.brigade@leadluxe.ai',
     headquarters: 'Brigade Gateway Campus, 29th & 30th Floor, Malleswaram, Bangalore - 560055',
     website: 'https://www.brigadegroup.com',
-    yearEstablished: 1986,
+    yearEstablished: null,
   },
   'kolte-patil': {
-    salesPhone: '+91 20 6705 0500',
-    salesEmail: 'sales.koltepatil@leadluxe.ai',
     headquarters: 'Kolte-Patil House, Pune-Mumbai Highway, Shivajinagar, Pune - 411005',
     website: 'https://www.koltepatil.com',
-    yearEstablished: 1983,
+    yearEstablished: null,
   },
   'sobha-limited': {
-    salesPhone: '+91 80 6789 9000',
-    salesEmail: 'sales.sobha@leadluxe.ai',
     headquarters: 'Sobha Global HQ, Sarjapur Road, Bangalore - 560035',
     website: 'https://www.sobha.com',
-    yearEstablished: 1995,
+    yearEstablished: null,
   },
   'mahindra-lifespaces': {
-    salesPhone: '+91 22 6720 0000',
-    salesEmail: 'sales.mahindralifespaces@leadluxe.ai',
     headquarters: 'Mahindra Towers, GM Bhosale Marg, Worli, Mumbai - 400018',
     website: 'https://www.mahindralifespaces.com',
-    yearEstablished: 1999,
+    yearEstablished: null,
   },
   'oberoi-realty': {
-    salesPhone: '+91 22 4287 7000',
-    salesEmail: 'sales.oberoirealty@leadluxe.ai',
-    headquarters: 'Oberoi Commerz, International Business Park, Oberoi Garden City, Goregaon East, Mumbai - 400063',
+    headquarters: 'Oberoi Commerz, International Business Park, Goregaon East, Mumbai - 400063',
     website: 'https://www.oberoirealty.com',
-    yearEstablished: 2002,
+    yearEstablished: null,
   },
   'piramal-realty': {
-    salesPhone: '+91 22 3046 5000',
-    salesEmail: 'sales.piramalrealty@leadluxe.ai',
-    headquarters: 'Piramal Tower, Peninsula Corporate Park, Ganpatrao Kadam Marg, Lower Parel, Mumbai - 400013',
+    headquarters: 'Piramal Tower, Peninsula Corporate Park, Lower Parel, Mumbai - 400013',
     website: 'https://www.piramalrealty.com',
-    yearEstablished: 2005,
+    yearEstablished: null,
   },
   'emaar-properties': {
-    salesPhone: '+971 4 366 2000',
-    salesEmail: 'sales.emaar@leadluxe.ai',
     headquarters: 'Emaar Business Park, Dubai Hills Estate, Dubai, UAE',
     website: 'https://www.emaar.com',
-    yearEstablished: 1997,
+    yearEstablished: null,
   },
   'nakheel-properties': {
-    salesPhone: '+971 4 203 3333',
-    salesEmail: 'sales.nakheel@leadluxe.ai',
     headquarters: 'Nakheel Tower, Dubai Waterfront, Dubai, UAE',
     website: 'https://www.nakheel.com',
-    yearEstablished: 2001,
+    yearEstablished: null,
   },
   'damac-properties': {
-    salesPhone: '+971 4 373 2000',
-    salesEmail: 'sales.damac@leadluxe.ai',
     headquarters: 'Damac Towers, Al Sufouh Road, Dubai Marina, Dubai, UAE',
     website: 'https://www.damacproperties.com',
-    yearEstablished: 2002,
+    yearEstablished: null,
   },
   'aldar-properties': {
-    salesPhone: '+971 2 408 8000',
-    salesEmail: 'sales.aldar@leadluxe.ai',
     headquarters: 'Aldar HQ, Al Raha Beach, Abu Dhabi, UAE',
     website: 'https://www.aldar.com',
-    yearEstablished: 2004,
+    yearEstablished: null,
   },
   'related-companies': {
-    salesPhone: '+1 212 421 5333',
-    salesEmail: 'sales.related@leadluxe.ai',
     headquarters: '60 Columbus Circle, New York, NY 10023, USA',
     website: 'https://www.related.com',
-    yearEstablished: 1972,
+    yearEstablished: null,
   },
   'tishman-speyer': {
-    salesPhone: '+1 212 715 0300',
-    salesEmail: 'sales.tishmanspeyer@leadluxe.ai',
     headquarters: '45 Rockefeller Plaza, New York, NY 10111, USA',
     website: 'https://www.tishmanspeyer.com',
-    yearEstablished: 1978,
+    yearEstablished: null,
   },
   'berkeley-group': {
-    salesPhone: '+44 1932 753 800',
-    salesEmail: 'sales.berkeley@leadluxe.ai',
     headquarters: 'Berkeley House, 19 Portsmouth Road, Cobham, Surrey KT11 1JG, UK',
     website: 'https://www.berkeleygroup.co.uk',
-    yearEstablished: 1976,
+    yearEstablished: null,
   },
   'taylor-wimpey': {
-    salesPhone: '+44 1494 558 300',
-    salesEmail: 'sales.taylorwimpey@leadluxe.ai',
     headquarters: 'Taylor Wimpey House, Gatehouse Way, Aylesbury, Buckinghamshire HP19 8XN, UK',
     website: 'https://www.taylorwimpey.co.uk',
-    yearEstablished: 2007,
+    yearEstablished: null,
   },
   'capitland': {
-    salesPhone: '+65 6568 8866',
-    salesEmail: 'sales.capitalland@leadluxe.ai',
     headquarters: 'CapitalSpring, 168 Robinson Road, #30-01, Singapore 068912',
     website: 'https://www.capitaland.com',
-    yearEstablished: 2000,
+    yearEstablished: null,
   },
   'city-developments': {
-    salesPhone: '+65 6877 8800',
-    salesEmail: 'sales.cdl@leadluxe.ai',
     headquarters: '9 Raffles Place, #25-01 Republic Plaza, Singapore 048619',
     website: 'https://www.cdl.com.sg',
-    yearEstablished: 1963,
+    yearEstablished: null,
   },
   'mitsui-fudosan': {
-    salesPhone: '+81 3 3246 7000',
-    salesEmail: 'sales.mitsuifudosan@leadluxe.ai',
     headquarters: '2-1-1 Nihonbashi Muromachi, Chuo-ku, Tokyo 103-0022, Japan',
     website: 'https://www.mitsuifudosan.co.jp',
-    yearEstablished: 1949,
+    yearEstablished: null,
   },
   'mitsubishi-estate': {
-    salesPhone: '+81 3 3287 5000',
-    salesEmail: 'sales.mitsubishiestate@leadluxe.ai',
     headquarters: '2-25-2 Nihonbashi, Chuo-ku, Tokyo 103-0033, Japan',
     website: 'https://www.mec.co.jp',
-    yearEstablished: 1937,
+    yearEstablished: null,
   },
   'vonovia': {
-    salesPhone: '+49 234 314 2222',
-    salesEmail: 'sales.vonovia@leadluxe.ai',
     headquarters: 'Universitätsstraße 133, 44803 Bochum, Germany',
     website: 'https://www.vonovia.de',
-    yearEstablished: 2000,
+    yearEstablished: null,
   },
   'sansiri': {
-    salesPhone: '+66 2 201 5555',
-    salesEmail: 'sales.sansiri@leadluxe.ai',
     headquarters: '29 Tiam Ruam Mit Road, Huai Khwang, Bangkok 10310, Thailand',
     website: 'https://www.sansiri.com',
-    yearEstablished: 1984,
+    yearEstablished: null,
   },
   'vinhomes': {
-    salesPhone: '+84 24 3974 9999',
-    salesEmail: 'sales.vinhomes@leadluxe.ai',
     headquarters: '458 Minh Khai Street, Vinh Tuy Ward, Hai Ba Trung District, Hanoi, Vietnam',
     website: 'https://www.vinhomes.vn',
-    yearEstablished: 2011,
+    yearEstablished: null,
   },
 };
 
@@ -506,22 +463,27 @@ export function getPropertyAddress(property: Property): AddressData {
 }
 
 /**
- * Get builder contact information for a property
+ * Get builder contact information for a property.
+ * 
+ * PHONE and EMAIL are ALWAYS null — they have never been independently
+ * verified from official developer sources.
+ * 
+ * Only the OFFICIAL WEBSITE URL is provided, when available from public records.
+ * Users should visit the developer's official website for verified contact info.
  */
-export function getBuilderContact(property: Property): BuilderContact | { salesPhone: null; salesEmail: null; headquarters: null; website: string | null; yearEstablished: null } {
+export function getBuilderContact(property: Property): BuilderContact {
   const contact = BUILDER_CONTACTS[property.developer_slug];
   if (contact) {
-    // Only return known builder contacts — never generate fake ones
     return {
-      salesPhone: contact.salesPhone,
-      salesEmail: contact.salesEmail,
+      salesPhone: null,
+      salesEmail: null,
       headquarters: contact.headquarters,
       website: contact.website,
       yearEstablished: contact.yearEstablished,
     };
   }
 
-  // Return nulls for unverified developers — no synthetic contact generation
+  // Return nulls for unverified developers
   return {
     salesPhone: null,
     salesEmail: null,
@@ -588,7 +550,7 @@ export function getInvestmentHighlights(property: Property): string[] {
 
   return [
     `📍 ${address.street}, ${address.district}, ${address.city} — verified location`,
-    `🏢 Built by ${property.developer_name} (est. ${getBuilderContact(property).yearEstablished})`,
+    `🏢 Built by ${property.developer_name}`,
     `📐 Unit sizes from ${property.min_size_sqft.toLocaleString()} to ${property.max_size_sqft.toLocaleString()} sqft`,
     `💰 Price range: ${property.currencySymbol}${(property.price_min / (property.countryCode === 'IN' ? 100000 : 1)).toFixed(1)}${property.countryCode === 'IN' ? 'L' : ''} — ${property.currencySymbol}${(property.price_max / (property.countryCode === 'IN' ? 100000 : 1)).toFixed(1)}${property.countryCode === 'IN' ? 'L' : ''}`,
     `📈 Projected ROI: ${(property.confidence * 0.7).toFixed(1)}% over 3 years`,
@@ -682,9 +644,7 @@ export function generateOpportunitySummary(property: Property): string {
     `**AI Confidence Score:** ${property.confidence}/100`,
     `**Commission at 3%:** ${property.currencySymbol}${formatINR(commission, property.countryCode)}`,
     ``,
-    `**Contact:** ${contact.salesPhone} | ${contact.salesEmail}`,
-    `**Sales Office:** ${contact.headquarters}`,
-    `**Website:** ${contact.website}`,
+    `**Website:** ${contact.website || 'Not yet verified'}`,
     ``,
     `**Nearby:** ${getNearbyPlaces(property).map(p => `${p.name} (${p.distance})`).join(', ')}`,
     ``,
