@@ -13,6 +13,7 @@ import { Forecasts } from './pages/Forecasts';
 import { Coach } from './pages/Coach';
 import { Settings } from './pages/Settings';
 import { CommissionDashboard } from './pages/CommissionDashboard';
+import { DealRoom } from './pages/DealRoom';
 import { NotFound } from './pages/NotFound';
 import { GlobalMap } from './pages/GlobalMap';
 import { Match } from './pages/Match';
@@ -65,6 +66,7 @@ function AppRoutes() {
         <Route path="/briefing" element={<GravityBriefing />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/commission" element={<CommissionDashboard />} />
+        <Route path="/deal-room" element={<DealRoom />} />
       </Route>
 
       {/* 404 */}

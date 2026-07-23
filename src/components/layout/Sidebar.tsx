@@ -16,6 +16,7 @@ interface SidebarProps {
 
 const navItems = [
   { path: '/dashboard', label: 'Experience', icon: LayoutDashboard },
+  { path: '/deal-room', label: 'Deal Room', icon: Building2 },
   { path: '/gravity', label: 'Gravity Engine', icon: Target },
   { path: '/briefing', label: 'Daily Briefing', icon: Bell },
   { path: '/opportunities', label: 'Opportunities', icon: Zap },

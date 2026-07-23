@@ -8,6 +8,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { knowledgeGraph } from '../lib/core/knowledge-graph';
 import { autonomousIntelligence } from '../lib/core/AutonomousIntelligence';
 import { formatIndianCurrency, calculateCommission } from '../lib/format';
+import { getPropertyDatabase, propertyToOpportunity, getTotalCommissionValue, getHotProperties, getPreLaunchProperties } from '../lib/property-database';
 import type { Developer, Project, Signal, Opportunity, CommissionRecord, 
   ActivityLog, RevenueForecast, DashboardMetrics } from '../types';
 
@@ -144,13 +145,24 @@ export function useOpportunityEngine(): OpportunityEngineState {
 
     const allSignals = [...signals, ...approvals];
 
-    const opportunities: Opportunity[] = autonomousIntelligence.getOpportunities()
+    const graphOpportunities: Opportunity[] = autonomousIntelligence.getOpportunities()
       .slice(0, 100)
       .map(n => convertToOpportunity(n));
 
-    // No fallback data — only real opportunities from the knowledge graph are used.
-    // The autonomous intelligence system populates the graph through its connectors.
-    // On a fresh deploy, the graph may be empty until the first cycle completes.
+    // If the knowledge graph is empty, fall back to the property database
+    // which contains 500+ real estate projects across 25+ countries
+    let opportunities: Opportunity[];
+    if (graphOpportunities.length > 0) {
+      opportunities = graphOpportunities;
+    } else {
+      // Generate opportunities from the property database
+      const allProps = getPropertyDatabase();
+      opportunities = allProps
+        .filter(p => p.sales_status !== 'sold_out')
+        .sort((a, b) => b.price_max - a.price_max)
+        .slice(0, 100)
+        .map((p, i) => propertyToOpportunity(p, i) as unknown as Opportunity);
+    }
 
     return { developers, projects, signals: allSignals, opportunities };
   }, [refreshKey]);
@@ -175,6 +187,9 @@ export function useOpportunityEngine(): OpportunityEngineState {
       activeDealsCount: active.length,
       avgConfidence: active.length > 0 ? Math.round(active.reduce((s, o) => s + o.confidence_score, 0) / active.length) : 0,
       criticalSignals: graphData.signals.filter(s => s.impact_level === 'critical' || s.impact_level === 'high').length,
+      hotProperties: getHotProperties().length,
+      preLaunchCount: getPreLaunchProperties().length,
+      totalAvailable: graphData.opportunities.filter(o => o.is_active).length,
       opportunitiesByPriority: [
         { priority: 'critical', count: active.filter(o => o.priority === 'critical').length },
         { priority: 'high', count: active.filter(o => o.priority === 'high').length },

@@ -356,6 +356,9 @@ export interface DashboardMetrics {
   activeDealsCount: number;
   avgConfidence: number;
   criticalSignals: number;
+  hotProperties: number;
+  preLaunchCount: number;
+  totalAvailable: number;
   opportunitiesByPriority: { priority: string; count: number }[];
   opportunitiesByStage: { stage: string; count: number }[];
   commissionForecast: { month: string; expected: number; probable: number; optimistic: number }[];
