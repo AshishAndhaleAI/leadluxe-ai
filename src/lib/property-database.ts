@@ -452,8 +452,10 @@ function generatePropertiesForCity(
       const salesStatus = propStatus === 'pre_launch' ? 'hot' :
                           avail < units * 0.2 ? 'limited' :
                           avail === 0 ? 'sold_out' : pick(salesStatuses);
-      const totalValue = (minPrice + maxPrice) / 2 * units;
-      const commission = Math.round(totalValue * 0.03);
+      // Commission is 3% of a SINGLE unit's estimated value (not total project value)
+      // e.g., ₹1.5L for a ₹50L unit — realistic per-deal commission
+      const avgUnitValue = (minPrice + maxPrice) / 2;
+      const commission = Math.round(avgUnitValue * 0.03);
 
       const description = `${dev.name} presents ${propName}, a ${isLuxury ? 'luxury' : isAffordable ? 'value-engineered' : 'premium'} ${propType} development in ${cityName}, ${countryName}. ` +
         `Featuring ${unitTypes.map(u => `${u.bedrooms}BHK (${u.size_sqft} sqft)`).join(', ')} configurations. ` +
@@ -503,7 +505,7 @@ function generatePropertiesForCity(
         tags: isLuxury ? [...tags, 'luxury', 'premium'] : tags,
         description,
         highlights,
-        confidence: rng(isLuxury ? 70 : 50, 98),
+        confidence: Math.min(92, rng(isLuxury ? 60 : 35, isLuxury ? 88 : 78)),
         estimated_commission: commission,
         commission_percentage: 3.0,
         sales_status: salesStatus as Property['sales_status'],
@@ -762,7 +764,7 @@ export function propertyToOpportunity(p: Property, index: number) {
     priority: confidence >= 85 ? 'critical' as const : confidence >= 70 ? 'high' as const : confidence >= 50 ? 'medium' as const : 'low' as const,
     deal_stage: p.status === 'pre_launch' ? 'discovered' as const : p.status === 'under_construction' ? 'qualifying' as const : 'proposal' as const,
     commission_percentage: 3.00,
-    estimated_commission: p.estimated_commission,
+    estimated_commission: Math.round((p.price_min + p.price_max) / 2 * 0.03), // Per-unit, not total project
     commission_currency: p.currency,
     reasoning: [
       `${p.developer_name} launching ${p.name} in ${p.city}, ${p.country} — ${p.total_units} units available`,

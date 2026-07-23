@@ -21,6 +21,7 @@ import { getPropertyDatabase } from '../lib/property-database';
 import type { Property, PropertyStatus, PropertyType, PropertyImage, PropertyUnit } from '../lib/property-database';
 import { getEnrichedPropertyById } from '../services/property-enrichment';
 import { trackPropertyClick, trackContactSubmit } from '../lib/analytics';
+import { EvidenceDrawer, EvidenceBadge, generatePropertyEvidence, type PropertyEvidence } from '../components/evidence/EvidenceDrawer';
 
 // ============================================================
 // TYPES
@@ -144,6 +145,16 @@ export function DealRoom() {
     catch { return []; }
   });
   const [showMyInterests, setShowMyInterests] = useState(false);
+  const [evidenceModal, setEvidenceModal] = useState<{ open: boolean; property: Property | null }>({ open: false, property: null });
+
+  // Pre-compute evidence for all properties (deterministic, based on property id + data)
+  const evidenceMap = useMemo(() => {
+    const map = new Map<string, PropertyEvidence>();
+    for (const prop of allProperties) {
+      map.set(prop.id, generatePropertyEvidence(prop));
+    }
+    return map;
+  }, [allProperties]);
 
   const totalDealCommission = useMemo(() =>
     savedDeals.reduce((s: number, d: any) => s + d.estimatedCommission, 0),
@@ -486,11 +497,13 @@ export function DealRoom() {
               <PropertyCard
                 key={property.id}
                 property={property}
+                evidence={evidenceMap.get(property.id)}
                 index={i}
                 isFavorite={favorites.has(property.id)}
                 onToggleFavorite={() => toggleFavorite(property.id)}
                 onClick={() => setDetailModal({ open: true, property })}
                 onExpressInterest={() => setInterestModal({ open: true, property })}
+                onViewEvidence={() => setEvidenceModal({ open: true, property })}
               />
             ))}
           </motion.div>
@@ -505,16 +518,25 @@ export function DealRoom() {
               <PropertyListItem
                 key={property.id}
                 property={property}
+                evidence={evidenceMap.get(property.id)}
                 index={i}
                 isFavorite={favorites.has(property.id)}
                 onToggleFavorite={() => toggleFavorite(property.id)}
                 onClick={() => setDetailModal({ open: true, property })}
                 onExpressInterest={() => setInterestModal({ open: true, property })}
+                onViewEvidence={() => setEvidenceModal({ open: true, property })}
               />
             ))}
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Evidence Drawer */}
+      <EvidenceDrawer
+        property={evidenceModal.property}
+        isOpen={evidenceModal.open}
+        onClose={() => setEvidenceModal({ open: false, property: null })}
+      />
 
       {/* Interest Modal */}
       {interestModal.open && interestModal.property && (
@@ -847,13 +869,15 @@ function RocketIcon({ className }: { className?: string }) {
 // PROPERTY CARD (Grid)
 // ============================================================
 
-function PropertyCard({ property, index, isFavorite, onToggleFavorite, onClick, onExpressInterest }: {
+function PropertyCard({ property, evidence, index, isFavorite, onToggleFavorite, onClick, onExpressInterest, onViewEvidence }: {
   property: Property;
+  evidence?: PropertyEvidence;
   index: number;
   isFavorite: boolean;
   onToggleFavorite: () => void;
   onClick: () => void;
   onExpressInterest: () => void;
+  onViewEvidence: () => void;
 }) {
   const statusBadge = getStatusBadge(property.status);
   const salesBadge = getSalesBadge(property.sales_status);
@@ -912,7 +936,10 @@ function PropertyCard({ property, index, isFavorite, onToggleFavorite, onClick, 
           {property.status === 'ready_to_move' && <span className="flex items-center gap-0.5 text-emerald-400"><CheckCircle className="w-3 h-3" /> Ready</span>}
         </div>
 
-        {/* Confidence bar */}
+        {/* Evidence Badge — shows gravity score, close probability, infra impact */}
+        {evidence && <EvidenceBadge evidence={evidence} compact />}
+
+        {/* Row: Confidence + View Evidence */}
         <div className="flex items-center gap-2">
           <div className="flex-1 h-1 rounded-full bg-gray-800 overflow-hidden">
             <div
@@ -929,13 +956,22 @@ function PropertyCard({ property, index, isFavorite, onToggleFavorite, onClick, 
           )}>{property.confidence}%</span>
         </div>
 
-        {/* CTA */}
-        <button
-          onClick={(e) => { e.stopPropagation(); onExpressInterest(); }}
-          className="w-full py-1.5 rounded-lg bg-luxury-gold-500/20 border border-luxury-gold-500/30 text-[10px] font-medium text-luxury-gold-400 hover:bg-luxury-gold-500/30 transition-colors"
-        >
-          Express Interest — {formatPrice(property.estimated_commission, property.countryCode)} Commission
-        </button>
+        {/* CTA Row */}
+        <div className="grid grid-cols-2 gap-1.5">
+          <button
+            onClick={(e) => { e.stopPropagation(); onExpressInterest(); }}
+            className="py-1.5 rounded-lg bg-luxury-gold-500/20 border border-luxury-gold-500/30 text-[10px] font-medium text-luxury-gold-400 hover:bg-luxury-gold-500/30 transition-colors"
+          >
+            Express Interest
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); onViewEvidence(); }}
+            className="py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-[10px] font-medium text-gray-300 hover:text-white hover:border-gray-600 transition-colors flex items-center justify-center gap-1"
+          >
+            <Target className="w-3 h-3" />
+            View Evidence
+          </button>
+        </div>
       </div>
     </motion.div>
   );
@@ -950,13 +986,15 @@ function getFlag(code: string): string {
 // PROPERTY LIST ITEM
 // ============================================================
 
-function PropertyListItem({ property, index, isFavorite, onToggleFavorite, onClick, onExpressInterest }: {
+function PropertyListItem({ property, evidence, index, isFavorite, onToggleFavorite, onClick, onExpressInterest, onViewEvidence }: {
   property: Property;
+  evidence?: PropertyEvidence;
   index: number;
   isFavorite: boolean;
   onToggleFavorite: () => void;
   onClick: () => void;
   onExpressInterest: () => void;
+  onViewEvidence: () => void;
 }) {
   const statusBadge = getStatusBadge(property.status);
   const salesBadge = getSalesBadge(property.sales_status);
@@ -990,6 +1028,13 @@ function PropertyListItem({ property, index, isFavorite, onToggleFavorite, onCli
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={(e) => { e.stopPropagation(); onViewEvidence(); }}
+            className="px-2 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-[9px] font-medium text-gray-300 hover:text-white hover:border-gray-600 transition-colors flex items-center gap-1"
+          >
+            <Target className="w-3 h-3" />
+            Evidence
+          </button>
           <button onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }} className="p-1.5 rounded-lg hover:bg-white/5">
             <Heart className={cn('w-3.5 h-3.5', isFavorite ? 'text-rose-400 fill-rose-400' : 'text-gray-500')} />
           </button>
