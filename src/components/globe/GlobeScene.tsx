@@ -29,8 +29,9 @@ export function GlobeScene({
   initialAltitude = 2.5,
 }: GlobeSceneProps) {
   const globeRef = useRef<any>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [loaded, setLoaded] = useState(false);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
 
   // Real geospatial data
   const { countryData, loading: geoLoading } = useCountryData();
@@ -81,17 +82,23 @@ export function GlobeScene({
     return [...cityPoints, ...hotspotPoints];
   }, [validCities, validHotspots]);
 
-  // Handle resize
+  // Handle resize — use container dimensions with fallback
   useEffect(() => {
     function updateDimensions() {
-      setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
+      const w = containerRef.current?.clientWidth || window.innerWidth;
+      const h = containerRef.current?.clientHeight || window.innerHeight;
+      if (w > 0 && h > 0) {
+        setDimensions({ width: w, height: h });
+      }
     }
     updateDimensions();
     window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
+    const observer = new ResizeObserver(updateDimensions);
+    if (containerRef.current) observer.observe(containerRef.current);
+    return () => {
+      window.removeEventListener('resize', updateDimensions);
+      observer.disconnect();
+    };
   }, []);
 
   // Initial camera position
@@ -138,6 +145,7 @@ export function GlobeScene({
   }, []);
 
   return (
+    <div ref={containerRef} className="w-full h-full" style={{ minHeight: '500px' }}>
     <GlobeComponent
       ref={globeRef}
       width={dimensions.width}
@@ -209,5 +217,6 @@ export function GlobeScene({
       labelAltitude={0.03}
       labelResolution={8}
     />
+    </div>
   );
 }
