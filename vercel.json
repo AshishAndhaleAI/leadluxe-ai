@@ -1,18 +1,9 @@
 {
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/google77ad955a2916a050.html",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
-      ]
-    }
-  ],
-  "overrides": [
-    {
-      "path": "public/google*.html",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
-        { "key": "Content-Type", "value": "text/html; charset=utf-8" }
       ]
     }
   ]
