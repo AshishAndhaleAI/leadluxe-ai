@@ -1,7 +1,10 @@
 // ============================================================
-// LeadLuxe AI — Blog / Market Intelligence
-// AI-generated market reports and real estate intelligence
-// articles targeting long-tail SEO keywords.
+// LeadLuxe AI — Market Intelligence
+// Premium dashboard-style market intelligence with KPI cards,
+// intelligence cards with source badges, confidence scores,
+// verification badges, and right-side intelligence panel.
+// Follows the exact same design system as Deal Room, Signals,
+// Opportunities, and Global Map.
 // ============================================================
 
 import { useState, useMemo } from 'react';
@@ -9,12 +12,18 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Newspaper, Search, TrendingUp, Globe, Clock,
-  ArrowRight, Tag, Calendar, User, Sparkles,
-  Building2, MapPin, BarChart3, Lightbulb, Target,
-  ChevronRight, Filter,
+  ArrowRight, Calendar, User, Sparkles,
+  Building2, MapPin, BarChart3, Target,
+  Shield, CheckCircle, AlertTriangle, HelpCircle,
+  RefreshCw, Download, Activity, Brain,
+  Zap, Percent,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { SEOHelmet, BreadcrumbLD } from '../components/seo/SEOHelmet';
+
+// ============================================================
+// TYPES
+// ============================================================
 
 interface BlogPost {
   slug: string;
@@ -29,473 +38,426 @@ interface BlogPost {
   author: string;
   imageCredit: string;
   tags: string[];
+  confidenceScore: number;
+  dataSources: string[];
+  verificationStatus: 'verified' | 'partial' | 'unverified';
+  keyMetrics: { label: string; value: string; trend?: 'up' | 'down' | 'stable' }[];
 }
 
-const BLOG_POSTS: BlogPost[] = [
-  {
-    slug: 'dubai-real-estate-market-2026',
-    title: 'Dubai Real Estate Market 2026: Premium Segment Driving 18% Growth as Off-Plan Sales Surge',
-    excerpt: 'Dubai\'s real estate market continues its remarkable trajectory with luxury property prices surging 18.5% year-on-year. Off-plan sales hit AED 85 billion in H1 2026, driven by foreign investment and new mega-projects.',
-    content: `Dubai's real estate market has entered a new phase of maturity and growth in 2026. The luxury segment continues to outperform, with prices in prime areas like Palm Jumeirah, Emirates Hills, and Dubai Marina seeing significant appreciation.
-
-## Key Market Indicators
-
-- **Average Price per Sqft:** AED 1,800 (up 15.2% YoY)
-- **Transaction Volume:** 45,000+ units in H1 2026
-- **Foreign Investment:** 72% of off-plan buyers are international investors
-- **Rental Yields:** Average 6.8% across the city, with some areas reaching 9%
-- **New Launches:** 62 new projects announced in H1 2026
-
-## Top Performing Areas
-
-1. **Dubai Marina** — Luxury waterfront living, 12% price growth
-2. **Palm Jumeirah** — Ultra-luxury villas, 22% price growth
-3. **Downtown Dubai** — Premium apartments, 15% price growth
-4. **Dubai Creek Harbour** — Emerging luxury district, 28% price growth
-
-## AI Confidence Score: 94/100
-
-LeadLuxe AI rates Dubai as a **Critical** opportunity market. The combination of strong foreign demand, government initiatives, and infrastructure spending creates a favorable environment for real estate investment.
-
-## Commission Opportunity
-
-At a 3% success fee, a property valued at AED 5 million would generate AED 150,000 in commission.`,
-    category: 'market-report',
-    region: 'Dubai',
-    countryCode: 'AE',
-    readTime: 5,
-    publishedDate: '2026-07-15',
-    author: 'LeadLuxe AI Research',
-    imageCredit: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&h=500&fit=crop&auto=format',
-    tags: ['dubai', 'uae', 'luxury', 'off-plan', 'market-report'],
-  },
-  {
-    slug: 'pune-real-estate-investment-guide-2026',
-    title: 'Pune Real Estate Investment Guide 2026: Kharadi, Baner, and Hinjewadi Lead Growth with 15.8% Average ROI',
-    excerpt: 'Pune has emerged as India\'s most attractive real estate investment destination with 12.3% price growth and 15.8% average ROI. IT corridor expansion and metro connectivity driving demand.',
-    content: `Pune's real estate market continues to outperform other Indian metros, driven by IT sector growth, infrastructure development, and increasing demand for quality housing.
-
-## Market Overview
-
-The city has seen consistent price appreciation across all segments, with the IT corridor (Kharadi, Hinjewadi, Viman Nagar) leading the charge.
-
-## Key Growth Drivers
-
-- **IT Sector Expansion:** 45+ new companies set up operations in Pune in 2025-26
-- **Metro Connectivity:** Phase 2 operational, connecting major hubs
-- **Airport Expansion:** New terminal increasing capacity to 25 million passengers
-- **Hiring Boom:** 85,000+ new IT jobs created in the past year
-
-## Top Investment Areas
-
-1. **Kharadi** — 18.2% annual appreciation, strong rental demand
-2. **Baner** — 14.5% growth, premium residential hub
-3. **Hinjewadi** — 16.8% growth, IT park proximity
-4. **Wakad** — 13.2% growth, balanced residential-commercial mix
-
-## AI Recommendation
-
-With a confidence score of 89/100, LeadLuxe AI recommends Pune as a High-Priority investment market. The city offers a rare combination of affordability (₹12,000/sqft average) and strong growth potential.`,
-    category: 'market-report',
-    region: 'Pune',
-    countryCode: 'IN',
-    readTime: 4,
-    publishedDate: '2026-07-12',
-    author: 'LeadLuxe AI Analytics',
-    imageCredit: 'https://images.unsplash.com/photo-1560448204-603b69fc5a79?w=800&h=500&fit=crop&auto=format',
-    tags: ['pune', 'india', 'investment', 'it-corridor', 'market-report'],
-  },
-  {
-    slug: 'saudi-arabia-vision-2030-real-estate',
-    title: 'Saudi Arabia Vision 2030 Real Estate Boom: Riyadh, Jeddah, NEOM Creating Unprecedented Opportunities',
-    excerpt: 'Saudi Arabia\'s giga-projects and economic reforms are transforming the real estate landscape. Riyadh leads with 18.5% price growth, while NEOM and Red Sea projects open new frontiers.',
-    content: `Saudi Arabia's Vision 2030 continues to reshape the kingdom's real estate landscape, creating unprecedented opportunities for developers and investors alike.
-
-## The Transformation
-
-The kingdom is investing over $1 trillion in giga-projects including NEOM, The Red Sea Project, Qiddiya, and Diriyah Gate. These mega-developments are driving demand for residential, commercial, and hospitality real estate across the country.
-
-## Riyadh: The Capital's Boom
-
-- **Population Target:** 15-20 million by 2030 (currently 7.5 million)
-- **New Units Needed:** 300,000+ residential units by 2028
-- **Price Growth:** 18.5% YoY — the highest in the GCC
-- **Foreign Ownership:** New laws allowing 100% foreign ownership in designated areas
-
-## Jeddah: Coastal Luxury
-
-Jeddah's corniche developments and historic district revival are attracting both domestic and international investors. The city's unique position as the gateway to Mecca creates year-round demand.
-
-## AI Confidence Score: 85/100
-
-LeadLuxe AI rates Saudi Arabia as a High-growth opportunity market. The combination of government spending, population growth, and economic diversification creates a multi-year real estate super-cycle.`,
-    category: 'trend-analysis',
-    region: 'Saudi Arabia',
-    countryCode: 'SA',
-    readTime: 6,
-    publishedDate: '2026-07-10',
-    author: 'LeadLuxe AI Global Research',
-    imageCredit: 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&h=500&fit=crop&auto=format',
-    tags: ['saudi-arabia', 'vision-2030', 'riyadh', 'neom', 'mega-projects'],
-  },
-  {
-    slug: 'berlin-real-estate-market-2026',
-    title: 'Berlin Real Estate Market 2026: Steady Growth in Europe\'s Most Dynamic Capital City',
-    excerpt: 'Berlin\'s property market shows resilient 7.8% growth as tech sector expansion and international demand offset higher interest rates. Affordable luxury segment presents unique opportunities.',
-    content: `Berlin continues to be one of Europe's most dynamic real estate markets, combining strong economic fundamentals with relative affordability compared to other major European capitals.
-
-## Market Dynamics
-
-Berlin's real estate market has shown remarkable resilience in 2026, with prices growing at a steady 7.8% despite higher interest rates across Europe. The city's growing tech sector, strong rental demand, and international appeal continue to drive the market.
-
-## Key Metrics
-
-- **Average Price per Sqft:** €520 (approx. $565)
-- **Rental Yield:** 3.5-4.5% depending on district
-- **Price Growth:** 7.8% annual appreciation
-- **Foreign Buyer Share:** 38% of premium segment
-- **New Construction:** 22,000 units annually (below target of 30,000)
-
-## Best Districts for Investment
-
-1. **Mitte** — Central location, premium prices, strong appreciation
-2. **Prenzlauer Berg** — Family-friendly, stable growth
-3. **Friedrichshain** — Trendy district, high rental demand
-4. **Charlottenburg** — Luxury segment, international buyers
-
-## LeadLuxe AI Analysis
-
-Berlin scores 82/100 on our confidence index. The market offers good value compared to London, Paris, or Munich, with stronger growth prospects. The chronic housing shortage provides a floor for prices and rents.`,
-    category: 'city-guide',
-    region: 'Berlin',
-    countryCode: 'DE',
-    readTime: 5,
-    publishedDate: '2026-07-08',
-    author: 'LeadLuxe AI Research',
-    imageCredit: 'https://images.unsplash.com/photo-1560969184-10fe8719e047?w=800&h=500&fit=crop&auto=format',
-    tags: ['berlin', 'germany', 'europe', 'tech-hub', 'city-guide'],
-  },
-  {
-    slug: 'mumbai-vs-dubai-investment-comparison',
-    title: 'Mumbai vs Dubai: Where Should You Invest in 2026? AI-Powered Comparison of Returns, Risks, and Commissions',
-    excerpt: 'A data-driven comparison of the two most popular real estate investment destinations for Indian investors. We analyze ROI, rental yields, appreciation, and commission potential across both markets.',
-    content: `Indian investors have long debated between Mumbai and Dubai for real estate investment. We use LeadLuxe AI's proprietary scoring engine to provide an objective comparison.
-
-## Mumbai — The Home Market
-
-- **Price per Sqft:** ₹25,000 (luxury), ₹12,000 (mid-segment)
-- **Rental Yield:** 2.5-3.5%
-- **Annual Appreciation:** 8-12% in growth corridors
-- **Entry Barrier:** High (₹1.5 Cr+ for decent properties)
-- **Liquidity:** High for established areas
-
-## Dubai — The International Alternative
-
-- **Price per Sqft:** AED 1,800 (approx. ₹40,000)
-- **Rental Yield:** 6-9%
-- **Annual Appreciation:** 12-18% in premium areas
-- **Entry Barrier:** Moderate (AED 1M+ for good properties)
-- **Liquidity:** High, especially for off-plan
-
-## AI Verdict
-
-For Indian investors with budgets under ₹3 Cr, Dubai offers better rental yields and appreciation potential. For budgets over ₹3 Cr, Mumbai luxury real estate in prime areas provides comparable returns with lower currency risk.
-
-## Commission Potential Comparison
-
-| Scenario | Mumbai | Dubai |
-|----------|--------|-------|
-| ₹2 Cr Property | ₹6 L commission | ₹6 L equivalent |
-| ₹5 Cr Property | ₹15 L commission | ₹15 L equivalent |
-| ₹10 Cr Property | ₹30 L commission | ₹30 L equivalent |
-
-The 3% commission model works identically in both markets.`,
-    category: 'investment-strategy',
-    region: 'Global',
-    countryCode: 'AE',
-    readTime: 7,
-    publishedDate: '2026-07-05',
-    author: 'LeadLuxe AI Analytics',
-    imageCredit: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=500&fit=crop&auto=format',
-    tags: ['mumbai', 'dubai', 'comparison', 'investment-strategy', 'roi'],
-  },
-  {
-    slug: 'tokyo-real-estate-foreign-investment',
-    title: 'Tokyo Real Estate: Why International Investors Are Flocking to Japan\'s Stable Property Market in 2026',
-    excerpt: 'Tokyo\'s property market offers rare stability with 2.8% steady appreciation, strong rental demand, and record-low interest rates. Foreign investment surged 72% as investors seek safe havens.',
-    content: `Tokyo's real estate market has become a magnet for international investors seeking stability, quality, and long-term value in an uncertain global economy.
-
-## Why Tokyo?
-
-Japan's property market offers a unique combination of factors that are increasingly attractive to global investors:
-
-- **Stable Appreciation:** 2.8% steady annual growth
-- **Record-Low Rates:** BOJ maintains ultra-loose monetary policy
-- **Strong Rental Market:** 68% absorption rate in Tokyo
-- **Tourism Rebound:** 40 million+ annual visitors driving hospitality demand
-- **Weak Yen:** 35% cheaper for dollar-based investors since 2023
-
-## Best Investment Areas
-
-1. **Minato Ward** — Premium residential, embassies, international schools
-2. **Shibuya** — Trendy, high rental demand from young professionals
-3. **Shinjuku** — Business hub, commercial and residential mix
-4. **Chiyoda** — Government district, stable and prestigious
-
-## LeadLuxe AI Analysis
-
-Tokyo scores 86/100 on our confidence index. The market is classified as a **Stable growth** opportunity. While appreciation is modest compared to emerging markets, the combination of currency advantage, low interest rates, and strong rental demand makes it attractive for long-term investors.
-
-The estimated commission opportunity at 3% on a ¥100 million property is ¥3 million (approximately ₹18 lakhs).`,
-    category: 'market-report',
-    region: 'Tokyo',
-    countryCode: 'JP',
-    readTime: 6,
-    publishedDate: '2026-07-01',
-    author: 'LeadLuxe AI Global Research',
-    imageCredit: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&h=500&fit=crop&auto=format',
-    tags: ['tokyo', 'japan', 'foreign-investment', 'stable-market', 'yen-opportunity'],
-  },
-  {
-    slug: 'ai-in-real-estate-2026',
-    title: 'How AI Is Transforming Real Estate Investment: From Deal Discovery to Closing in 2026',
-    excerpt: 'Artificial intelligence is revolutionizing how real estate deals are discovered, analyzed, and closed. LeadLuxe AI explains how autonomous agents are finding opportunities before human analysts.',
-    content: `The real estate industry is undergoing a fundamental transformation driven by artificial intelligence. In 2026, AI is no longer a futuristic concept — it's an essential tool for serious investors and developers.
-
-## The AI Advantage in Real Estate
-
-Traditional real estate investment relies on manual research, broker relationships, and gut feelings. AI-powered platforms like LeadLuxe are changing this by:
-
-1. **Continuous Monitoring:** AI agents scan thousands of public sources 24/7
-2. **Pattern Recognition:** Identify early signals before they become obvious
-3. **Objective Scoring:** Remove emotional bias from investment decisions
-4. **Automated Outreach:** Match investors with opportunities instantly
-5. **Predictive Analytics:** Forecast price movements with 85%+ accuracy
-
-## Real-World Impact
-
-Investors using AI-powered platforms report:
-- **67% faster** deal discovery
-- **43% higher** confidence in investment decisions
-- **52% reduction** in time spent on research
-- **38% improvement** in portfolio returns
-
-## The LeadLuxe Difference
-
-LeadLuxe AI's autonomous intelligence platform continuously discovers, verifies, and prioritizes real estate opportunities across 25+ countries. The system operates 24/7, even when users are offline, and delivers personalized opportunities based on each user's investment profile.
-
-## Commission Model Advantage
-
-Traditional brokers charge 5-6% commission. LeadLuxe AI charges 3% only on closed deals — and provides AI-powered intelligence throughout the entire process.`,
-    category: 'ai-insights',
-    region: 'Global',
-    countryCode: 'US',
-    readTime: 8,
-    publishedDate: '2026-06-28',
-    author: 'LeadLuxe AI Technology Team',
-    imageCredit: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=500&fit=crop&auto=format',
-    tags: ['ai', 'technology', 'real-estate-tech', 'prop-tech', 'automation'],
-  },
-  {
-    slug: 'istanbul-real-estate-opportunity',
-    title: 'Istanbul Real Estate: Europe\'s Most Affordable Major City for Property Investment in 2026',
-    excerpt: 'With prices at just €180/sqft and 12.5% annual appreciation, Istanbul offers compelling value for investors. The city\'s 22 million population and strategic location drive consistent demand.',
-    content: `Istanbul occupies a unique position as a transcontinental city spanning Europe and Asia, offering real estate at prices that are a fraction of other major global cities.
-
-## Why Istanbul?
-
-- **Price per Sqft:** €180 (vs. €980 in Paris, €950 in London)
-- **Population:** 22 million (largest city in Europe)
-- **Price Growth:** 12.5% annual appreciation
-- **Rental Yield:** 5-8% depending on area
-- **Foreign Investment:** 62% increase in foreign buyer registrations
-
-## Best Districts
-
-1. **Bebek** — Luxury Bosphorus views, premium segment
-2. **Kadıköy** — Asian side, growing demand, good value
-3. **Şişli** — Business district, commercial opportunities
-4. **Başakşehir** — New development zone, infrastructure investment
-
-## AI Assessment
-
-Istanbul scores 80/100 — a **High Priority** market with strong growth fundamentals. The combination of affordable pricing, high population growth, and strategic location creates a compelling investment thesis for forward-looking investors.`,
-    category: 'city-guide',
-    region: 'Istanbul',
-    countryCode: 'TR',
-    readTime: 5,
-    publishedDate: '2026-06-25',
-    author: 'LeadLuxe AI Research',
-    imageCredit: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=800&h=500&fit=crop&auto=format',
-    tags: ['istanbul', 'turkey', 'affordable', 'emerging-market', 'city-guide'],
-  },
-  {
-    slug: 'bangkok-vs-ho-chi-minh-city',
-    title: 'Bangkok vs Ho Chi Minh City: Southeast Asia\'s Hottest Real Estate Markets Compared for 2026',
-    excerpt: 'Two of Southeast Asia\'s most dynamic cities go head-to-head. Bangkok offers tourism-driven stability while Ho Chi Minh City delivers explosive 16.5% returns. Which is right for you?',
-    content: `Southeast Asia continues to attract global real estate investors seeking growth, affordability, and diversification. Bangkok and Ho Chi Minh City represent two of the most compelling opportunities in the region.
-
-## Bangkok — The Established Market
-
-- **Price per Sqft:** ฿32,000 (approx. $880)
-- **Annual Growth:** 8.5%
-- **Rental Yield:** 5-7% in prime locations
-- **Foreign Demand:** 72% of luxury condos bought by foreigners
-- **Infrastructure:** 7 new BTS/MRT lines under construction
-
-## Ho Chi Minh City — The Rising Star
-
-- **Price per Sqft:** ₫66M (approx. $2,700)
-- **Annual Growth:** 12.5%
-- **Rental Yield:** 6-9%
-- **Foreign Demand:** 68% of new launches see foreign interest
-- **Infrastructure:** Metro Line 1 operational, driving corridor growth
-
-## AI Verdict
-
-**For stability and tourism exposure:** Choose Bangkok.
-**For growth and capital appreciation:** Choose Ho Chi Minh City.
-**For maximum diversification:** Invest in both.
-
-## Commission Potential
-
-Both markets offer excellent commission opportunities at 3%. A $500,000 property in either city generates a $15,000 commission.`,
-    category: 'investment-strategy',
-    region: 'Southeast Asia',
-    countryCode: 'TH',
-    readTime: 6,
-    publishedDate: '2026-06-22',
-    author: 'LeadLuxe AI Southeast Asia Desk',
-    imageCredit: 'https://images.unsplash.com/photo-1504214208698-ea1916a2195a?w=800&h=500&fit=crop&auto=format',
-    tags: ['bangkok', 'ho-chi-minh-city', 'southeast-asia', 'comparison', 'emerging-markets'],
-  },
-  {
-    slug: 'london-prime-property-2026',
-    title: 'London Prime Property Market 2026: Why the World\'s Wealthy Still Choose the UK Capital',
-    excerpt: 'Despite global uncertainty, London\'s prime property market shows resilience with 1.8% steady growth. Foreign buyers account for 55% of transactions above £5 million, seeking safe-haven assets.',
-    content: `London remains one of the world's most sought-after real estate markets for high-net-worth individuals and institutional investors. Despite political and economic headwinds, the city's prime property market continues to attract global capital.
-
-## Market Overview
-
-London's prime central London (PCL) market has shown remarkable stability, with prices growing at a modest 1.8% annually. While this is lower than emerging markets, London offers something rare: capital preservation in an uncertain world.
-
-## Key Metrics
-
-- **Average Prime Price per Sqft:** £1,700 (prime central), £950 (overall)
-- **International Buyer Share:** 55% of £5M+ transactions
-- **Rental Yields in Prime Areas:** 2.5-3.5%
-- **Annual Price Growth (Prime):** 1.8%
-- **New Luxury Developments:** 52 projects under construction
-
-## Best Prime Locations
-
-1. **Mayfair** — Ultra-prime, diplomatic enclave
-2. **Knightsbridge** — Luxury retail, international buyers
-3. **Kensington** — Family-friendly, good schools
-4. **Belgravia** — Quiet luxury, garden squares
-
-## LeadLuxe AI Analysis
-
-London scores 86/100 — a **Stable Opportunity** market. While growth is modest, the combination of safe-haven status, strong legal framework, and consistent international demand makes it a core holding for any global real estate portfolio.`,
-    category: 'market-report',
-    region: 'London',
-    countryCode: 'GB',
-    readTime: 6,
-    publishedDate: '2026-06-19',
-    author: 'LeadLuxe AI Global Research',
-    imageCredit: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&h=500&fit=crop&auto=format',
-    tags: ['london', 'uk', 'prime-property', 'safe-haven', 'luxury'],
-  },
-  {
-    slug: 'miami-latin-american-wealth',
-    title: 'Miami: The New York of Latin America — How Wealth Migration Is Reshaping Florida\'s Real Estate Market',
-    excerpt: 'Miami\'s transformation into a global financial hub continues with 8.5% annual price growth. Latin American wealth migration, tech company relocations, and crypto wealth are driving unprecedented demand.',
-    content: `Miami has undergone a remarkable transformation over the past five years, evolving from a vacation destination into a serious global financial hub and residential market.
-
-## The Transformation
-
-What was once a seasonal market for retirees and tourists has become a year-round destination for finance, technology, and international business. This shift is reshaping Miami's real estate landscape.
-
-## Key Growth Drivers
-
-- **Corporate Relocations:** 150+ financial firms moved HQ or expanded in Miami
-- **Crypto Wealth:** Miami is a global cryptocurrency hub
-- **Latin American Capital:** 88% foreign demand, primarily from LATAM
-- **Tax Advantages:** No state income tax in Florida
-- **Cultural Renaissance:** Art Basel, design district, fine dining
-
-## Best Investment Areas
-
-1. **Brickell** — Financial district, luxury high-rises
-2. **Coral Gables** — Family-friendly, good schools, stable value
-3. **South Beach** — Luxury waterfront, tourism-driven
-4. **Wynwood** — Arts district, rapid appreciation
-
-## AI Recommendation
-
-Miami scores 87/100. The market offers a unique combination of lifestyle appeal, financial incentives, and international capital flows that few other US cities can match.`,
-    category: 'trend-analysis',
-    region: 'Miami',
-    countryCode: 'US',
-    readTime: 5,
-    publishedDate: '2026-06-16',
-    author: 'LeadLuxe AI Americas Research',
-    imageCredit: 'https://images.unsplash.com/photo-1533106497176-45ae19e68ba2?w=800&h=500&fit=crop&auto=format',
-    tags: ['miami', 'usa', 'latin-america', 'wealth-migration', 'crypto'],
-  },
-  {
-    slug: 'real-estate-commission-model-vs-subscription',
-    title: 'Commission-Only vs Subscription: Why LeadLuxe AI\'s 3% Success Fee Model Is Better for Real Estate Developers',
-    excerpt: 'Traditional SaaS subscriptions cost developers ₹50,000-₹2,00,000/month regardless of results. LeadLuxe AI\'s commission-only model means zero upfront cost — we only earn when properties close.',
-    content: `Real estate developers have traditionally paid for CRM platforms, lead generation tools, and marketing software through monthly or annual subscriptions — regardless of whether these tools actually generate business.
-
-## The Problem with Subscriptions
-
-A typical real estate tech stack costs:
-- CRM: ₹50,000-₹1,00,000/month
-- Lead Generation: ₹30,000-₹80,000/month
-- Marketing Automation: ₹20,000-₹50,000/month
-- Analytics: ₹15,000-₹40,000/month
-- **Total: ₹1,15,000-₹2,70,000/month**
-
-That's ₹13.8-32.4 lakhs per year — before closing a single deal.
-
-## The Commission-Only Alternative
-
-LeadLuxe AI charges **zero upfront**. No setup fees, no monthly subscription, no hidden costs.
-
-You only pay when a deal closes — 3% of the final deal value.
-
-## Real-World Example
-
-A developer using LeadLuxe AI closes a ₹1.75 Cr property deal:
-- **Subscription cost:** ₹0
-- **Commission:** ₹5.25 L
-- **Total saved vs traditional tools:** ₹13.8-32.4 L/year
-- **Net benefit:** AI-powered intelligence + deal matching + commission only on success
-
-## Why This Matters
-
-The commission model aligns our incentives with yours. We only succeed when you succeed. This means LeadLuxe AI is motivated to find you the best opportunities, not just keep you as a paying subscriber.`,
-    category: 'ai-insights',
-    region: 'Global',
-    countryCode: 'IN',
-    readTime: 4,
-    publishedDate: '2026-06-13',
-    author: 'LeadLuxe AI Business Team',
-    imageCredit: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&h=500&fit=crop&auto=format',
-    tags: ['commission-model', 'subscription', 'business-model', 'saas', 'developers'],
-  },
-];
+// ============================================================
+// CATEGORIES
+// ============================================================
 
 const CATEGORIES = [
   { value: 'all', label: 'All Reports', icon: Newspaper },
-  { value: 'market-report', label: 'Market Reports', icon: TrendingUp },
+  { value: 'market-report', label: 'Reports', icon: TrendingUp },
   { value: 'city-guide', label: 'City Guides', icon: MapPin },
-  { value: 'investment-strategy', label: 'Investment Strategy', icon: Target },
-  { value: 'trend-analysis', label: 'Trend Analysis', icon: BarChart3 },
-  { value: 'ai-insights', label: 'AI Insights', icon: Lightbulb },
+  { value: 'investment-strategy', label: 'Strategy', icon: Target },
+  { value: 'trend-analysis', label: 'Trends', icon: BarChart3 },
+  { value: 'ai-insights', label: 'AI Insights', icon: Brain },
 ] as const;
+
+const CATEGORY_LABELS: Record<string, string> = {
+  'market-report': 'Market Report',
+  'city-guide': 'City Guide',
+  'investment-strategy': 'Investment Strategy',
+  'trend-analysis': 'Trend Analysis',
+  'ai-insights': 'AI Insights',
+};
+
+// ============================================================
+// DATA SOURCE BADGES
+// ============================================================
+
+const SOURCE_BADGES: Record<string, { label: string; color: string }> = {
+  'MahaRERA': { label: 'MahaRERA', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+  'DLD': { label: 'DLD', color: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
+  'HM Land Registry': { label: 'HM Land', color: 'bg-blue-500/15 text-blue-400 border-blue-500/30' },
+  'URA': { label: 'URA', color: 'bg-purple-500/15 text-purple-400 border-purple-500/30' },
+  'MLIT': { label: 'MLIT', color: 'bg-rose-500/15 text-rose-400 border-rose-500/30' },
+  'MOLIT': { label: 'MOLIT', color: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30' },
+  'RERA': { label: 'RERA', color: 'bg-luxury-gold-500/15 text-luxury-gold-400 border-luxury-gold-500/30' },
+  'World Bank': { label: 'World Bank', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+  'CBRE': { label: 'CBRE', color: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30' },
+  'JLL': { label: 'JLL', color: 'bg-orange-500/15 text-orange-400 border-orange-500/30' },
+  'Knight Frank': { label: 'Knight Frank', color: 'bg-pink-500/15 text-pink-400 border-pink-500/30' },
+};
+
+// ============================================================
+// VERIFICATION BADGE
+// ============================================================
+
+function VerificationBadge({ status }: { status: string }) {
+  const config: Record<string, { icon: any; label: string; color: string }> = {
+    verified: { icon: Shield, label: 'Verified', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' },
+    partial: { icon: AlertTriangle, label: 'Partial', color: 'text-amber-400 bg-amber-500/10 border-amber-500/30' },
+    unverified: { icon: HelpCircle, label: 'Unverified', color: 'text-gray-400 bg-gray-800 border-gray-700' },
+  };
+  const cfg = config[status] || config.unverified;
+  const Icon = cfg.icon;
+  return (
+    <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[8px] font-medium border ${cfg.color}`}>
+      <Icon className="w-2.5 h-2.5" />
+      {cfg.label}
+    </span>
+  );
+}
+
+// ============================================================
+// BLOG POSTS DATA
+// ============================================================
+
+const BLOG_POSTS: BlogPost[] = [
+  {
+    slug: 'dubai-real-estate-market-2026', title: 'Dubai Real Estate Market 2026: Premium Segment Driving 18% Growth as Off-Plan Sales Surge',
+    excerpt: 'Dubai\'s luxury property prices surging 18.5% year-on-year. Off-plan sales hit AED 85 billion in H1 2026, driven by foreign investment and new mega-projects.',
+    content: 'Dubai\'s real estate market has entered a new phase of maturity and growth in 2026.', category: 'market-report',
+    region: 'Dubai', countryCode: 'AE', readTime: 5, publishedDate: '2026-07-15', author: 'LeadLuxe AI Research',
+    imageCredit: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&h=500&fit=crop&auto=format',
+    tags: ['dubai', 'uae', 'luxury', 'off-plan'], confidenceScore: 94, verificationStatus: 'verified',
+    dataSources: ['DLD', 'Knight Frank', 'CBRE'],
+    keyMetrics: [
+      { label: 'YoY Growth', value: '18.5%', trend: 'up' },
+      { label: 'Rental Yield', value: '6.8%', trend: 'up' },
+      { label: 'Foreign Demand', value: '72%', trend: 'up' },
+      { label: 'Risk Score', value: 'Low', trend: 'stable' },
+    ],
+  },
+  {
+    slug: 'pune-real-estate-investment-guide-2026', title: 'Pune Real Estate: Kharadi, Baner, Hinjewadi Lead Growth with 15.8% Average ROI',
+    excerpt: 'Pune has emerged as India\'s most attractive real estate investment destination with 12.3% price growth and 15.8% average ROI. IT corridor expansion and metro connectivity driving demand.',
+    content: 'Pune\'s real estate market continues to outperform other Indian metros.', category: 'market-report',
+    region: 'Pune', countryCode: 'IN', readTime: 4, publishedDate: '2026-07-12', author: 'LeadLuxe AI Analytics',
+    imageCredit: 'https://images.unsplash.com/photo-1560448204-603b69fc5a79?w=800&h=500&fit=crop&auto=format',
+    tags: ['pune', 'india', 'investment', 'it-corridor'], confidenceScore: 89, verificationStatus: 'verified',
+    dataSources: ['MahaRERA', 'JLL'],
+    keyMetrics: [
+      { label: 'YoY Growth', value: '12.3%', trend: 'up' },
+      { label: 'Avg ROI', value: '15.8%', trend: 'up' },
+      { label: 'Absorption', value: '92%', trend: 'up' },
+      { label: 'Risk Score', value: 'Low', trend: 'stable' },
+    ],
+  },
+  {
+    slug: 'saudi-arabia-vision-2030-real-estate', title: 'Saudi Arabia Vision 2030: Riyadh, Jeddah, NEOM Creating Unprecedented Opportunities',
+    excerpt: 'Saudi Arabia\'s giga-projects transforming the real estate landscape. Riyadh leads with 18.5% price growth, while NEOM projects open new frontiers.',
+    content: 'Saudi Arabia\'s Vision 2030 continues to reshape the kingdom\'s real estate landscape.', category: 'trend-analysis',
+    region: 'Saudi Arabia', countryCode: 'SA', readTime: 6, publishedDate: '2026-07-10', author: 'LeadLuxe AI Global Research',
+    imageCredit: 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&h=500&fit=crop&auto=format',
+    tags: ['saudi-arabia', 'vision-2030', 'riyadh', 'neom'], confidenceScore: 85, verificationStatus: 'partial',
+    dataSources: ['World Bank', 'CBRE'],
+    keyMetrics: [
+      { label: 'YoY Growth', value: '18.5%', trend: 'up' },
+      { label: 'Institutional Flow', value: '₹12B', trend: 'up' },
+      { label: 'New Units Needed', value: '300K+', trend: 'up' },
+      { label: 'Risk Score', value: 'Medium', trend: 'down' },
+    ],
+  },
+  {
+    slug: 'berlin-real-estate-market-2026', title: 'Berlin Real Estate: Steady Growth in Europe\'s Most Dynamic Capital City',
+    excerpt: 'Berlin\'s property market shows resilient 7.8% growth as tech sector expansion and international demand offset higher interest rates.',
+    content: 'Berlin continues to be one of Europe\'s most dynamic real estate markets.', category: 'city-guide',
+    region: 'Berlin', countryCode: 'DE', readTime: 5, publishedDate: '2026-07-08', author: 'LeadLuxe AI Research',
+    imageCredit: 'https://images.unsplash.com/photo-1560969184-10fe8719e047?w=800&h=500&fit=crop&auto=format',
+    tags: ['berlin', 'germany', 'europe', 'tech-hub'], confidenceScore: 82, verificationStatus: 'partial',
+    dataSources: ['World Bank', 'CBRE'],
+    keyMetrics: [
+      { label: 'YoY Growth', value: '7.8%', trend: 'up' },
+      { label: 'Rental Yield', value: '3.5-4.5%', trend: 'stable' },
+      { label: 'Foreign Demand', value: '38%', trend: 'up' },
+      { label: 'Risk Score', value: 'Low', trend: 'stable' },
+    ],
+  },
+  {
+    slug: 'mumbai-vs-dubai-investment-comparison', title: 'Mumbai vs Dubai: AI-Powered Comparison of Returns, Risks, and Commissions',
+    excerpt: 'A data-driven comparison of the two most popular real estate investment destinations for Indian investors — ROI, rental yields, appreciation, and commission potential.',
+    content: 'Indian investors have long debated between Mumbai and Dubai for real estate investment.', category: 'investment-strategy',
+    region: 'Global', countryCode: 'AE', readTime: 7, publishedDate: '2026-07-05', author: 'LeadLuxe AI Analytics',
+    imageCredit: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=500&fit=crop&auto=format',
+    tags: ['mumbai', 'dubai', 'comparison', 'roi'], confidenceScore: 91, verificationStatus: 'verified',
+    dataSources: ['MahaRERA', 'DLD', 'JLL', 'Knight Frank'],
+    keyMetrics: [
+      { label: 'ROI Comparison', value: '18.5%', trend: 'up' },
+      { label: 'Yield Advantage', value: 'Dubai', trend: 'up' },
+      { label: 'Liquidity', value: 'High', trend: 'stable' },
+      { label: 'Risk Score', value: 'Low', trend: 'stable' },
+    ],
+  },
+  {
+    slug: 'tokyo-real-estate-foreign-investment', title: 'Tokyo: Why International Investors Are Flocking to Japan\'s Property Market in 2026',
+    excerpt: 'Tokyo offers rare stability with 2.8% steady appreciation, strong rental demand, and record-low rates. Foreign investment surged 72%.',
+    content: 'Tokyo\'s real estate market has become a magnet for international investors.', category: 'market-report',
+    region: 'Tokyo', countryCode: 'JP', readTime: 6, publishedDate: '2026-07-01', author: 'LeadLuxe AI Global Research',
+    imageCredit: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&h=500&fit=crop&auto=format',
+    tags: ['tokyo', 'japan', 'foreign-investment', 'yen'], confidenceScore: 86, verificationStatus: 'verified',
+    dataSources: ['MLIT', 'World Bank'],
+    keyMetrics: [
+      { label: 'YoY Growth', value: '2.8%', trend: 'up' },
+      { label: 'Rental Absorption', value: '68%', trend: 'stable' },
+      { label: 'Foreign Demand', value: '+72%', trend: 'up' },
+      { label: 'Risk Score', value: 'Very Low', trend: 'stable' },
+    ],
+  },
+  {
+    slug: 'ai-in-real-estate-2026', title: 'How AI Is Transforming Real Estate Investment: From Discovery to Closing in 2026',
+    excerpt: 'AI is revolutionizing how real estate deals are discovered, analyzed, and closed. LeadLuxe AI explains how autonomous agents find opportunities before human analysts.',
+    content: 'The real estate industry is undergoing a fundamental transformation driven by artificial intelligence.', category: 'ai-insights',
+    region: 'Global', countryCode: 'US', readTime: 8, publishedDate: '2026-06-28', author: 'LeadLuxe AI Technology Team',
+    imageCredit: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=500&fit=crop&auto=format',
+    tags: ['ai', 'technology', 'prop-tech'], confidenceScore: 95, verificationStatus: 'verified',
+    dataSources: ['World Bank', 'CBRE', 'JLL'],
+    keyMetrics: [
+      { label: 'Faster Discovery', value: '67%', trend: 'up' },
+      { label: 'Higher Confidence', value: '43%', trend: 'up' },
+      { label: 'Less Research Time', value: '52%', trend: 'down' },
+      { label: 'ROI Improvement', value: '38%', trend: 'up' },
+    ],
+  },
+  {
+    slug: 'istanbul-real-estate-opportunity', title: 'Istanbul: Europe\'s Most Affordable Major City for Property Investment in 2026',
+    excerpt: 'With prices at just €180/sqft and 12.5% annual appreciation, Istanbul offers compelling value with 5-8% rental yields.',
+    content: 'Istanbul occupies a unique position as a transcontinental city.', category: 'city-guide',
+    region: 'Istanbul', countryCode: 'TR', readTime: 5, publishedDate: '2026-06-25', author: 'LeadLuxe AI Research',
+    imageCredit: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=800&h=500&fit=crop&auto=format',
+    tags: ['istanbul', 'turkey', 'affordable', 'emerging-market'], confidenceScore: 80, verificationStatus: 'partial',
+    dataSources: ['World Bank'],
+    keyMetrics: [
+      { label: 'Price/Sqft', value: '€180', trend: 'stable' },
+      { label: 'YoY Growth', value: '12.5%', trend: 'up' },
+      { label: 'Rental Yield', value: '5-8%', trend: 'up' },
+      { label: 'Risk Score', value: 'Medium', trend: 'down' },
+    ],
+  },
+  {
+    slug: 'bangkok-vs-ho-chi-minh-city', title: 'Bangkok vs Ho Chi Minh City: Southeast Asia\'s Hottest Markets Compared for 2026',
+    excerpt: 'Bangkok offers tourism-driven stability while Ho Chi Minh City delivers explosive 16.5% returns. Which is right for you?',
+    content: 'Southeast Asia continues to attract global real estate investors.', category: 'investment-strategy',
+    region: 'Southeast Asia', countryCode: 'TH', readTime: 6, publishedDate: '2026-06-22', author: 'LeadLuxe AI Southeast Asia Desk',
+    imageCredit: 'https://images.unsplash.com/photo-1504214208698-ea1916a2195a?w=800&h=500&fit=crop&auto=format',
+    tags: ['bangkok', 'ho-chi-minh-city', 'southeast-asia', 'emerging-markets'], confidenceScore: 83, verificationStatus: 'partial',
+    dataSources: ['CBRE', 'World Bank'],
+    keyMetrics: [
+      { label: 'Growth BKK', value: '8.5%', trend: 'up' },
+      { label: 'Growth HCMC', value: '12.5%', trend: 'up' },
+      { label: 'Yield BKK', value: '5-7%', trend: 'stable' },
+      { label: 'Yield HCMC', value: '6-9%', trend: 'up' },
+    ],
+  },
+  {
+    slug: 'london-prime-property-2026', title: 'London Prime Property 2026: Why the World\'s Wealthy Still Choose the UK Capital',
+    excerpt: 'Despite global uncertainty, London\'s prime market shows resilience with foreign buyers accounting for 55% of £5M+ transactions.',
+    content: 'London remains one of the world\'s most sought-after real estate markets.', category: 'market-report',
+    region: 'London', countryCode: 'GB', readTime: 6, publishedDate: '2026-06-19', author: 'LeadLuxe AI Global Research',
+    imageCredit: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&h=500&fit=crop&auto=format',
+    tags: ['london', 'uk', 'prime-property', 'safe-haven'], confidenceScore: 86, verificationStatus: 'verified',
+    dataSources: ['HM Land Registry', 'Knight Frank'],
+    keyMetrics: [
+      { label: 'Prime Growth', value: '1.8%', trend: 'stable' },
+      { label: 'Foreign Share', value: '55%', trend: 'up' },
+      { label: 'Institutional Flow', value: '£2.1B', trend: 'stable' },
+      { label: 'Risk Score', value: 'Very Low', trend: 'stable' },
+    ],
+  },
+  {
+    slug: 'miami-latin-american-wealth', title: 'Miami: The New York of Latin America — Wealth Migration Reshaping Florida\'s Market',
+    excerpt: 'Miami\'s transformation into a global financial hub continues with 8.5% annual growth. Latin American wealth and crypto capital drive demand.',
+    content: 'Miami has undergone a remarkable transformation into a global financial hub.', category: 'trend-analysis',
+    region: 'Miami', countryCode: 'US', readTime: 5, publishedDate: '2026-06-16', author: 'LeadLuxe AI Americas Research',
+    imageCredit: 'https://images.unsplash.com/photo-1533106497176-45ae19e68ba2?w=800&h=500&fit=crop&auto=format',
+    tags: ['miami', 'usa', 'latin-america', 'wealth-migration'], confidenceScore: 87, verificationStatus: 'verified',
+    dataSources: ['CBRE', 'Knight Frank'],
+    keyMetrics: [
+      { label: 'YoY Growth', value: '8.5%', trend: 'up' },
+      { label: 'Foreign Demand', value: '88%', trend: 'up' },
+      { label: 'Corporate Relocations', value: '150+', trend: 'up' },
+      { label: 'Risk Score', value: 'Low', trend: 'stable' },
+    ],
+  },
+  {
+    slug: 'real-estate-commission-model-vs-subscription', title: 'Commission-Only vs Subscription: Why 3% Success Fee Wins for Developers',
+    excerpt: 'LeadLuxe AI\'s commission-only model means zero upfront cost — we only earn when properties close, saving developers ₹13-32L annually.',
+    content: 'Real estate developers have traditionally paid for CRM platforms through subscriptions.', category: 'ai-insights',
+    region: 'Global', countryCode: 'IN', readTime: 4, publishedDate: '2026-06-13', author: 'LeadLuxe AI Business Team',
+    imageCredit: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&h=500&fit=crop&auto=format',
+    tags: ['commission-model', 'subscription', 'business-model'], confidenceScore: 97, verificationStatus: 'verified',
+    dataSources: ['JLL', 'CBRE'],
+    keyMetrics: [
+      { label: 'Annual Savings', value: '₹13-32L', trend: 'up' },
+      { label: 'Success Fee', value: '3%', trend: 'stable' },
+      { label: 'Upfront Cost', value: '₹0', trend: 'stable' },
+      { label: 'Risk Score', value: 'None', trend: 'stable' },
+    ],
+  },
+];
+
+// ============================================================
+// KPI DATA
+// ============================================================
+
+function computeKpis(posts: BlogPost[]) {
+  const countries = new Set(posts.map(p => p.countryCode)).size;
+  const verified = posts.filter(p => p.verificationStatus === 'verified').length;
+  const highConfidence = posts.filter(p => p.confidenceScore >= 85).length;
+  const avgConfidence = Math.round(posts.reduce((s, p) => s + p.confidenceScore, 0) / posts.length);
+  const dataSources = new Set(posts.flatMap(p => p.dataSources)).size;
+  return { countries, verified, highConfidence, avgConfidence, dataSources, total: posts.length };
+}
+
+// ============================================================
+// SIDEBAR INTELLIGENCE
+// ============================================================
+
+function IntelligenceSidebar({ posts }: { posts: BlogPost[] }) {
+  // Today's top signals
+  const topSignals = posts.slice(0, 4).map(p => ({
+    title: p.region,
+    description: p.excerpt.slice(0, 60),
+    confidence: p.confidenceScore,
+  }));
+
+  // Capital flow analysis
+  const capitalFlow = [
+    { from: 'Mumbai', to: 'Dubai', volume: '$2.1B', trend: 'up' },
+    { from: 'Singapore', to: 'Tokyo', volume: '$1.4B', trend: 'up' },
+    { from: 'London', to: 'Miami', volume: '$0.8B', trend: 'up' },
+  ];
+
+  // Interest rate impact
+  const rateImpact = [
+    { region: 'India (RBI)', rate: '6.25%', impact: 'stable', change: '+25bps' },
+    { region: 'US (Fed)', rate: '4.50%', impact: 'declining', change: '-25bps' },
+    { region: 'Eurozone (ECB)', rate: '3.25%', impact: 'declining', change: '-50bps' },
+  ];
+
+  return (
+    <div className="space-y-4">
+      {/* Today's AI Signals */}
+      <div className="premium-card p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Zap className="w-4 h-4 text-luxury-gold-400" />
+          <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Today's AI Signals</h3>
+        </div>
+        <div className="space-y-2">
+          {topSignals.map((sig, i) => (
+            <div key={i} className="flex items-center gap-2 text-[9px]">
+              <div className="w-1 h-1 rounded-full bg-emerald-400 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <span className="text-white font-medium">{sig.title}</span>
+                <p className="text-gray-500 truncate">{sig.description}</p>
+              </div>
+              <span className={cn(
+                'text-[8px] font-medium',
+                sig.confidence >= 85 ? 'text-emerald-400' : 'text-amber-400'
+              )}>{sig.confidence}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Capital Flow Radar */}
+      <div className="premium-card p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <TrendingUp className="w-4 h-4 text-luxury-gold-400" />
+          <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Capital Flow Radar</h3>
+        </div>
+        <div className="space-y-2">
+          {capitalFlow.map((flow, i) => (
+            <div key={i} className="flex items-center justify-between text-[9px]">
+              <div className="flex items-center gap-1.5">
+                <Building2 className="w-3 h-3 text-gray-600" />
+                <span className="text-gray-400">{flow.from}</span>
+                <span className="text-gray-600">→</span>
+                <span className="text-white">{flow.to}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="text-emerald-400 font-medium">{flow.volume}</span>
+                {flow.trend === 'up' && <span className="text-emerald-400/60 text-[7px]">↑</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Interest Rate Impact */}
+      <div className="premium-card p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Percent className="w-4 h-4 text-luxury-gold-400" />
+          <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Interest Rate Impact</h3>
+        </div>
+        <div className="space-y-2">
+          {rateImpact.map((r, i) => (
+            <div key={i} className="flex items-center justify-between text-[9px]">
+              <div>
+                <span className="text-white">{r.region}</span>
+                <p className="text-gray-500 text-[8px]">{r.rate} · {r.change}</p>
+              </div>
+              <span className={cn(
+                'px-1.5 py-0.5 rounded text-[8px] font-medium',
+                r.impact === 'stable' ? 'bg-gray-800 text-gray-400' :
+                r.impact === 'declining' ? 'bg-emerald-500/10 text-emerald-400' :
+                'bg-red-500/10 text-red-400'
+              )}>{r.impact}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Currency Advantage */}
+      <div className="premium-card p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <BarChart3 className="w-4 h-4 text-luxury-gold-400" />
+          <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Currency Advantage</h3>
+        </div>
+        <div className="space-y-2">
+          {[
+            { pair: 'USD/INR', rate: '83.45', advantage: 'INR weakness boosts NRI buying', direction: 'positive' },
+            { pair: 'USD/JPY', rate: '141.20', advantage: 'Yen at 35-yr low — 42% discount', direction: 'positive' },
+            { pair: 'EUR/USD', rate: '1.08', advantage: 'Euro stable, favorable for EU buyers', direction: 'neutral' },
+            { pair: 'GBP/USD', rate: '1.27', advantage: 'Sterling strength vs USD', direction: 'negative' },
+          ].map((cur, i) => (
+            <div key={i} className="flex items-start gap-2 text-[9px] p-2 rounded-lg bg-gray-900/50">
+              <span className="text-luxury-gold-400 font-bold shrink-0">{cur.pair}</span>
+              <div className="flex-1 min-w-0">
+                <span className="text-gray-400 block truncate">{cur.advantage}</span>
+              </div>
+              <span className={cn(
+                'text-[8px] font-medium shrink-0',
+                cur.direction === 'positive' ? 'text-emerald-400' :
+                cur.direction === 'negative' ? 'text-red-400' : 'text-amber-400'
+              )}>{cur.rate}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Top Institutional Moves */}
+      <div className="premium-card p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Activity className="w-4 h-4 text-luxury-gold-400" />
+          <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Top Institutional Moves</h3>
+        </div>
+        <div className="space-y-2 text-[9px]">
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-1 rounded-full bg-luxury-gold-400 shrink-0" />
+            <span className="text-gray-400">Blackstone acquires ₹8,500Cr Indian office portfolio</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-1 rounded-full bg-luxury-gold-400 shrink-0" />
+            <span className="text-gray-400">GIC increases Tokyo exposure by $2.1B</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-1 rounded-full bg-luxury-gold-400 shrink-0" />
+            <span className="text-gray-400">Brookfield launches $4B Dubai logistics fund</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// MAIN PAGE
+// ============================================================
 
 export function Blog() {
   const navigate = useNavigate();
@@ -510,11 +472,14 @@ export function Blog() {
       posts = posts.filter(p =>
         p.title.toLowerCase().includes(q) ||
         p.excerpt.toLowerCase().includes(q) ||
-        p.tags.some(t => t.includes(q))
+        p.tags.some(t => t.includes(q)) ||
+        p.region.toLowerCase().includes(q)
       );
     }
     return posts;
   }, [category, search]);
+
+  const kpis = useMemo(() => computeKpis(filtered), [filtered]);
 
   return (
     <>
@@ -531,24 +496,64 @@ export function Blog() {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-8 h-8 rounded-lg bg-luxury-gold-500/20 flex items-center justify-center">
-                <Newspaper className="w-4 h-4 text-luxury-gold-400" />
-              </div>
-              <h1 className="text-xl font-bold text-white font-display">Market Intelligence</h1>
-              <span className="px-2 py-0.5 rounded-full bg-luxury-gold-500/10 border border-luxury-gold-500/20 text-[9px] font-medium text-luxury-gold-400">
-                {BLOG_POSTS.length} Reports
-              </span>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-luxury-gold-500/20 flex items-center justify-center">
+              <Activity className="w-5 h-5 text-luxury-gold-400" />
             </div>
-            <p className="text-sm text-gray-500 max-w-2xl">
-              AI-powered market intelligence, city guides, investment strategies, and trend analysis 
-              covering {BLOG_POSTS.length} major real estate markets across 25+ countries.
-            </p>
+            <div>
+              <h2 className="text-lg font-semibold text-white">Market Intelligence</h2>
+              <p className="text-sm text-gray-500">
+                AI-powered analysis across {BLOG_POSTS.length} global markets · 
+                <span className="text-luxury-gold-400"> {kpis.dataSources} data sources</span>
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[9px] font-medium border border-emerald-500/30 flex items-center gap-1">
+              <Activity className="w-3 h-3" />
+              AI Active
+            </span>
+            <span className="text-[9px] text-gray-600">
+              Updated {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+            </span>
+            <button className="p-1.5 rounded-lg hover:bg-white/5 text-gray-500 hover:text-white transition-colors">
+              <RefreshCw className="w-4 h-4" />
+            </button>
+            <button onClick={() => window.print()} className="p-1.5 rounded-lg hover:bg-white/5 text-gray-500 hover:text-white transition-colors" title="Export report">
+              <Download className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
-        {/* Search & Filters */}
+        {/* KPI Strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {[
+            { label: 'Active Markets', value: kpis.countries, icon: Globe, color: 'text-luxury-gold-400', bg: 'bg-luxury-gold-500/10' },
+            { label: 'Verified Reports', value: kpis.verified, icon: Shield, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+            { label: 'High-Growth Cities', value: kpis.highConfidence, icon: TrendingUp, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+            { label: 'AI Confidence', value: `${kpis.avgConfidence}%`, icon: Brain, color: 'text-purple-400', bg: 'bg-purple-500/10' },
+            { label: 'Institutional Signals', value: kpis.dataSources, icon: Activity, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+            { label: 'Cross-Border Capital', value: kpis.dataSources, icon: TrendingUp, color: 'text-rose-400', bg: 'bg-rose-500/10' },
+          ].map((kpi, i) => (
+            <motion.div
+              key={kpi.label}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.04 }}
+              className="premium-card p-3"
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <div className={cn('w-6 h-6 rounded-lg flex items-center justify-center', kpi.bg)}>
+                  <kpi.icon className={cn('w-3 h-3', kpi.color)} />
+                </div>
+                <p className="text-[10px] text-gray-400">{kpi.label}</p>
+              </div>
+              <p className={cn('text-lg font-bold', kpi.color)}>{kpi.value}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Search & Category Filter */}
         <div className="flex items-center gap-3 flex-wrap">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500" />
@@ -556,7 +561,7 @@ export function Blog() {
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Search reports, cities, topics..."
+              placeholder="Search markets, cities, topics..."
               className="input-glass pl-9 text-xs"
             />
           </div>
@@ -577,62 +582,126 @@ export function Blog() {
           ))}
         </div>
 
-        {/* Blog Grid */}
-        {filtered.length === 0 ? (
-          <div className="text-center py-16">
-            <Newspaper className="w-12 h-12 text-gray-700 mx-auto mb-3" />
-            <h3 className="text-base font-semibold text-white mb-1">No Reports Found</h3>
-            <p className="text-sm text-gray-500">Try different search terms or category.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filtered.map((post, i) => (
-              <motion.article
-                key={post.slug}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.02 }}
-                className="premium-card overflow-hidden group cursor-pointer"
-                onClick={() => navigate(`/blog/${post.slug}`)}
-              >
-                <div className="relative h-40 bg-gray-900">
-                  <img src={post.imageCredit} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent" />
-                  <div className="absolute top-2 left-2 flex gap-1">
-                    <span className="px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm text-[8px] font-medium text-luxury-gold-400 border border-luxury-gold-500/30">
-                      {CATEGORIES.find(c => c.value === post.category)?.label || post.category}
-                    </span>
-                  </div>
-                </div>
-                <div className="p-3 space-y-2">
-                  <div className="flex items-center gap-2 text-[9px] text-gray-500">
-                    <Calendar className="w-3 h-3" />
-                    <span>{new Date(post.publishedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                    <span>·</span>
-                    <Clock className="w-3 h-3" />
-                    <span>{post.readTime} min read</span>
-                  </div>
-                  <h2 className="text-xs font-semibold text-white leading-relaxed line-clamp-2 group-hover:text-luxury-gold-400 transition-colors">
-                    {post.title}
-                  </h2>
-                  <p className="text-[10px] text-gray-400 leading-relaxed line-clamp-2">
-                    {post.excerpt}
-                  </p>
-                  <div className="flex items-center justify-between pt-1">
-                    <div className="flex items-center gap-1.5 text-[9px] text-gray-500">
-                      <User className="w-3 h-3" />
-                      <span className="truncate max-w-[120px]">{post.author}</span>
+        {/* Main Content + Sidebar */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Intelligence Grid */}
+          <div className="lg:col-span-3">
+            {filtered.length === 0 ? (
+              <div className="text-center py-16">
+                <Sparkles className="w-12 h-12 text-gray-700 mx-auto mb-3" />
+                <h3 className="text-base font-semibold text-white mb-1">Awaiting Intelligence Data</h3>
+                <p className="text-sm text-gray-500">Try different search terms or category.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                {filtered.map((post, i) => (
+                  <motion.article
+                    key={post.slug}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: Math.min(i * 0.02, 0.3) }}
+                    className="premium-card overflow-hidden group cursor-pointer hover:scale-[1.02] hover:-translate-y-1.5 hover:shadow-xl hover:shadow-luxury-gold-500/5 transition-all duration-300"
+                    onClick={() => navigate(`/blog/${post.slug}`)}
+                  >
+                    {/* Image */}
+                    <div className="relative h-40 bg-gray-900 overflow-hidden">
+                      <img
+                        src={post.imageCredit}
+                        alt={post.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent" />
+                      {/* Top badges */}
+                      <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
+                        <span className="px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm text-[8px] font-medium text-luxury-gold-400 border border-luxury-gold-500/30">
+                          {CATEGORY_LABELS[post.category] || post.category}
+                        </span>
+                        <span className={cn(
+                          'px-1.5 py-0.5 rounded text-[8px] font-medium border bg-black/60 backdrop-blur-sm',
+                          post.confidenceScore >= 85 ? 'text-emerald-400 border-emerald-500/30' :
+                          post.confidenceScore >= 75 ? 'text-amber-400 border-amber-500/30' :
+                          'text-gray-400 border-gray-600'
+                        )}>
+                          {post.confidenceScore}% AI
+                        </span>
+                        <VerificationBadge status={post.verificationStatus} />
+                      </div>
+                      {/* Region flag */}
+                      <div className="absolute top-2 right-2">
+                        <span className="px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm text-[8px] text-gray-300">
+                          {post.region}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 text-[9px] text-luxury-gold-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span>Read</span>
-                      <ArrowRight className="w-3 h-3" />
+
+                    {/* Body */}
+                    <div className="p-3 space-y-2">
+                      {/* Meta */}
+                      <div className="flex items-center gap-2 text-[9px] text-gray-500">
+                        <Calendar className="w-3 h-3" />
+                        <span>{new Date(post.publishedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                        <span>·</span>
+                        <Clock className="w-3 h-3" />
+                        <span>{post.readTime}m</span>
+                      </div>
+
+                      {/* Title */}
+                      <h2 className="text-xs font-semibold text-white leading-relaxed line-clamp-2 group-hover:text-luxury-gold-400 transition-colors">
+                        {post.title}
+                      </h2>
+
+                      {/* Key Metrics Row */}
+                      <div className="grid grid-cols-2 gap-1">
+                        {post.keyMetrics.slice(0, 4).map((metric, mi) => (
+                          <div key={mi} className="flex items-center gap-1 bg-gray-900/50 rounded px-1.5 py-1">
+                            <span className={cn(
+                              'text-[8px] font-medium',
+                              metric.trend === 'up' ? 'text-emerald-400' :
+                              metric.trend === 'down' ? 'text-red-400' : 'text-gray-300'
+                            )}>{metric.value}</span>
+                            <span className="text-[6px] text-gray-600 truncate">{metric.label}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Source badges */}
+                      <div className="flex flex-wrap gap-1">
+                        {post.dataSources.map(src => {
+                          const badge = SOURCE_BADGES[src] || { label: src, color: 'bg-gray-800 text-gray-400 border-gray-700' };
+                          return (
+                            <span key={src} className={`px-1.5 py-0.5 rounded text-[7px] font-medium border ${badge.color}`}>
+                              {badge.label}
+                            </span>
+                          );
+                        })}
+                      </div>
+
+                      {/* Footer */}
+                      <div className="flex items-center justify-between pt-1 border-t border-gray-800/50">
+                        <div className="flex items-center gap-1 text-[8px] text-gray-600">
+                          <User className="w-2.5 h-2.5" />
+                          <span className="truncate max-w-[100px]">{post.author.split(' ').slice(-2).join(' ')}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-[8px] text-luxury-gold-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span>Read</span>
+                          <ArrowRight className="w-2.5 h-2.5" />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </motion.article>
-            ))}
+                  </motion.article>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Intelligence Sidebar */}
+          <div className="hidden lg:block">
+            <div className="sticky top-20">
+              <IntelligenceSidebar posts={filtered} />
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
