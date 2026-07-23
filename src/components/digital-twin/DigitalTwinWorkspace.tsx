@@ -120,33 +120,34 @@ function HeroOverview({ twin, property }: { twin: PropertyDigitalTwin; property:
       {/* Trust Summary */}
       <div className="p-4 rounded-xl bg-gray-900/40 border border-gray-800">
         <div className="flex items-center gap-2 mb-2">
-          <Shield className="w-4 h-4 text-luxury-gold-400" />
+          <Shield className="w-4 h-4 text-amber-400" />
           <h4 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Data Trust Summary</h4>
         </div>
         <div className="grid grid-cols-5 gap-2 text-center text-[8px]">
           <div>
-            <p className="text-xs font-bold text-emerald-400">{twin.trustSummary.verifiedDataPercent}%</p>
+            <p className="text-xs font-bold text-amber-400">{twin.trustSummary.verifiedDataPercent}%</p>
             <p className="text-gray-600">Verified</p>
           </div>
           <div>
-            <p className="text-xs font-bold text-luxury-gold-400">{twin.trustSummary.evidenceCount}</p>
+            <p className="text-xs font-bold text-gray-600">{twin.trustSummary.evidenceCount}</p>
             <p className="text-gray-600">Evidence</p>
           </div>
           <div>
-            <p className="text-xs font-bold text-purple-400">{twin.trustSummary.governmentSources}</p>
+            <p className="text-xs font-bold text-gray-600">{twin.trustSummary.governmentSources}</p>
             <p className="text-gray-600">Gov Sources</p>
           </div>
           <div>
-            <p className="text-xs font-bold text-blue-400">{twin.trustSummary.mapAccuracy}%</p>
+            <p className="text-xs font-bold text-gray-600">{twin.trustSummary.mapAccuracy}%</p>
             <p className="text-gray-600">Map Acc</p>
           </div>
           <div>
-            <p className="text-xs font-bold text-gray-400">23 Jul</p>
-            <p className="text-gray-600">Verified</p>
+            <p className="text-xs font-bold text-gray-600">—</p>
+            <p className="text-gray-600">Last Verified</p>
           </div>
         </div>
         <p className="text-[7px] text-gray-700 text-center mt-2">
-          Values marked UNVERIFIED have not been confirmed from an official source. 
+          This Digital Twin data is AI-projected from property attributes and is <strong className="text-amber-400/80">not independently verified</strong>.
+          All values are marked UNVERIFIED. Use for research only. 
           <a href="/data-provenance" className="text-luxury-gold-400 hover:underline ml-1">Data policy</a>
         </p>
       </div>

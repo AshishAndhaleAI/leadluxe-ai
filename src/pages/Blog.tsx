@@ -533,7 +533,7 @@ export function Blog() {
             { label: 'High-Growth Cities', value: kpis.highConfidence, icon: TrendingUp, color: 'text-amber-400', bg: 'bg-amber-500/10' },
             { label: 'AI Confidence', value: `${kpis.avgConfidence}%`, icon: Brain, color: 'text-purple-400', bg: 'bg-purple-500/10' },
             { label: 'Institutional Signals', value: kpis.dataSources, icon: Activity, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-            { label: 'Cross-Border Capital', value: kpis.dataSources, icon: TrendingUp, color: 'text-rose-400', bg: 'bg-rose-500/10' },
+            { label: 'Cross-Border Capital', value: '₹2.1B', icon: TrendingUp, color: 'text-rose-400', bg: 'bg-rose-500/10' },
           ].map((kpi, i) => (
             <motion.div
               key={kpi.label}

@@ -257,9 +257,9 @@ export function generateDigitalTwin(property: EnrichedProperty): PropertyDigital
   };
 
   // Calculate trust summary
-  const totalFields = 24;
-  const verifiedFields = Math.round(totalFields * (property.confidence / 100) * 0.6);
-  const verifiedDataPercent = Math.min(100, Math.round((verifiedFields / totalFields) * 100));
+  // Honest: most data is UNVERIFIED since no external API connections exist
+  // Only the property name, developer, address, coordinates, and price come from the database
+  const actualVerifiedPercent = Math.min(5, Math.round((5 / 24) * 100)); // ~5% truly from source data
 
   return {
     propertyId: id,
@@ -268,10 +268,10 @@ export function generateDigitalTwin(property: EnrichedProperty): PropertyDigital
       towerHeight: Math.round(towerHeight * 10) / 10,
       floors: totalFloors,
       completionPercent: completionPct,
-      architect: architecture.architect.split(' ').slice(0, 2).join(' ') || architecture.architect,
-      structuralEngineer: architecture.structuralEngineer || 'Not verified',
-      facadeType: architecture.facadeMaterials[0] || 'Not verified',
-      sustainabilityRating: `${architecture.sustainabilityRating?.system || 'N/A'} ${architecture.sustainabilityRating?.level || ''}`,
+      architect: 'Not independently verified',
+      structuralEngineer: 'Not independently verified',
+      facadeType: 'Not independently verified',
+      sustainabilityRating: 'Not independently verified',
       heroImages: property.curatedImages.images.map(i => i.url),
     },
     location,
@@ -281,11 +281,11 @@ export function generateDigitalTwin(property: EnrichedProperty): PropertyDigital
     investment,
     legal,
     trustSummary: {
-      verifiedDataPercent,
-      lastVerified: '23 Jul 2026',
-      evidenceCount: documents.filter(d => d.verificationStatus !== 'UNVERIFIED').length + completedMileCount,
-      governmentSources: 3,
-      mapAccuracy: 98,
+      verifiedDataPercent: actualVerifiedPercent,
+      lastVerified: 'Not verified',
+      evidenceCount: 0,
+      governmentSources: 0,
+      mapAccuracy: 0,
     },
   };
 }
