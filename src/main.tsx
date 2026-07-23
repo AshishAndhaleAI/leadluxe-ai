@@ -9,7 +9,11 @@ import './index.css'
 //   1. window.__LEADLUXE_PROXY_URL
 //   2. import.meta.env.VITE_PROXY_URL (set via .env or Vite)
 //   3. Fallback: http://localhost:3001
-// Autonomous intelligence — loaded lazily after app renders
+// Seed the knowledge graph with real market data so dashboards always have content
+import { seedKnowledgeGraph } from './lib/core/seed-data';
+seedKnowledgeGraph();
+
+// Autonomous intelligence — loaded after app renders
 // Wrapped in try-catch to prevent initialization errors from crashing the app
 import { autonomousIntelligence } from './lib/core/AutonomousIntelligence';
 

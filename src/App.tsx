@@ -4,7 +4,7 @@ import { NotificationProvider } from './context/NotificationContext';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 import { Landing } from './pages/Landing';
 import { Login } from './pages/Login';
-import { Experience } from './pages/Experience';
+import { Dashboard } from './pages/Dashboard';
 import { Opportunities } from './pages/Opportunities';
 import { OpportunityDetail } from './pages/OpportunityDetail';
 import { Signals } from './pages/Signals';
@@ -41,17 +41,7 @@ function AppRoutes() {
       <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
 
-      {/* Protected — Cinematic Experience (full-screen, no sidebar) */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Experience />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Protected — Standard Dashboard Layout */}
+      {/* Protected — Standard Dashboard Layout (with sidebar) */}
       <Route
         element={
           <ProtectedRoute>
@@ -59,6 +49,8 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       >
+        {/* /dashboard renders the detailed KPI dashboard */}
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/opportunities" element={<Opportunities />} />
         <Route path="/opportunity/:id" element={<OpportunityDetail />} />
         <Route path="/signals" element={<Signals />} />
