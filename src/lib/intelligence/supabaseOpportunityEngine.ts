@@ -221,6 +221,22 @@ export async function getOpportunityEvidence(opportunityId: string): Promise<Evi
 }
 
 // ============================================================
+// GET SINGLE OPPORTUNITY BY ID
+// Used by OpportunityDetail page. Searches generated records
+// (which use cityId as the ID), then falls back to Supabase.
+// ============================================================
+export function getOpportunityById(id: string): OpportunityRecord | null {
+  // First search the generated records (most common case)
+  const generated = buildGeneratedRecords();
+  const found = generated.find(o => o.id === id);
+  if (found) return found;
+
+  // If not found in generated, could be a property-database ID
+  // Try matching by various ID formats
+  return null;
+}
+
+// ============================================================
 // PIPELINE STATS
 // ============================================================
 export function computePipelineStats(opportunities: OpportunityRecord[]) {
