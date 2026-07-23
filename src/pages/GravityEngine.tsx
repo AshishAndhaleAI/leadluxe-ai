@@ -10,7 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   TrendingUp, TrendingDown, Globe, MapPin, Zap, Activity,
   Shield, Target, ArrowRight, Sparkles, AlertTriangle, Info,
-  Building2, Layers, Crosshair, Star, Search, Bell, Eye, EyeOff
+  Building2, Layers, Crosshair, Star, Search, Bell, Eye, EyeOff,
+  BarChart3, CheckSquare, Square, X
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -24,6 +25,33 @@ import {
 } from '../lib/gravity/alerts';
 
 // ============================================================
+// RADAR CHART COLORS
+// ============================================================
+
+const COMPARE_COLORS = [
+  { stroke: '#D4AF37', fill: '#D4AF3720', label: 'Gold' },
+  { stroke: '#34D399', fill: '#34D39920', label: 'Emerald' },
+  { stroke: '#60A5FA', fill: '#60A5FA20', label: 'Blue' },
+  { stroke: '#A78BFA', fill: '#A78BFA20', label: 'Purple' },
+  { stroke: '#FB7185', fill: '#FB718520', label: 'Rose' },
+  { stroke: '#22D3EE', fill: '#22D3EE20', label: 'Cyan' },
+];
+
+// ============================================================
+// HELPER — polar to Cartesian
+// ============================================================
+
+function polarToCartesian(
+  cx: number, cy: number, radius: number, angleDeg: number,
+): { x: number; y: number } {
+  const angleRad = ((angleDeg - 90) * Math.PI) / 180;
+  return {
+    x: cx + radius * Math.cos(angleRad),
+    y: cy + radius * Math.sin(angleRad),
+  };
+}
+
+// ============================================================
 // MAIN PAGE
 // ============================================================
 
@@ -34,6 +62,8 @@ export function GravityEngine() {
   const [filterRisk, setFilterRisk] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [watchlist, setWatchlist] = useState(getWatchlist());
+  const [compareMode, setCompareMode] = useState(false);
+  const [selectedForCompare, setSelectedForCompare] = useState<Set<string>>(new Set());
 
   const rankings = useMemo(() => computeGravityRankings(), []);
   const categoryMeta = useMemo(() => getCategoryMeta(), []);
@@ -45,6 +75,39 @@ export function GravityEngine() {
       setWatchlist(addToWatchlist(analysis));
     }
   }, [watchlist]);
+
+  const handleToggleCompare = useCallback((id: string) => {
+    setSelectedForCompare(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else if (next.size < 6) {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleClearCompare = useCallback(() => {
+    setSelectedForCompare(new Set());
+  }, []);
+
+  // Build array of compared analyses from the full rankings
+  const comparedAnalyses = useMemo(() => {
+    const all = [
+      ...rankings.topMarkets,
+      ...rankings.emergingMarkets,
+      ...rankings.undervaluedMarkets,
+      ...rankings.highestMomentum,
+    ];
+    const seen = new Set<string>();
+    const unique = all.filter(a => {
+      if (seen.has(a.microMarket.id)) return false;
+      seen.add(a.microMarket.id);
+      return true;
+    });
+    return unique.filter(a => selectedForCompare.has(a.microMarket.id));
+  }, [rankings, selectedForCompare]);
 
   // Get the source list based on active category
   const categorySource = useMemo(() => {
@@ -80,7 +143,8 @@ export function GravityEngine() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}          <div className="flex items-start justify-between">
+      {/* Header */}
+      <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <div className="w-8 h-8 rounded-lg bg-luxury-gold-500/20 flex items-center justify-center">
@@ -203,9 +267,9 @@ export function GravityEngine() {
       {/* Two-column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: Market Rankings */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className={cn('space-y-4', comparedAnalyses.length >= 2 ? 'lg:col-span-1' : 'lg:col-span-2')}>
           {/* Filter bar */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <div className="relative flex-1 max-w-xs">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500" />
               <input
@@ -232,6 +296,27 @@ export function GravityEngine() {
                 </button>
               ))}
             </div>
+            <div className="w-px h-6 bg-gray-800" />
+            <button
+              onClick={() => {
+                setCompareMode(!compareMode);
+                if (compareMode) handleClearCompare();
+              }}
+              className={cn(
+                'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-medium transition-colors',
+                compareMode
+                  ? 'bg-luxury-gold-500/20 text-luxury-gold-400 border border-luxury-gold-500/30'
+                  : 'bg-gray-800 text-gray-400 border border-gray-700 hover:text-white hover:border-gray-600'
+              )}
+            >
+              <BarChart3 className="w-3.5 h-3.5" />
+              {compareMode ? 'Exit Compare' : 'Compare'}
+              {selectedForCompare.size > 0 && compareMode && (
+                <span className="w-4 h-4 rounded-full bg-luxury-gold-500 text-[8px] font-bold text-black flex items-center justify-center">
+                  {selectedForCompare.size}
+                </span>
+              )}
+            </button>
           </div>
 
           {/* Market Cards */}
@@ -249,19 +334,32 @@ export function GravityEngine() {
                   rank={i + 1}
                   isSelected={selectedMarket?.microMarket.id === analysis.microMarket.id}
                   isWatched={watchlist.some(w => w.cityId === analysis.microMarket.id)}
+                  compareMode={compareMode}
+                  isCompared={selectedForCompare.has(analysis.microMarket.id)}
+                  compareColor={comparedAnalyses.findIndex(a => a.microMarket.id === analysis.microMarket.id)}
                   onClick={() => setSelectedMarket(
                     selectedMarket?.microMarket.id === analysis.microMarket.id ? null : analysis
                   )}
                   onToggleWatch={() => handleToggleWatch(analysis)}
+                  onToggleCompare={() => handleToggleCompare(analysis.microMarket.id)}
                 />
               ))
             )}
           </div>
         </div>
 
-        {/* Right: Detail Panel */}
+        {/* Right: Detail Panel or Comparison Panel */}
         <div className="space-y-4">
-          {selectedAnalysis ? (
+          {comparedAnalyses.length >= 2 && compareMode ? (
+            <ComparePanel
+              analyses={comparedAnalyses}
+              onClear={handleClearCompare}
+              onRemove={(id) => handleToggleCompare(id)}
+              onNavigate={navigate}
+              isWatched={(id) => watchlist.some(w => w.cityId === id)}
+              onToggleWatch={(analysis) => handleToggleWatch(analysis)}
+            />
+          ) : selectedAnalysis ? (
             <MarketDetailPanel
               analysis={selectedAnalysis}
               onNavigate={navigate}
@@ -390,32 +488,65 @@ export function GravityEngine() {
 // MARKET CARD COMPONENT
 // ============================================================
 
-function MarketCard({ analysis, rank, isSelected, isWatched, onClick, onToggleWatch }: {
+function MarketCard({ analysis, rank, isSelected, isWatched, compareMode, isCompared, compareColor, onClick, onToggleWatch, onToggleCompare }: {
   analysis: GravityAnalysis;
   rank: number;
   isSelected: boolean;
   isWatched: boolean;
+  compareMode: boolean;
+  isCompared: boolean;
+  compareColor: number;
   onClick: () => void;
   onToggleWatch: () => void;
+  onToggleCompare: () => void;
 }) {
   const { microMarket: m } = analysis;
   const scoreColor = analysis.overallScore >= 85 ? 'text-luxury-gold-400' :
     analysis.overallScore >= 75 ? 'text-emerald-400' :
     analysis.overallScore >= 60 ? 'text-blue-400' : 'text-gray-400';
 
+  const colorIndex = compareColor >= 0 && compareColor < COMPARE_COLORS.length ? compareColor : 0;
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: rank * 0.02 }}
-      onClick={onClick}
+      onClick={compareMode ? undefined : onClick}
       className={cn(
-        'premium-card p-4 cursor-pointer transition-all',
-        isSelected ? 'border-luxury-gold-500/30 ring-1 ring-luxury-gold-500/20' : 'hover:border-gray-700/50'
+        'premium-card p-4 transition-all',
+        compareMode ? '' : 'cursor-pointer',
+        isSelected ? 'border-luxury-gold-500/30 ring-1 ring-luxury-gold-500/20' : 'hover:border-gray-700/50',
+        isCompared && compareMode && 'ring-1'
       )}
+      style={isCompared && compareMode ? {
+        borderColor: COMPARE_COLORS[colorIndex].stroke + '50',
+        '--tw-ring-color': COMPARE_COLORS[colorIndex].stroke,
+      } as React.CSSProperties : undefined}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3 flex-1 min-w-0">
+          {/* Compare checkbox */}
+          {compareMode && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onToggleCompare(); }}
+              className="mt-1 shrink-0"
+            >
+              {isCompared ? (
+                <div
+                  className="w-5 h-5 rounded flex items-center justify-center"
+                  style={{ backgroundColor: COMPARE_COLORS[colorIndex].stroke }}
+                >
+                  <CheckSquare className="w-3.5 h-3.5 text-black" />
+                </div>
+              ) : (
+                <div className="w-5 h-5 rounded border border-gray-600 flex items-center justify-center hover:border-gray-400">
+                  <Square className="w-3.5 h-3.5 text-gray-500" />
+                </div>
+              )}
+            </button>
+          )}
+
           {/* Rank badge */}
           <div className={cn(
             'w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0',
@@ -445,16 +576,18 @@ function MarketCard({ analysis, rank, isSelected, isWatched, onClick, onToggleWa
 
         <div className="flex items-center gap-4 shrink-0">
           {/* Watch button */}
-          <button
-            onClick={(e) => { e.stopPropagation(); onToggleWatch(); }}
-            className={cn(
-              'p-1.5 rounded-lg transition-colors',
-              isWatched ? 'text-luxury-gold-400 hover:bg-luxury-gold-500/10' : 'text-gray-600 hover:text-gray-400 hover:bg-white/5'
-            )}
-            title={isWatched ? 'Unwatch market' : 'Watch market'}
-          >
-            {isWatched ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-          </button>
+          {!compareMode && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onToggleWatch(); }}
+              className={cn(
+                'p-1.5 rounded-lg transition-colors',
+                isWatched ? 'text-luxury-gold-400 hover:bg-luxury-gold-500/10' : 'text-gray-600 hover:text-gray-400 hover:bg-white/5'
+              )}
+              title={isWatched ? 'Unwatch market' : 'Watch market'}
+            >
+              {isWatched ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+            </button>
+          )}
 
           {/* Gravity Score */}
           <div className="text-center">
@@ -482,10 +615,12 @@ function MarketCard({ analysis, rank, isSelected, isWatched, onClick, onToggleWa
         </div>
 
         {/* Expand indicator */}
-        <ArrowRight className={cn(
-          'w-4 h-4 transition-transform',
-          isSelected ? 'rotate-90 text-luxury-gold-400' : 'text-gray-600'
-        )} />
+        {!compareMode && (
+          <ArrowRight className={cn(
+            'w-4 h-4 transition-transform',
+            isSelected ? 'rotate-90 text-luxury-gold-400' : 'text-gray-600'
+          )} />
+        )}
       </div>
 
       {/* Signal preview (compact) */}
@@ -697,6 +832,338 @@ function CategoryScoreBar({ cat }: { cat: GravityCategoryScore }) {
       <p className="text-[8px] text-gray-600 mt-0.5">
         {cat.signalCount} signals · {Math.round(cat.weight * 100)}% weight · {cat.topSignal.slice(0, 50)}...
       </p>
+    </div>
+  );
+}
+
+// ============================================================
+// COMPARE PANEL — shows radar chart overlay + side-by-side metrics
+// ============================================================
+
+function ComparePanel({ analyses, onClear, onRemove, onNavigate, isWatched, onToggleWatch }: {
+  analyses: GravityAnalysis[];
+  onClear: () => void;
+  onRemove: (id: string) => void;
+  onNavigate: (path: string) => void;
+  isWatched: (id: string) => boolean;
+  onToggleWatch: (analysis: GravityAnalysis) => void;
+}) {
+  return (
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="premium-card p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <BarChart3 className="w-4 h-4 text-luxury-gold-400" />
+            <h2 className="text-sm font-bold text-white">Market Comparison</h2>
+            <span className="px-1.5 py-0.5 rounded bg-luxury-gold-500/10 text-[9px] font-medium text-luxury-gold-400">
+              {analyses.length} selected
+            </span>
+          </div>
+          <button
+            onClick={onClear}
+            className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] text-gray-500 hover:text-white hover:bg-white/5 transition-colors"
+          >
+            <X className="w-3 h-3" />
+            Clear all
+          </button>
+        </div>
+
+        {/* Radar Chart */}
+        <div className="flex justify-center">
+          <RadarChartSVG analyses={analyses} />
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div className="premium-card p-4">
+        <h3 className="text-[10px] font-semibold text-gray-400 mb-3 uppercase tracking-wider">Selected Markets</h3>
+        <div className="space-y-2">
+          {analyses.map((a, i) => {
+            const color = COMPARE_COLORS[i % COMPARE_COLORS.length];
+            return (
+              <div key={a.microMarket.id} className="flex items-center justify-between p-2 rounded-lg bg-gray-900/50 border border-gray-800">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color.stroke }} />
+                  <span className="text-xs text-white font-medium">{a.microMarket.name}</span>
+                  <span className="text-[10px] text-gray-500">{a.microMarket.countryFlag}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={cn(
+                    'text-xs font-bold',
+                    a.overallScore >= 85 ? 'text-luxury-gold-400' :
+                    a.overallScore >= 75 ? 'text-emerald-400' : 'text-amber-400'
+                  )}>{a.overallScore}</span>
+                  <button
+                    onClick={() => onRemove(a.microMarket.id)}
+                    className="p-1 rounded text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Side-by-Side Category Scores */}
+      <div className="premium-card p-4">
+        <h3 className="text-[10px] font-semibold text-gray-400 mb-3 uppercase tracking-wider">Category Scores</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-[10px]">
+            <thead>
+              <tr className="text-gray-500 border-b border-gray-800">
+                <th className="text-left py-1.5 pr-3 font-medium">Category</th>
+                {analyses.map((a, i) => {
+                  const color = COMPARE_COLORS[i % COMPARE_COLORS.length];
+                  return (
+                    <th key={a.microMarket.id} className="text-center py-1.5 px-2 font-medium">
+                      <span style={{ color: color.stroke }}>{a.microMarket.name}</span>
+                    </th>
+                  );
+                })}
+              </tr>
+            </thead>
+            <tbody>
+              {analyses[0]?.categoryScores.map((cat, catIdx) => (
+                <tr key={cat.category} className="border-b border-gray-800/30">
+                  <td className="py-1.5 pr-3 text-gray-300">
+                    <span className="mr-1">{cat.icon}</span>
+                    {cat.label}
+                  </td>
+                  {analyses.map((a, i) => {
+                    const score = a.categoryScores[catIdx]?.score ?? 0;
+                    return (
+                      <td key={a.microMarket.id} className="text-center py-1.5 px-2">
+                        <span className={cn(
+                          'font-bold',
+                          score >= 70 ? 'text-luxury-gold-400' :
+                          score >= 50 ? 'text-emerald-400' : 'text-gray-400'
+                        )}>{score}</span>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+              {/* Gravity score row */}
+              <tr className="border-t border-gray-700">
+                <td className="py-1.5 pr-3 font-semibold text-white">Gravity Score</td>
+                {analyses.map((a, i) => (
+                  <td key={a.microMarket.id} className="text-center py-1.5 px-2">
+                    <span className={cn(
+                      'font-bold',
+                      a.overallScore >= 85 ? 'text-luxury-gold-400' :
+                      a.overallScore >= 75 ? 'text-emerald-400' : 'text-amber-400'
+                    )}>{a.overallScore}</span>
+                  </td>
+                ))}
+              </tr>
+              {/* Predicted appreciation row */}
+              <tr className="border-b border-gray-800/30">
+                <td className="py-1.5 pr-3 font-semibold text-white">Predicted App.</td>
+                {analyses.map((a, i) => (
+                  <td key={a.microMarket.id} className="text-center py-1.5 px-2 font-bold text-emerald-400">
+                    +{a.predictedAppreciation}%
+                  </td>
+                ))}
+              </tr>
+              {/* Risk level row */}
+              <tr>
+                <td className="py-1.5 pr-3 font-semibold text-white">Risk</td>
+                {analyses.map((a, i) => (
+                  <td key={a.microMarket.id} className="text-center py-1.5 px-2">
+                    <span className={cn(
+                      'px-1.5 py-0.5 rounded text-[9px] font-medium',
+                      a.microMarket.riskLevel === 'low' ? 'bg-emerald-500/15 text-emerald-400' :
+                      a.microMarket.riskLevel === 'medium' ? 'bg-amber-500/15 text-amber-400' :
+                      'bg-red-500/15 text-red-400'
+                    )}>
+                      {a.microMarket.riskLevel.toUpperCase()}
+                    </span>
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Quick Actions per market */}
+      <div className="premium-card p-4">
+        <h3 className="text-[10px] font-semibold text-gray-400 mb-3 uppercase tracking-wider">Actions</h3>
+        <div className="space-y-2">
+          {analyses.map((a, i) => {
+            const color = COMPARE_COLORS[i % COMPARE_COLORS.length];
+            return (
+              <div key={a.microMarket.id} className="flex items-center justify-between p-2 rounded-lg bg-gray-900/50 border border-gray-800">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color.stroke }} />
+                  <span className="text-xs text-white">{a.microMarket.name}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => onToggleWatch(a)}
+                    className={cn(
+                      'px-2 py-1 rounded text-[9px] font-medium transition-colors',
+                      isWatched(a.microMarket.id)
+                        ? 'bg-luxury-gold-500/20 text-luxury-gold-400'
+                        : 'bg-gray-800 text-gray-400 hover:text-white'
+                    )}
+                  >
+                    {isWatched(a.microMarket.id) ? 'Watching' : 'Watch'}
+                  </button>
+                  <button
+                    onClick={() => onNavigate(`/opportunities?city=${a.microMarket.id}`)}
+                    className="px-2 py-1 rounded bg-gray-800 text-[9px] font-medium text-gray-400 hover:text-white transition-colors"
+                  >
+                    Opportunities
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// SVG RADAR CHART — overlays multiple markets on 5 category axes
+// ============================================================
+
+function RadarChartSVG({ analyses }: { analyses: GravityAnalysis[] }) {
+  const size = 280;
+  const cx = size / 2;
+  const cy = size / 2;
+  const maxRadius = 100;
+  const levels = 5;
+
+  const categories = analyses[0]?.categoryScores ?? [];
+  const numAxes = categories.length; // 5
+  const angleStep = 360 / numAxes;
+
+  // Build grid rings (10, 20, 30, ... 100)
+  const gridRings = Array.from({ length: levels }, (_, i) => {
+    const radius = ((i + 1) / levels) * maxRadius;
+    const points = Array.from({ length: numAxes + 1 }, (_, j) => {
+      const { x, y } = polarToCartesian(cx, cy, radius, j * angleStep);
+      return `${x},${y}`;
+    }).join(' ');
+    return { radius, points, label: Math.round(((i + 1) / levels) * 100) };
+  });
+
+  // Axis lines from center to edge
+  const axes = Array.from({ length: numAxes }, (_, i) => {
+    const angle = i * angleStep;
+    const end = polarToCartesian(cx, cy, maxRadius, angle);
+    const labelPos = polarToCartesian(cx, cy, maxRadius + 18, angle);
+    return { angle, end, labelPos, category: categories[i] };
+  });
+
+  // Market polygons
+  const polygons = analyses.map((analysis, marketIdx) => {
+    const color = COMPARE_COLORS[marketIdx % COMPARE_COLORS.length];
+    const points = categories.map((_, catIdx) => {
+      const score = analysis.categoryScores[catIdx]?.score ?? 0;
+      const radius = (score / 100) * maxRadius;
+      const angle = catIdx * angleStep;
+      const { x, y } = polarToCartesian(cx, cy, radius, angle);
+      return { x, y, score };
+    });
+    const pointStr = points.map(p => `${p.x},${p.y}`).join(' ');
+    return { color, points, pointStr };
+  });
+
+  return (
+    <div className="relative">
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="overflow-visible">
+        {/* Grid rings */}
+        {gridRings.map((ring, i) => (
+          <polygon
+            key={i}
+            points={ring.points}
+            fill="none"
+            stroke="rgba(255,255,255,0.06)"
+            strokeWidth="0.5"
+          />
+        ))}
+
+        {/* Grid labels */}
+        {gridRings.filter((_, i) => i === levels - 1 || i === 0).map((ring, i) => (
+          <text
+            key={i}
+            x={cx + 4}
+            y={cy - ring.radius + 3}
+            fill="rgba(255,255,255,0.15)"
+            fontSize="7"
+            fontFamily="monospace"
+          >
+            {ring.label}
+          </text>
+        ))}
+
+        {/* Axis lines */}
+        {axes.map((axis, i) => (
+          <g key={i}>
+            <line
+              x1={cx}
+              y1={cy}
+              x2={axis.end.x}
+              y2={axis.end.y}
+              stroke="rgba(255,255,255,0.08)"
+              strokeWidth="0.5"
+            />
+            <text
+              x={axis.labelPos.x}
+              y={axis.labelPos.y}
+              fill="rgba(255,255,255,0.35)"
+              fontSize="8"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontFamily="system-ui"
+            >
+              {axis.category.icon}
+            </text>
+          </g>
+        ))}
+
+        {/* Market polygons */}
+        {polygons.map((poly, i) => (
+          <g key={i}>
+            {/* Fill */}
+            <polygon
+              points={poly.pointStr}
+              fill={poly.color.fill}
+              stroke="none"
+            />
+            {/* Stroke */}
+            <polygon
+              points={poly.pointStr}
+              fill="none"
+              stroke={poly.color.stroke}
+              strokeWidth="1.5"
+              strokeLinejoin="round"
+            />
+            {/* Data points */}
+            {poly.points.map((pt, j) => (
+              <circle
+                key={j}
+                cx={pt.x}
+                cy={pt.y}
+                r="3"
+                fill={poly.color.stroke}
+                stroke="#111"
+                strokeWidth="1"
+              />
+            ))}
+          </g>
+        ))}
+
+        {/* Center dot */}
+        <circle cx={cx} cy={cy} r="1.5" fill="rgba(255,255,255,0.15)" />
+      </svg>
     </div>
   );
 }
