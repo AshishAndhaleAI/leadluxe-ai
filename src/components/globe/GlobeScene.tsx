@@ -5,7 +5,7 @@
 // ============================================================
 
 import { useRef, useMemo, useCallback, Suspense } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { useGlobeCities } from './CityClusters';
@@ -45,17 +45,13 @@ function latLngToVec3(lat: number, lng: number, radius: number): THREE.Vector3 {
 
 // ============================================================
 // EARTH COMPONENT
+// Uses a stable reference — NO self-rotation (camera autoRotate handles it).
+// CRITICAL: Earth must NOT rotate independently from markers/arcs,
+// otherwise markers drift away from the texture over time.
 // ============================================================
 function Earth() {
   const texture = useTexture('https://unpkg.com/three-globe/example/img/earth-day.jpg');
   const meshRef = useRef<THREE.Mesh>(null);
-
-  // Slow rotation
-  useFrame(() => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += 0.0005;
-    }
-  });
 
   return (
     <mesh ref={meshRef}>

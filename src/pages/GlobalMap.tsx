@@ -14,6 +14,9 @@ import { useGlobeCities, formatCityLabel } from '../components/globe/CityCluster
 import { usePropertyHotspots, formatHotspotLabel } from '../components/globe/PropertyHotspots';
 import { GlobeControls } from '../components/globe/GlobeControls';
 import { InteractiveGlobe } from '../components/globe/Globe3D';
+import { GeoSearch } from '../components/globe/GeoSearch';
+import { DebugGeoOverlay } from '../components/globe/DebugGeoOverlay';
+import type { GeoSearchResult } from '../lib/geo/GeocodingEngine';
 
 type ViewLevel = 'world' | 'country' | 'city';
 
@@ -70,11 +73,11 @@ export function GlobalMap() {
     }
   }, []);
 
-  const handleSearch = useCallback((query: string) => {
-    // Find city by name across all countries
+  const handleSearch = useCallback((result: GeoSearchResult) => {
+    // Find the city by ID
     for (const country of COUNTRIES) {
       const cs = CITIES[country.code] || [];
-      const found = cs.find(c => c.name.toLowerCase().includes(query.toLowerCase()));
+      const found = cs.find(c => c.id === result.id);
       if (found) {
         setSelectedCountry(country);
         setSelectedCity(found);
@@ -135,15 +138,26 @@ export function GlobalMap() {
 
       {/* Globe Container */}
       <div ref={containerRef} className={cn('relative overflow-hidden rounded-xl premium-card', isFullscreen ? 'rounded-none h-screen' : 'min-h-[600px]')}>
-        {/* Globe Loading Indicator */}
-        <div className="absolute top-4 left-4 z-10">
+        {/* Geo Search Bar */}
+        <div className="absolute top-4 left-4 right-16 z-10">
+          <GeoSearch
+            onSelect={handleSearch}
+            placeholder="Search city… Tokyo, Dubai, Pune, London…"
+            className="max-w-xs"
+          />
+        </div>
+
+        {/* Globe Controls */}
+        <div className="absolute top-4 right-4 z-10">
           <GlobeControls
             onReset={() => {
               setViewLevel('world');
               setSelectedCountry(null);
               setSelectedCity(null);
             }}
-            onSearch={handleSearch}
+            onSearch={(q) => {
+              if (q) handleSearch({ id: '', label: q, description: '', latitude: 0, longitude: 0, countryCode: '', cityName: q, matchScore: 0 });
+            }}
             onFullscreen={() => setIsFullscreen(!isFullscreen)}
             isFullscreen={isFullscreen}
             loading={false}
@@ -292,6 +306,9 @@ export function GlobalMap() {
           )}
         </>
       )}
+
+      {/* Debug Geo Overlay (Ctrl+Shift+G) */}
+      <DebugGeoOverlay />
     </div>
   );
 }
