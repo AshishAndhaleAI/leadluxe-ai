@@ -813,7 +813,7 @@ function PropertyCard({ property, index, isFavorite, onToggleFavorite, onClick, 
 }) {
   const statusBadge = getStatusBadge(property.status);
   const salesBadge = getSalesBadge(property.sales_status);
-  const imgUrl = property.images[0]?.url || 'https://picsum.photos/seed/default/800/600';
+  const imgUrl = property.images[0]?.url || 'https://images.unsplash.com/photo-1504385120-68dac6aecd5e?w=800&h=600&fit=crop&auto=format';
 
   return (
     <motion.div
@@ -916,7 +916,7 @@ function PropertyListItem({ property, index, isFavorite, onToggleFavorite, onCli
 }) {
   const statusBadge = getStatusBadge(property.status);
   const salesBadge = getSalesBadge(property.sales_status);
-  const imgUrl = property.images[0]?.url || 'https://picsum.photos/seed/default/800/600';
+  const imgUrl = property.images[0]?.url || 'https://images.unsplash.com/photo-1504385120-68dac6aecd5e?w=800&h=600&fit=crop&auto=format';
 
   return (
     <motion.div
