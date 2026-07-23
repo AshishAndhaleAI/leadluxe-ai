@@ -843,6 +843,13 @@ export function PropertyDetail() {
                     <Zap className="w-3.5 h-3.5" />
                     AI Match Analysis
                   </button>
+                  <button
+                    onClick={() => navigate(`/research/${property.slug}`)}
+                    className="btn-ghost w-full text-xs border border-luxury-gold-500/20 text-luxury-gold-400 hover:bg-luxury-gold-500/10"
+                  >
+                    <Building2 className="w-3.5 h-3.5" />
+                    Full Research · Digital Twin
+                  </button>
                 </div>
               </div>
 
