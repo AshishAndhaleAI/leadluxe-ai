@@ -16,6 +16,7 @@ import { CommissionDashboard } from './pages/CommissionDashboard';
 import { NotFound } from './pages/NotFound';
 import { GlobalMap } from './pages/GlobalMap';
 import { Match } from './pages/Match';
+import { GravityEngine } from './pages/GravityEngine';
 import type { ReactNode } from 'react';
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
@@ -59,6 +60,7 @@ function AppRoutes() {
         <Route path="/coach" element={<Coach />} />
         <Route path="/global-map" element={<GlobalMap />} />
         <Route path="/match" element={<Match />} />
+        <Route path="/gravity" element={<GravityEngine />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/commission" element={<CommissionDashboard />} />
       </Route>
