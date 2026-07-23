@@ -1,7 +1,8 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Zap, Globe, Building2, TrendingUp,
-  Bot, ChevronLeft, Menu, Settings, Map, Sparkles as MatchIcon
+  Bot, ChevronLeft, Menu, Settings, Map, Sparkles as MatchIcon,
+  Percent
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { cn, getInitials } from '../../lib/utils';
@@ -13,11 +14,12 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { path: '/dashboard', label: 'Experience', icon: LayoutDashboard },
   { path: '/opportunities', label: 'Opportunities', icon: Zap },
   { path: '/signals', label: 'Signals', icon: Globe },
   { path: '/global-map', label: 'Global Map', icon: Map },
   { path: '/match', label: 'AI Match', icon: MatchIcon },
+  { path: '/commission', label: 'Commission', icon: Percent },
   { path: '/competitors', label: 'Competitors', icon: Building2 },
   { path: '/forecasts', label: 'Forecasts', icon: TrendingUp },
   { path: '/coach', label: 'AI Coach', icon: Bot },

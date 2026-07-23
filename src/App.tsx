@@ -4,7 +4,7 @@ import { NotificationProvider } from './context/NotificationContext';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 import { Landing } from './pages/Landing';
 import { Login } from './pages/Login';
-import { Dashboard } from './pages/Dashboard';
+import { Experience } from './pages/Experience';
 import { Opportunities } from './pages/Opportunities';
 import { OpportunityDetail } from './pages/OpportunityDetail';
 import { Signals } from './pages/Signals';
@@ -12,6 +12,7 @@ import { Competitors } from './pages/Competitors';
 import { Forecasts } from './pages/Forecasts';
 import { Coach } from './pages/Coach';
 import { Settings } from './pages/Settings';
+import { CommissionDashboard } from './pages/CommissionDashboard';
 import { NotFound } from './pages/NotFound';
 import { GlobalMap } from './pages/GlobalMap';
 import { Match } from './pages/Match';
@@ -40,7 +41,17 @@ function AppRoutes() {
       <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
 
-      {/* Protected Routes */}
+      {/* Protected — Cinematic Experience (full-screen, no sidebar) */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Experience />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Protected — Standard Dashboard Layout */}
       <Route
         element={
           <ProtectedRoute>
@@ -48,7 +59,6 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/opportunities" element={<Opportunities />} />
         <Route path="/opportunity/:id" element={<OpportunityDetail />} />
         <Route path="/signals" element={<Signals />} />
@@ -58,6 +68,7 @@ function AppRoutes() {
         <Route path="/global-map" element={<GlobalMap />} />
         <Route path="/match" element={<Match />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/commission" element={<CommissionDashboard />} />
       </Route>
 
       {/* 404 */}
