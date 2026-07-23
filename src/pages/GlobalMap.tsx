@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -8,8 +8,10 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
-import { COUNTRIES, CITIES, getCitiesByCountry, getCountry, formatGlobalCurrency } from '../lib/global-data';
+import { COUNTRIES, CITIES, getCitiesByCountry, getCountry } from '../lib/global-data';
 import type { Country, City } from '../lib/global-data';
+
+const InteractiveGlobe = lazy(() => import('../components/globe/Globe3D').then(m => ({ default: m.InteractiveGlobe })));
 
 type ViewLevel = 'world' | 'country' | 'city';
 
@@ -77,50 +79,55 @@ export function GlobalMap() {
       {/* World View */}
       {viewLevel === 'world' && (
         <div className="space-y-6">
-          {/* Globe Visualization */}
-          <div className="premium-card p-8 relative overflow-hidden min-h-[400px]">
-            {/* Decorative globe grid */}
-            <div className="absolute inset-0 opacity-[0.03]">
-              <div className="w-full h-full" style={{
-                backgroundImage: `
-                  radial-gradient(circle at 50% 50%, rgba(212,160,48,0.1) 0%, transparent 60%),
-                  repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(212,160,48,0.05) 40px, rgba(212,160,48,0.05) 41px),
-                  repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(212,160,48,0.05) 40px, rgba(212,160,48,0.05) 41px)
-                `,
-              }} />
-            </div>
-
-            <div className="relative z-10">
-              <div className="text-center mb-8">
-                <h3 className="text-xl font-bold text-white font-display mb-2">Global Real Estate Intelligence</h3>
-                <p className="text-sm text-gray-500">{activeCountries.length} countries · {Object.values(CITIES).flat().length} cities tracked</p>
+          {/* Interactive 3D Globe */}
+          <div className="premium-card overflow-hidden border-luxury-gold-500/10">
+            <div className="flex items-center justify-between p-4 border-b border-luxury-border bg-luxury-dark/50">
+              <div className="flex items-center gap-2">
+                <Globe className="w-4 h-4 text-luxury-gold-400" />
+                <h3 className="text-sm font-semibold text-white">3D Global Intelligence</h3>
               </div>
-
-              {/* Country Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                {activeCountries.map((country, i) => (
-                  <motion.button
-                    key={country.code}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.04 }}
-                    onClick={() => { setSelectedCountry(country); setViewLevel('country'); }}
-                    className="premium-card p-4 text-center group hover:border-luxury-gold-500/30 transition-all duration-300"
-                  >
-                    <span className="text-3xl block mb-2">{country.flag}</span>
-                    <p className="text-sm font-semibold text-white group-hover:text-luxury-gold-300 transition-colors">{country.name}</p>
-                    <p className="text-[10px] text-gray-500 mt-1">{country.currency} · {country.marketTrend === 'rising' ? '📈' : '📊'}</p>
-                    <div className="mt-2 flex items-center justify-center gap-1">
-                      <span className={cn(
-                        'w-1.5 h-1.5 rounded-full',
-                        country.marketTrend === 'rising' ? 'bg-emerald-400' : 'bg-amber-400'
-                      )} />
-                      <span className="text-[9px] text-gray-500">{country.marketTrend === 'rising' ? 'Rising' : 'Stable'}</span>
-                    </div>
-                  </motion.button>
-                ))}
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-gray-500">
+                  {activeCountries.length} countries · {Object.values(CITIES).flat().length} cities
+                </span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[9px] text-emerald-400 font-medium">Live</span>
               </div>
             </div>
+            <Suspense fallback={
+              <div className="w-full min-h-[500px] flex items-center justify-center bg-luxury-black/50">
+                <div className="text-center">
+                  <div className="w-12 h-12 border-2 border-luxury-gold-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                  <p className="text-sm text-gray-500">Loading 3D Globe...</p>
+                </div>
+              </div>
+            }>
+              <InteractiveGlobe
+                key={viewLevel === 'world' ? 'globe-active' : 'globe-hidden'}
+                onCountrySelect={(code) => {
+                  const country = COUNTRIES.find(c => c.code === code);
+                  if (country) setSelectedCountry(country);
+                }}
+                onCitySelect={(cityId) => {
+                  // Find city and set up country+city view
+                  for (const c of Object.values(CITIES)) {
+                    const city = c.find(ci => ci.id === cityId);
+                    if (city) {
+                      const country = COUNTRIES.find(co => co.code === city.countryCode);
+                      if (country) setSelectedCountry(country);
+                      setSelectedCity(city);
+                      setViewLevel('city');
+                      return;
+                    }
+                  }
+                }}
+                onBackToWorld={() => {
+                  setViewLevel('world');
+                  setSelectedCountry(null);
+                  setSelectedCity(null);
+                }}
+              />
+            </Suspense>
           </div>
 
           {/* Hot Cities */}
