@@ -392,6 +392,7 @@ export function seedKnowledgeGraph(): void {
 
       // Opportunity node with specific project and site data
       const oppId = `opp-${city.id}`;
+      const opportunityId = oppId;
       const estimatedValue = city.pricePerSqft * 1000 * deterministicValue(city.id, 50, 250);
       const estimatedCommission = estimatedValue * 0.03;
       const confidence = city.confidence;
@@ -420,6 +421,8 @@ export function seedKnowledgeGraph(): void {
           unit_types: ['2 BHK', '3 BHK', '4 BHK', 'Penthouse'],
           total_units: deterministicValue(city.id, 200, 2000),
           price_per_sqft: city.pricePerSqft,
+          opportunity_id: opportunityId,
+          opportunityId: opportunityId,
           estimated_value: estimatedValue,
           estimated_commission: estimatedCommission,
           confidence_score: confidence,

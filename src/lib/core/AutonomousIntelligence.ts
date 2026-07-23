@@ -271,11 +271,24 @@ export class AutonomousIntelligence {
 
   /**
    * Get all opportunities discovered by the system
+   * Matches:
+   *   - Seed data: event nodes with estimated_value + confidence_score (the pattern seed-data.ts uses)
+   *   - Intelligence data: nodes with opportunityId or label containing 'Opportunity'
+   *   - Any event node that looks like an investment opportunity
    */
   getOpportunities(): GraphNode[] {
-    return knowledgeGraph.findNodes('event', n => 
-      n.label.includes('Opportunity') || n.properties.opportunityId
-    );
+    return knowledgeGraph.findNodes('event', n => {
+      // Match by explicit opportunityId
+      if (n.properties.opportunityId) return true;
+      // Match by label containing 'Opportunity'
+      if (n.label.includes('Opportunity')) return true;
+      // Match by having investment-related properties (seed data pattern)
+      if (n.properties.estimated_value || n.properties.estimatedValue) return true;
+      if (n.properties.confidence_score || n.properties.confidenceScore) return true;
+      // Match by having project_name (seed data identifies projects)
+      if (n.properties.project_name) return true;
+      return false;
+    });
   }
 
   /**
