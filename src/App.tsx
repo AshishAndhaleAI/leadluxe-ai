@@ -30,6 +30,9 @@ import { MarketIntelligence } from './pages/MarketIntelligence';
 import { BookDemo } from './pages/BookDemo';
 import { DealReport } from './pages/DealReport';
 import { Demo } from './pages/Demo';
+import { Developers } from './pages/Developers';
+import { NRIPortal } from './pages/NRIPortal';
+import { AcquisitionDashboard } from './pages/AcquisitionDashboard';
 import { DataProvenance } from './pages/DataProvenance';
 import { AIGovernancePanel } from './components/investor/AIGovernancePanel';
 import { NeuralCapitalMap } from './pages/NeuralCapitalMap';
@@ -119,6 +122,9 @@ function AppRoutes() {
         <Route path="/book-demo" element={<BookDemo />} />
         <Route path="/report/:slug" element={<DealReport />} />
         <Route path="/demo" element={<Demo />} />
+        <Route path="/developers" element={<Developers />} />
+        <Route path="/nri" element={<NRIPortal />} />
+        <Route path="/admin/acquisition" element={<ProtectedRoute><AcquisitionDashboard /></ProtectedRoute>} />
 
         {/* Public Info pages — no auth required */}
         <Route path="/data-provenance" element={<DataProvenance />} />

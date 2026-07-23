@@ -27,6 +27,8 @@ const HERO_IMAGES = [
 // ─── Navigation ─────────────────────────────────────────────
 const NAV_LINKS = [
   { label: 'Architecture', href: '#walkthrough' },
+  { label: 'Developers', href: '/developers' },
+  { label: 'NRI Investors', href: '/nri' },
   { label: 'Enterprise', href: '/enterprise' },
   { label: 'Pilot', href: '/pilot' },
 ];
