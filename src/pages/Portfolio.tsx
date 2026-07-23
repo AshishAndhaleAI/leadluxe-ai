@@ -11,7 +11,8 @@ import {
   Briefcase, Building2, Heart, Percent, TrendingUp, DollarSign,
   Target, ArrowUpRight, Clock, CheckCircle, X, MapPin,
   Star, Zap, FileText, Trash2, ExternalLink, ChevronRight,
-  BarChart3, PieChart, Activity, Award,
+  BarChart3, PieChart, Activity, Award, Bot, Lightbulb,
+  Send, Phone, Calendar, MessageSquare, AlertTriangle,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { getPropertyDatabase } from '../lib/property-database';
@@ -43,6 +44,7 @@ interface SavedDeal {
   developerName: string;
   city: string;
   country: string;
+  countryCode: string;
   priceMin: number;
   priceMax: number;
   estimatedCommission: number;
@@ -56,7 +58,292 @@ interface SavedDeal {
   createdAt: string;
 }
 
-type PortfolioTab = 'overview' | 'deals' | 'favorites' | 'analytics';
+type PortfolioTab = 'overview' | 'deals' | 'favorites' | 'analytics' | 'coach';
+
+// ============================================================
+// AI DEAL COACH — Recommendation Engine
+// ============================================================
+
+interface CoachRecommendation {
+  id: string;
+  dealId: string;
+  propertyName: string;
+  developerName: string;
+  city: string;
+  country: string;
+  countryCode: string;
+  commission: number;
+  currency: string;
+  priority: 'critical' | 'high' | 'medium' | 'low';
+  priorityScore: number;
+  category: 'contact' | 'follow_up' | 'site_visit' | 'negotiation' | 'closing' | 'stale' | 'research';
+  action: string;
+  reasoning: string;
+  tip: string;
+  channel?: 'email' | 'phone' | 'whatsapp' | 'meeting';
+  timeline: 'today' | 'this_week' | 'this_month' | 'flexible';
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+  daysSinceCreation: number;
+  dealStatus: string;
+}
+
+function generateCoachRecommendations(deals: SavedDeal[]): CoachRecommendation[] {
+  const recommendations: CoachRecommendation[] = [];
+  const now = Date.now();
+
+  for (const deal of deals) {
+    const createdAt = new Date(deal.createdAt).getTime();
+    const daysSinceCreation = Math.round((now - createdAt) / (1000 * 60 * 60 * 24));
+    const commissionValue = deal.estimatedCommission;
+    const countryCode = deal.countryCode || 'IN';
+
+    // Base priority score from commission value
+    const commissionScore = Math.min(commissionValue / 1000000, 1) * 30;
+
+    switch (deal.status) {
+      case 'new': {
+        // Urgency increases with days since creation
+        const urgencyScore = Math.min(daysSinceCreation / 7, 1) * 40;
+        const priorityScore = commissionScore + urgencyScore + 20;
+        const isStale = daysSinceCreation > 5;
+
+        recommendations.push({
+          id: `coach-new-${deal.id}`,
+          dealId: deal.id,
+          propertyName: deal.propertyName,
+          developerName: deal.developerName,
+          city: deal.city,
+          country: deal.country,
+          countryCode,
+          commission: commissionValue,
+          currency: deal.currency,
+          priority: priorityScore >= 70 ? 'critical' : priorityScore >= 50 ? 'high' : 'medium',
+          priorityScore,
+          category: isStale ? 'stale' : 'contact',
+          action: isStale
+            ? `Urgent: Contact ${deal.contactName} about ${deal.propertyName} — deal has been idle for ${daysSinceCreation} days`
+            : `Reach out to ${deal.contactName} about ${deal.propertyName} in ${deal.city}`,
+          reasoning: isStale
+            ? `This deal has been in 'New' status for ${daysSinceCreation} days. The lead's interest may be cooling. Immediate contact is recommended to re-engage before they explore other options.`
+            : `This lead expressed interest ${daysSinceCreation === 0 ? 'today' : `${daysSinceCreation} days ago`}. Quick response increases close probability by 78%. Send a personalized property brochure and invite them for a virtual tour.`,
+          tip: isStale
+            ? 'Send a re-engagement email with updated pricing or a limited-time offer. Mention new developments in the area to spark renewed interest.'
+            : 'Lead with value: share 3 reasons why this property matches their stated needs. Reference their message in your outreach.',
+          channel: 'email',
+          timeline: isStale ? 'today' : 'today',
+          contactName: deal.contactName,
+          contactEmail: deal.contactEmail,
+          contactPhone: deal.contactPhone,
+          daysSinceCreation,
+          dealStatus: deal.status,
+        });
+        break;
+      }
+
+      case 'contacted': {
+        const daysSinceContact = Math.max(daysSinceCreation - 1, 0);
+        const urgencyScore = Math.min(daysSinceContact / 5, 1) * 35;
+        const priorityScore = commissionScore + urgencyScore + 15;
+        const needsFollowUp = daysSinceContact > 3;
+
+        recommendations.push({
+          id: `coach-follow-${deal.id}`,
+          dealId: deal.id,
+          propertyName: deal.propertyName,
+          developerName: deal.developerName,
+          city: deal.city,
+          country: deal.country,
+          countryCode,
+          commission: commissionValue,
+          currency: deal.currency,
+          priority: needsFollowUp ? 'high' : priorityScore >= 55 ? 'high' : 'medium',
+          priorityScore,
+          category: 'follow_up',
+          action: needsFollowUp
+            ? `Follow up with ${deal.contactName} — no response in ${daysSinceContact} days`
+            : `Deepen the conversation with ${deal.contactName} — schedule a property walkthrough`,
+          reasoning: needsFollowUp
+            ? `You contacted ${deal.contactName} ${daysSinceContact} days ago but the deal hasn't progressed. A gentle follow-up with new information or a time-sensitive update could re-ignite their interest.`
+            : `${deal.contactName} has been contacted. The next step is to qualify their timeline and budget. Ask specific questions about their move-in date and financing to identify any blockers early.`,
+          tip: needsFollowUp
+            ? 'Reference your previous conversation. Try a different channel — if you emailed, call or send a WhatsApp message instead.'
+            : 'Ask discovery questions: "What drew you to this property?" and "What would make you decide to move forward this month?"',
+          channel: needsFollowUp ? 'phone' : 'email',
+          timeline: needsFollowUp ? 'today' : 'this_week',
+          contactName: deal.contactName,
+          contactEmail: deal.contactEmail,
+          contactPhone: deal.contactPhone,
+          daysSinceCreation,
+          dealStatus: deal.status,
+        });
+        break;
+      }
+
+      case 'qualified': {
+        const priorityScore = commissionScore + 40;
+        recommendations.push({
+          id: `coach-site-${deal.id}`,
+          dealId: deal.id,
+          propertyName: deal.propertyName,
+          developerName: deal.developerName,
+          city: deal.city,
+          country: deal.country,
+          countryCode,
+          commission: commissionValue,
+          currency: deal.currency,
+          priority: priorityScore >= 65 ? 'high' : 'medium',
+          priorityScore,
+          category: 'site_visit',
+          action: `Schedule a site visit for ${deal.contactName} at ${deal.propertyName}`,
+          reasoning: `${deal.contactName} is a qualified lead interested in ${deal.propertyName}. A physical site visit is the highest-conversion activity — properties shown in person have a 4x higher close rate. Coordinate with ${deal.developerName}'s sales team to arrange a guided tour.`,
+          tip: 'Prepare a comparison sheet showing 2-3 similar properties in the area to demonstrate value. Offer to pick them up or arrange transportation to reduce friction.',
+          channel: 'meeting',
+          timeline: 'this_week',
+          contactName: deal.contactName,
+          contactEmail: deal.contactEmail,
+          contactPhone: deal.contactPhone,
+          daysSinceCreation,
+          dealStatus: deal.status,
+        });
+        break;
+      }
+
+      case 'site_visit': {
+        const priorityScore = commissionScore + 45;
+        const daysSinceVisit = Math.max(daysSinceCreation - 3, 0);
+
+        recommendations.push({
+          id: `coach-neg-${deal.id}`,
+          dealId: deal.id,
+          propertyName: deal.propertyName,
+          developerName: deal.developerName,
+          city: deal.city,
+          country: deal.country,
+          countryCode,
+          commission: commissionValue,
+          currency: deal.currency,
+          priority: daysSinceVisit > 7 ? 'critical' : priorityScore >= 60 ? 'high' : 'medium',
+          priorityScore,
+          category: 'negotiation',
+          action: daysSinceVisit > 7
+            ? `Follow up urgently — ${deal.contactName} visited ${deal.propertyName} ${daysSinceVisit} days ago`
+            : `Begin negotiation with ${deal.contactName} for ${deal.propertyName}`,
+          reasoning: daysSinceVisit > 7
+            ? `It's been ${daysSinceVisit} days since the site visit. The lead's memory of the property is fading. Send a recap with photos and a limited-time offer to re-engage.`
+            : `The site visit is complete. ${deal.contactName} has seen the property firsthand. Now is the time to discuss payment plans, the booking process, and your commission structure. Strike while the impression is fresh.`,
+          tip: daysSinceVisit > 7
+            ? 'Share a photo from their visit with a personal message: "Remember this view? Let me share a special offer that expires this week."'
+            : 'Prepare a side-by-side comparison of this property vs competitors. Highlight the unique advantages you discussed during the visit.',
+          channel: 'phone',
+          timeline: 'today',
+          contactName: deal.contactName,
+          contactEmail: deal.contactEmail,
+          contactPhone: deal.contactPhone,
+          daysSinceCreation,
+          dealStatus: deal.status,
+        });
+        break;
+      }
+
+      case 'negotiation': {
+        const priorityScore = commissionScore + 50;
+        recommendations.push({
+          id: `coach-close-${deal.id}`,
+          dealId: deal.id,
+          propertyName: deal.propertyName,
+          developerName: deal.developerName,
+          city: deal.city,
+          country: deal.country,
+          countryCode,
+          commission: commissionValue,
+          currency: deal.currency,
+          priority: priorityScore >= 70 ? 'critical' : 'high',
+          priorityScore,
+          category: 'closing',
+          action: `Push to close ${deal.propertyName} — ${deal.contactName} is in negotiation`,
+          reasoning: `This deal is in the final stage with a potential commission of ${formatPrice(commissionValue, deal.currency)}. ${deal.contactName} is actively negotiating — maintain momentum by being responsive to their concerns and facilitating communication with ${deal.developerName}'s team.`,
+          tip: 'Identify the top 3 objections and prepare counter-arguments. Offer a limited-time add-on (free club membership, upgrade package) to tip the decision. Keep daily contact until signed.',
+          channel: 'phone',
+          timeline: 'today',
+          contactName: deal.contactName,
+          contactEmail: deal.contactEmail,
+          contactPhone: deal.contactPhone,
+          daysSinceCreation,
+          dealStatus: deal.status,
+        });
+        break;
+      }
+
+      case 'booked': {
+        const priorityScore = commissionScore + 55;
+        recommendations.push({
+          id: `coach-booked-${deal.id}`,
+          dealId: deal.id,
+          propertyName: deal.propertyName,
+          developerName: deal.developerName,
+          city: deal.city,
+          country: deal.country,
+          countryCode,
+          commission: commissionValue,
+          currency: deal.currency,
+          priority: priorityScore >= 75 ? 'critical' : 'high',
+          priorityScore,
+          category: 'closing',
+          action: `Finalize booking for ${deal.propertyName} — commission of ${formatPrice(commissionValue, deal.currency)} at stake`,
+          reasoning: `The deal is booked! Your commission of ${formatPrice(commissionValue, deal.currency)} is within reach. Ensure all documentation is in order, payment schedules are confirmed, and the developer has acknowledged the booking.`,
+          tip: 'Confirm the payment schedule with the developer. Send a congratulations message to the buyer. Request a referral — booked buyers are the best source of warm leads.',
+          channel: 'email',
+          timeline: 'today',
+          contactName: deal.contactName,
+          contactEmail: deal.contactEmail,
+          contactPhone: deal.contactPhone,
+          daysSinceCreation,
+          dealStatus: deal.status,
+        });
+        break;
+      }
+
+      case 'closed': {
+        const priorityScore = commissionScore;
+        recommendations.push({
+          id: `coach-closed-${deal.id}`,
+          dealId: deal.id,
+          propertyName: deal.propertyName,
+          developerName: deal.developerName,
+          city: deal.city,
+          country: deal.country,
+          countryCode,
+          commission: commissionValue,
+          currency: deal.currency,
+          priority: 'medium',
+          priorityScore,
+          category: 'research',
+          action: `Request a referral from ${deal.contactName} — they just closed on ${deal.propertyName}`,
+          reasoning: `This deal closed successfully. ${deal.contactName} had a positive experience working with you. Now is the best time to ask for referrals — satisfied clients are 5x more likely to recommend you to their network.`,
+          tip: 'Send a personalized thank-you note and a small gift (welcome hamper, housewarming plant). Follow up in 30 days to ask for referrals and Google reviews.',
+          channel: 'email',
+          timeline: 'this_month',
+          contactName: deal.contactName,
+          contactEmail: deal.contactEmail,
+          contactPhone: deal.contactPhone,
+          daysSinceCreation,
+          dealStatus: deal.status,
+        });
+        break;
+      }
+
+      default:
+        break;
+    }
+  }
+
+  // Sort by priority score descending
+  recommendations.sort((a, b) => b.priorityScore - a.priorityScore);
+
+  return recommendations;
+}
 
 // ============================================================
 // PORTFOLIO PAGE
@@ -137,6 +424,25 @@ export function Portfolio() {
     return map[status] || { label: status, color: 'bg-gray-500/15 text-gray-400 border-gray-500/30' };
   };
 
+  const getNextStatus = (status: string): string => {
+    const flow: Record<string, string> = {
+      new: 'contacted',
+      contacted: 'qualified',
+      qualified: 'site_visit',
+      site_visit: 'negotiation',
+      negotiation: 'booked',
+      booked: 'closed',
+      closed: 'closed',
+      lost: 'lost',
+    };
+    return flow[status] || status;
+  };
+
+  const getNextStatusLabel = (status: string): string => {
+    const next = getNextStatus(status);
+    return statusBadge(next).label;
+  };
+
   const removeDeal = (id: string) => {
     const updated = savedDeals.filter(d => d.id !== id);
     localStorage.setItem('leadluxe-deals', JSON.stringify(updated));
@@ -158,8 +464,20 @@ export function Portfolio() {
     setFavoriteIds(next);
   };
 
+  // AI Deal Coach recommendations
+  const coachRecommendations = useMemo(() =>
+    generateCoachRecommendations(savedDeals),
+    [savedDeals]
+  );
+
+  const criticalCount = useMemo(() =>
+    coachRecommendations.filter(r => r.priority === 'critical').length,
+    [coachRecommendations]
+  );
+
   const tabs: { key: PortfolioTab; label: string; icon: React.ElementType }[] = [
     { key: 'overview', label: 'Overview', icon: Briefcase },
+    { key: 'coach', label: criticalCount > 0 ? `AI Coach (${criticalCount})` : 'AI Coach', icon: Bot },
     { key: 'deals', label: `Deals (${savedDeals.length})`, icon: FileText },
     { key: 'favorites', label: `Favorites (${favoriteProperties.length})`, icon: Heart },
     { key: 'analytics', label: 'Analytics', icon: BarChart3 },
@@ -294,7 +612,7 @@ export function Portfolio() {
                         <div className="min-w-0">
                           <p className="text-xs font-semibold text-white truncate">{deal.propertyName}</p>
                           <p className="text-[10px] text-gray-500 truncate">
-                            {deal.developerName} · {deal.city}, {getFlag(deal.currency)}
+                            {deal.developerName} · {deal.city}, {getFlag(deal.countryCode || deal.currency)}
                           </p>
                         </div>
                       </div>
@@ -375,6 +693,235 @@ export function Portfolio() {
                 )}
               </div>
             </div>
+          </motion.div>
+        )}
+
+        {activeTab === 'coach' && (
+          <motion.div
+            key="coach"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="space-y-4"
+          >
+            {/* Coach Header */}
+            <div className="premium-card p-4 bg-gradient-to-r from-gray-900 via-gray-900/80 to-luxury-gold-500/5 border-luxury-gold-500/10">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-luxury-gold-500/20 flex items-center justify-center shrink-0">
+                  <Bot className="w-6 h-6 text-luxury-gold-400" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h2 className="text-base font-bold text-white">AI Deal Coach</h2>
+                    {criticalCount > 0 && (
+                      <span className="px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 text-[9px] font-medium border border-red-500/20 animate-pulse">
+                        {criticalCount} urgent
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    {coachRecommendations.length === 0
+                      ? 'Express interest in properties to receive AI-powered coaching and next-step recommendations.'
+                      : `Analyzing ${savedDeals.length} deal${savedDeals.length > 1 ? 's' : ''} · ${criticalCount > 0 ? `${criticalCount} need${criticalCount > 1 ? '' : 's'} immediate attention` : 'All deals are on track'}`}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Priority Filter */}
+            {coachRecommendations.length > 0 && (
+              <>
+                {/* Summary cards */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {[
+                    { label: 'Critical', count: coachRecommendations.filter(r => r.priority === 'critical').length, color: 'text-red-400', bg: 'bg-red-500/10' },
+                    { label: 'High Priority', count: coachRecommendations.filter(r => r.priority === 'high').length, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+                    { label: 'Medium Priority', count: coachRecommendations.filter(r => r.priority === 'medium').length, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+                    { label: 'Low Priority', count: coachRecommendations.filter(r => r.priority === 'low').length, color: 'text-gray-400', bg: 'bg-gray-500/10' },
+                  ].map((item, i) => (
+                    <motion.div
+                      key={item.label}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.04 }}
+                      className="premium-card p-3"
+                    >
+                      <p className="text-[10px] text-gray-500 mb-0.5">{item.label}</p>
+                      <p className={cn('text-xl font-bold', item.color)}>{item.count}</p>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Coaching Cards */}
+                <div className="space-y-3">
+                  {coachRecommendations.map((rec, i) => {
+                    const categoryConfig = (() => {
+                      const map: Record<string, { label: string; icon: React.ElementType; color: string }> = {
+                        contact: { label: 'Contact Lead', icon: Send, color: 'text-blue-400' },
+                        follow_up: { label: 'Follow Up', icon: MessageSquare, color: 'text-purple-400' },
+                        site_visit: { label: 'Site Visit', icon: Calendar, color: 'text-amber-400' },
+                        negotiation: { label: 'Negotiation', icon: Target, color: 'text-orange-400' },
+                        closing: { label: 'Closing', icon: CheckCircle, color: 'text-emerald-400' },
+                        stale: { label: 'Stale Deal', icon: AlertTriangle, color: 'text-red-400' },
+                        research: { label: 'Research', icon: Lightbulb, color: 'text-indigo-400' },
+                      };
+                      return map[rec.category] || { label: 'Action', icon: Lightbulb, color: 'text-gray-400' };
+                    })();
+
+                    const priorityConfig = (() => {
+                      const map: Record<string, { label: string; color: string; border: string }> = {
+                        critical: { label: 'Critical', color: 'text-red-400 bg-red-500/10 border-red-500/20', border: 'border-l-red-500' },
+                        high: { label: 'High Priority', color: 'text-amber-400 bg-amber-500/10 border-amber-500/20', border: 'border-l-amber-500' },
+                        medium: { label: 'Medium Priority', color: 'text-blue-400 bg-blue-500/10 border-blue-500/20', border: 'border-l-blue-500' },
+                        low: { label: 'Low Priority', color: 'text-gray-400 bg-gray-500/10 border-gray-500/20', border: 'border-l-gray-500' },
+                      };
+                      return map[rec.priority] || map.low;
+                    })();
+
+                    const timelineLabel = (() => {
+                      const map: Record<string, string> = {
+                        today: 'Do Today',
+                        this_week: 'Do This Week',
+                        this_month: 'Do This Month',
+                        flexible: 'Flexible',
+                      };
+                      return map[rec.timeline] || rec.timeline;
+                    })();
+
+                    return (
+                      <motion.div
+                        key={rec.id}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.03 }}
+                        className={cn(
+                          'premium-card p-4 border-l-4 overflow-hidden',
+                          priorityConfig.border
+                        )}
+                      >
+                        <div className="flex items-start gap-4">
+                          {/* Category icon */}
+                          <div className={cn(
+                            'w-10 h-10 rounded-xl flex items-center justify-center shrink-0',
+                            rec.priority === 'critical' ? 'bg-red-500/15' :
+                            rec.priority === 'high' ? 'bg-amber-500/15' :
+                            'bg-gray-800'
+                          )}>
+                            <categoryConfig.icon className={cn('w-5 h-5', categoryConfig.color)} />
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            {/* Header row */}
+                            <div className="flex items-start justify-between gap-3 mb-2">
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2 mb-0.5">
+                                  <h3 className="text-xs font-bold text-white">{rec.action}</h3>
+                                  <span className={cn('px-1.5 py-0.5 rounded text-[8px] font-medium border', priorityConfig.color)}>
+                                    {priorityConfig.label}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2 text-[10px] text-gray-500">
+                                  <span className="font-medium text-luxury-gold-400">{rec.propertyName}</span>
+                                  <span>·</span>
+                                  <span>{rec.developerName}</span>
+                                  <span>·</span>
+                                  <span>{rec.city}, {getFlag(rec.countryCode)}</span>
+                                </div>
+                              </div>
+                              <div className="text-right shrink-0">
+                                <p className="text-xs font-bold text-emerald-400">{formatPrice(rec.commission, rec.currency)}</p>
+                                <p className={cn(
+                                  'text-[8px] font-medium',
+                                  rec.timeline === 'today' ? 'text-red-400' :
+                                  rec.timeline === 'this_week' ? 'text-amber-400' :
+                                  'text-gray-500'
+                                )}>{timelineLabel}</p>
+                              </div>
+                            </div>
+
+                            {/* Reasoning */}
+                            <p className="text-[10px] text-gray-400 leading-relaxed mb-2">{rec.reasoning}</p>
+
+                            {/* Coach Tip */}
+                            <div className="flex items-start gap-1.5 p-2 rounded-lg bg-luxury-gold-500/5 border border-luxury-gold-500/10 mb-3">
+                              <Lightbulb className="w-3 h-3 text-luxury-gold-400 mt-0.5 shrink-0" />
+                              <p className="text-[9px] text-gray-400 italic">
+                                <span className="font-medium text-luxury-gold-400">AI Tip:</span> {rec.tip}
+                              </p>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {rec.contactEmail && (
+                                <a
+                                  href={`mailto:${rec.contactEmail}?subject=Following up on ${rec.propertyName}`}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[9px] font-medium text-blue-400 hover:bg-blue-500/20 transition-colors"
+                                >
+                                  <Send className="w-3 h-3" />
+                                  Send Email
+                                </a>
+                              )}
+                              {rec.contactPhone && (
+                                <a
+                                  href={`tel:${rec.contactPhone}`}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-medium text-emerald-400 hover:bg-emerald-500/20 transition-colors"
+                                >
+                                  <Phone className="w-3 h-3" />
+                                  Call {rec.contactName.split(' ')[0]}
+                                </a>
+                              )}
+                              {rec.category === 'site_visit' && (
+                                <Link
+                                  to="/deal-room"
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[9px] font-medium text-amber-400 hover:bg-amber-500/20 transition-colors"
+                                >
+                                  <Calendar className="w-3 h-3" />
+                                  Browse Properties
+                                </Link>
+                              )}
+                              <button
+                                onClick={() => updateDealStatus(rec.dealId, getNextStatus(rec.dealStatus))}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-luxury-gold-500/10 border border-luxury-gold-500/20 text-[9px] font-medium text-luxury-gold-400 hover:bg-luxury-gold-500/20 transition-colors"
+                              >
+                                <ArrowUpRight className="w-3 h-3" />
+                                Move to {getNextStatusLabel(rec.dealStatus)}
+                              </button>
+                            </div>
+
+                            {/* Deal info footer */}
+                            <div className="flex items-center gap-3 mt-2 text-[8px] text-gray-600">
+                              <span>{rec.daysSinceCreation === 0 ? 'Created today' : `${rec.daysSinceCreation} days ago`}</span>
+                              <span>·</span>
+                              <span>Contact: {rec.contactName}</span>
+                              <span>·</span>
+                              <span className="capitalize">Status: {statusBadge(rec.dealStatus).label}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+            {/* Empty state */}
+            {coachRecommendations.length === 0 && (
+              <div className="premium-card p-8 text-center">
+                <Bot className="w-12 h-12 text-gray-700 mx-auto mb-3" />
+                <h3 className="text-base font-semibold text-white mb-1">No Coaching Yet</h3>
+                <p className="text-sm text-gray-500 max-w-md mx-auto">
+                  Express interest in properties from the Deal Room to get AI-powered coaching. 
+                  The Deal Coach analyzes your deal pipeline and provides actionable next steps 
+                  for every lead.
+                </p>
+                <div className="flex items-center justify-center gap-3 mt-6">
+                  <Link to="/deal-room" className="btn-primary text-xs">
+                    Browse Properties
+                  </Link>
+                </div>
+              </div>
+            )}
           </motion.div>
         )}
 

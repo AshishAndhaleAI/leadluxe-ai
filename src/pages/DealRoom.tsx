@@ -988,6 +988,7 @@ function InterestModal({ property, onClose, onSubmitted }: {
       developerName: property.developer_name,
       city: property.city,
       country: property.country,
+      countryCode: property.countryCode,
       priceMin: property.price_min,
       priceMax: property.price_max,
       estimatedCommission: property.estimated_commission,
