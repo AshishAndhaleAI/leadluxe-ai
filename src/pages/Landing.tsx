@@ -5,7 +5,7 @@ import {
   ArrowRight, Sparkles, Bot, BarChart3, Building2, Shield,
   TrendingUp, Users, CalendarIcon, MessageSquare, CheckCircle,
   Star, ChevronRight, Menu, X, Zap, Layers, Check, Maximize2,
-  Calculator, IndianRupee, Percent, Trophy
+  Calculator, IndianRupee, Percent, Trophy, Globe, FileText
 } from 'lucide-react';
 
 import { cn } from '../lib/utils';
@@ -178,36 +178,46 @@ export function Landing() {
             </motion.div>
 
             <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight font-display text-balance">
-              We Don't Charge Monthly.<br />
-              <span className="text-gradient-gold">We Get Paid When You Close a Property Deal.</span>
+              AI Intelligence Layer for{' '}
+              <span className="text-gradient-gold">Global Real Estate Deal Flow.</span>
             </motion.h1>
 
             <motion.p variants={itemVariants} className="text-lg sm:text-xl text-gray-400 mb-10 max-w-3xl mx-auto">
-              AI qualification, WhatsApp automation, site-visit booking, and sales intelligence for premium real-estate developers — with <span className="text-luxury-gold-400 font-semibold">zero subscription risk</span>. Only 3% success fee on closed deals.
+              LeadLuxe analyzes infrastructure signals, capital flows, developer activity, and investor behavior to identify <span className="text-luxury-gold-400 font-semibold">high-probability opportunities</span> before traditional portals surface them. Zero subscription — only 3% on closed deals.
             </motion.p>
 
             <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
-                onClick={() => navigate('/login')}
+                onClick={() => navigate('/enterprise')}
                 className="btn-primary text-lg px-8 py-4 shadow-gold-lg"
               >
-                Book Builder Demo
+                <FileText className="w-5 h-5" />
+                Request AI Deal Report
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
               <button
                 onClick={() => setWalkthroughOpen(true)}
                 className="btn-outline text-lg px-8 py-4 group"
               >
-                <Maximize2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                Take Virtual Tour
+                <Zap className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                Watch 90-Second Demo
               </button>
             </motion.div>
 
-            {/* No-risk badges */}
-            <motion.div variants={itemVariants} className="flex items-center justify-center gap-6 mt-8 text-xs text-gray-600">
-              <span className="flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> No upfront cost</span>
-              <span className="flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> No monthly subscription</span>
-              <span className="flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> 3% on closed deals only</span>
+            {/* Credibility strip */}
+            <motion.div variants={itemVariants} className="flex items-center justify-center gap-2 sm:gap-4 mt-8 flex-wrap">
+              {[
+                { icon: Globe, text: '120+ Cities Tracked' },
+                { icon: CheckCircle, text: 'Verified Data Sources' },
+                { icon: BarChart3, text: 'AI Evidence Engine' },
+                { icon: Users, text: 'Twin Matching' },
+                { icon: Percent, text: 'Commission-Based' },
+              ].map((item, i) => (
+                <span key={i} className="flex items-center gap-1.5 text-[10px] px-2.5 py-1 rounded-full bg-luxury-gold-500/5 border border-luxury-gold-500/10 text-gray-400">
+                  <item.icon className="w-3 h-3 text-luxury-gold-400" />
+                  {item.text}
+                </span>
+              ))}
             </motion.div>
 
             <motion.div variants={itemVariants} className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6">
