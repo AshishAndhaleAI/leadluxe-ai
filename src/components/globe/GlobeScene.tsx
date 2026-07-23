@@ -4,6 +4,7 @@ import { useCountryData, getCountryColor, getCountrySideColor, getCountryAltitud
 import { useGlobeCities, formatCityLabel } from './CityClusters';
 import { usePropertyHotspots, formatHotspotLabel } from './PropertyHotspots';
 import { useInvestmentArcs } from './InvestmentArcs';
+import { GlobeErrorBoundary } from './GlobeErrorBoundary';
 
 // ============================================================
 // PROPS
@@ -64,8 +65,49 @@ export function GlobeScene({
       a.endLng >= -180 && a.endLng <= 180
     ), [arcs]);
 
+  // Event handlers (defined before being referenced by useCallbacks)
+  const handleCountryClick = useCallback((polygon: any) => {
+    const isoA2 = polygon?.properties?.ISO_A2 || '';
+    if (isoA2 && onCountrySelect) {
+      onCountrySelect(isoA2.toUpperCase());
+    }
+  }, [onCountrySelect]);
+
+  // Stable accessor values — prevents per-render function references that
+  // would cause react-globe.gl to rebuild WebGL buffers on every parent render
+  const POINT_ALT_FN = useCallback((d: any) => d?._type === 'city' ? 0.02 : 0.01, []);
+  const POINT_LABEL_FN = useCallback((d: any) => d?._label || '', []);
+  const POLYGON_GEO_GEOM_FN = useCallback((d: any) => d?.feature?.geometry || null, []);
+  const POLYGON_STROKE_FN = useCallback(() => 'rgba(212, 160, 48, 0.06)' as any, []);
+  const POLYGON_LABEL_FN = useCallback((d: any) => {
+    if (!d) return '';
+    // d is CountryData: { feature: GeoJSONFeature, opportunities, confidence, isActive }
+    const props = d.feature?.properties || d.properties || {};
+    return `
+      <div style="background: #050510; border: 1px solid rgba(212,160,48,0.3); border-radius: 8px; padding: 6px 10px; color: white; font-family: system-ui; font-size: 11px;">
+        <b>${props.NAME || props.name || ''}</b>
+        ${d.opportunities > 0 ? `<div style="color: #f59e0b; font-size: 9px; margin-top: 2px;">${d.opportunities} opportunities · ${d.confidence}% confidence</div>` : ''}
+      </div>
+    `;
+  }, []);
+  const LABEL_TEXT_FN = useCallback((d: any) => d?.isHot ? d.city : '', []);
+  const LABEL_COLOR_FN = useCallback((d: any) => d?.isHot ? '#f59e0b' : 'rgba(255,255,255,0.3)', []);
+  const ARC_COLOR_FN = useCallback((a: any) => a?.color || '#f59e0b', []);
+  const ARC_ALT_FN = useCallback((a: any) => a?.altitude || 0.1, []);
+  const ARC_STROKE_FN = useCallback((a: any) => a?.stroke || 0.5, []);
+  const POLYGON_COLOR_FN = useCallback((d: any) => getCountryColor(d as any), []);
+  const POLYGON_SIDE_FN = useCallback((d: any) => getCountrySideColor(d as any), []);
+  const POLYGON_ALT_FN = useCallback((d: any) => getCountryAltitude(d as any), []);
+  const ON_POLYGON_CLICK = useCallback((d: any) => handleCountryClick(d as any), [handleCountryClick]);
+  const ON_POINT_CLICK = useCallback((d: any, event: any) => {
+    if (d?._type === 'city' && d._cityId && onCitySelect) {
+      onCitySelect(d._cityId);
+    } else if (d?._type === 'hotspot' && d.city && onCitySelect) {
+      console.log('Hotspot clicked:', d.city);
+    }
+  }, [onCitySelect]);
+
   // Merge city markers and property hotspots into a single pointsData
-  // (react-globe.gl only supports one pointsData prop)
   const mergedPoints = useMemo(() => {
     const cityPoints = validCities.map(c => ({
       ...c,
@@ -113,38 +155,13 @@ export function GlobeScene({
     }
   }, [initialLat, initialLng, initialAltitude, loaded]);
 
-  // Event handlers
-  const handleCityClick = useCallback((point: any, event: any) => {
-    if (point?.cityId && onCitySelect) {
-      onCitySelect(point.cityId);
-    }
-  }, [onCitySelect]);
-
-  const handleCountryClick = useCallback((polygon: any) => {
-    const isoA2 = polygon?.properties?.ISO_A2 || '';
-    if (isoA2 && onCountrySelect) {
-      onCountrySelect(isoA2.toUpperCase());
-    }
-  }, [onCountrySelect]);
-
   // Early return if no data
   if (geoLoading) {
     return <div className="w-full h-full flex items-center justify-center"><div className="w-10 h-10 border-2 border-luxury-gold-500 border-t-transparent rounded-full animate-spin" /></div>;
   }
 
-  // Country polygon labels
-  const polygonLabel = useCallback((d: any) => {
-    const countryData = d;
-    if (!countryData) return '';
-    return `
-      <div style="background: #050510; border: 1px solid rgba(212,160,48,0.3); border-radius: 8px; padding: 6px 10px; color: white; font-family: system-ui; font-size: 11px;">
-        <b>${countryData.properties?.NAME || ''}</b>
-        ${countryData.opportunities > 0 ? `<div style="color: #f59e0b; font-size: 9px; margin-top: 2px;">${countryData.opportunities} opportunities · ${countryData.confidence}% confidence</div>` : ''}
-      </div>
-    `;
-  }, []);
-
   return (
+    <GlobeErrorBoundary>
     <div ref={containerRef} className="w-full h-full" style={{ minHeight: '500px' }}>
     <GlobeComponent
       ref={globeRef}
@@ -153,13 +170,13 @@ export function GlobeScene({
 
       // === Country Boundaries ===
       polygonsData={countryData}
-      polygonGeoJsonGeometry={(d: any) => d?.feature?.geometry}
-      polygonCapColor={(d: any) => getCountryColor(d as any)}
-      polygonSideColor={(d: any) => getCountrySideColor(d as any)}
-      polygonAltitude={(d: any) => getCountryAltitude(d as any)}
-      polygonLabel={(d: any) => polygonLabel(d)}
-      onPolygonClick={(d: any) => handleCountryClick(d as any)}
-      polygonStrokeColor={() => 'rgba(212, 160, 48, 0.06)' as any}
+      polygonGeoJsonGeometry={POLYGON_GEO_GEOM_FN}
+      polygonCapColor={POLYGON_COLOR_FN}
+      polygonSideColor={POLYGON_SIDE_FN}
+      polygonAltitude={POLYGON_ALT_FN}
+      polygonLabel={POLYGON_LABEL_FN}
+      onPolygonClick={ON_POLYGON_CLICK}
+      polygonStrokeColor={POLYGON_STROKE_FN}
 
       // === City Markers + Property Hotspots (merged) ===
       pointsData={mergedPoints as any[]}
@@ -167,18 +184,9 @@ export function GlobeScene({
       pointLng="lng"
       pointColor="color"
       pointRadius="radius"
-      pointAltitude={(d: any) => d._type === 'city' ? 0.02 : 0.01}
-      pointLabel={(d: any) => d._label || ''}
-      onPointClick={(d: any, event: any) => {
-        if (d._type === 'city' && d._cityId && onCitySelect) {
-          onCitySelect(d._cityId);
-        } else if (d._type === 'hotspot' && d.city && onCitySelect) {
-          // For hotspots, find the city by name and navigate
-          // (simplified: just pass the city name as context)
-          console.log('Hotspot clicked:', d.city);
-        }
-      }}
-
+      pointAltitude={POINT_ALT_FN}
+      pointLabel={POINT_LABEL_FN}
+      onPointClick={ON_POINT_CLICK}
 
       // === Investment Arcs ===
       arcsData={validArcs}
@@ -186,13 +194,21 @@ export function GlobeScene({
       arcStartLng="startLng"
       arcEndLat="endLat"
       arcEndLng="endLng"
-      arcColor={(a: any) => a?.color || '#f59e0b'}
-      arcAltitude={(a: any) => a?.altitude || 0.1}
-      arcStroke={(a: any) => a?.stroke || 0.5}
+      arcColor={ARC_COLOR_FN}
+      arcAltitude={ARC_ALT_FN}
+      arcStroke={ARC_STROKE_FN}
       arcDashLength={0.15}
       arcDashGap={0.1}
-      arcDashInitialGap={() => Math.random()}
-      arcDashAnimateTime={3000}
+      arcDashInitialGap={0.2}
+      arcDashAnimateTime={4000}
+
+      // === WebGL Renderer Config — stabilize context ===
+      rendererConfig={{
+        powerPreference: 'high-performance' as any,
+        antialias: true,
+        failIfMajorPerformanceCaveat: false,
+        alpha: false,
+      }}
 
       // === Atmosphere & Visuals ===
       showAtmosphere={true}
@@ -200,23 +216,21 @@ export function GlobeScene({
       atmosphereAltitude={0.15}
       
       // === Globe Visuals ===
-      globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
-      backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
-      bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
+      globeImageUrl="https://unpkg.com/three-globe/example/img/earth-night.jpg"
+      backgroundImageUrl="https://unpkg.com/three-globe/example/img/night-sky.png"
+      bumpImageUrl="https://unpkg.com/three-globe/example/img/earth-topology.png"
 
-
-      
       // === Labels ===
       labelsData={validCities}
       labelLat="lat"
       labelLng="lng"
-      labelText={(d: any) => d?.isHot ? d.city : ''}
+      labelText={LABEL_TEXT_FN}
       labelSize={0.8}
-
-      labelColor={(d: any) => d?.isHot ? '#f59e0b' : 'rgba(255,255,255,0.3)'}
+      labelColor={LABEL_COLOR_FN}
       labelAltitude={0.03}
       labelResolution={8}
     />
     </div>
+    </GlobeErrorBoundary>
   );
 }
