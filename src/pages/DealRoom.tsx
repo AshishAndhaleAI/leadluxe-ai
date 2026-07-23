@@ -571,21 +571,29 @@ function PropertyDetailModalInner({ property, isFavorite, onToggleFavorite, onEx
         onClick={e => e.stopPropagation()}
         className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-gray-950 border border-gray-800"
       >
-        {/* Close */}
-        <div className="sticky top-0 z-10 flex items-center justify-between p-4 bg-gray-950/90 backdrop-blur-sm border-b border-gray-800">
-          <div className="flex items-center gap-3">
-            <div>
-              <h2 className="text-lg font-bold text-white">{property.name}</h2>
-              <p className="text-xs text-gray-400">{property.developer_name} · {property.city}, {property.country}</p>
-            </div>
+        {/* Hero Image — full-width header */}
+        <div className="relative h-72 sm:h-96 overflow-hidden">
+          <img
+            src={property.hero_url}
+            alt={property.name}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/40 to-transparent" />
+          <div className="absolute top-4 left-4 flex gap-1.5 z-10">
+            <span className={cn('px-2 py-0.5 rounded text-[10px] font-medium border backdrop-blur-sm', statusBadge.color)}>{statusBadge.label}</span>
+            <span className={cn('px-2 py-0.5 rounded text-[10px] font-medium border backdrop-blur-sm', salesBadge.color)}>{salesBadge.label}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <button onClick={onToggleFavorite} className="p-2 rounded-lg hover:bg-white/5">
-              <Heart className={cn('w-4 h-4', isFavorite ? 'text-rose-400 fill-rose-400' : 'text-gray-500')} />
+          <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+            <button onClick={onToggleFavorite} className="p-2 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors">
+              <Heart className={cn('w-4 h-4', isFavorite ? 'text-rose-400 fill-rose-400' : 'text-white/70')} />
             </button>
-            <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/5">
-              <X className="w-4 h-4 text-gray-400" />
+            <button onClick={onClose} className="p-2 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors">
+              <X className="w-4 h-4 text-white/70" />
             </button>
+          </div>
+          <div className="absolute bottom-4 left-4 right-4 z-10">
+            <h2 className="text-xl font-bold text-white">{property.name}</h2>
+            <p className="text-sm text-gray-300">{property.developer_name} · {property.city}, {property.country}</p>
           </div>
         </div>
 
@@ -593,17 +601,13 @@ function PropertyDetailModalInner({ property, isFavorite, onToggleFavorite, onEx
           {/* Left: Images & Amenities */}
           <div className="lg:col-span-3 p-4 space-y-4">
             {/* Image gallery */}
-            <div className="relative h-64 rounded-xl overflow-hidden bg-gray-900">
+            <div className="relative h-56 rounded-xl overflow-hidden bg-gray-900">
               <img src={property.images[activeImage]?.url || ''} alt={property.name} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
               <div className="absolute bottom-3 left-3 flex gap-1">
                 {property.images.map((img, i) => (
                   <button key={i} onClick={() => setActiveImage(i)} className={cn('w-2 h-2 rounded-full transition-all', i === activeImage ? 'bg-luxury-gold-400 w-4' : 'bg-white/40')} />
                 ))}
-              </div>
-              <div className="absolute top-3 left-3 flex gap-1">
-                <span className={cn('px-2 py-0.5 rounded text-[9px] font-medium border backdrop-blur-sm', statusBadge.color)}>{statusBadge.label}</span>
-                <span className={cn('px-2 py-0.5 rounded text-[9px] font-medium border backdrop-blur-sm', salesBadge.color)}>{salesBadge.label}</span>
               </div>
             </div>
 

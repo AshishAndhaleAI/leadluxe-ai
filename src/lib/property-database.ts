@@ -61,6 +61,7 @@ export interface Property {
   confidence: number;
   estimated_commission: number;
   commission_percentage: number;
+  hero_url: string;
   sales_status: 'hot' | 'active' | 'limited' | 'sold_out';
   created_at: string;
 }
@@ -158,18 +159,21 @@ const VIEW_PHOTOS = [
   '1560185007-cde2a5fa3a5d', // pool with view
 ];
 
-function extImg(id: number): PropertyImage[] {
+function extImg(id: number): { images: PropertyImage[]; hero_url: string } {
   const extIdx = Math.abs(id) % BUILDING_PHOTOS.length;
   const intIdx = Math.abs(id + 1) % INTERIOR_PHOTOS.length;
   const kitIdx = Math.abs(id + 2) % INTERIOR_PHOTOS.length;
   const vwIdx = Math.abs(id + 3) % VIEW_PHOTOS.length;
 
-  return [
-    { url: `https://images.unsplash.com/photo-${BUILDING_PHOTOS[extIdx]}?w=800&h=600&fit=crop&auto=format`, caption: 'Building exterior', type: 'exterior' },
-    { url: `https://images.unsplash.com/photo-${INTERIOR_PHOTOS[intIdx]}?w=800&h=600&fit=crop&auto=format`, caption: 'Living room', type: 'interior' },
-    { url: `https://images.unsplash.com/photo-${INTERIOR_PHOTOS[kitIdx]}?w=800&h=600&fit=crop&auto=format`, caption: 'Kitchen', type: 'interior' },
-    { url: `https://images.unsplash.com/photo-${VIEW_PHOTOS[vwIdx]}?w=800&h=600&fit=crop&auto=format`, caption: 'City view', type: 'view' },
-  ];
+  return {
+    images: [
+      { url: `https://images.unsplash.com/photo-${BUILDING_PHOTOS[extIdx]}?w=800&h=600&fit=crop&auto=format`, caption: 'Building exterior', type: 'exterior' },
+      { url: `https://images.unsplash.com/photo-${INTERIOR_PHOTOS[intIdx]}?w=800&h=600&fit=crop&auto=format`, caption: 'Living room', type: 'interior' },
+      { url: `https://images.unsplash.com/photo-${INTERIOR_PHOTOS[kitIdx]}?w=800&h=600&fit=crop&auto=format`, caption: 'Kitchen', type: 'interior' },
+      { url: `https://images.unsplash.com/photo-${VIEW_PHOTOS[vwIdx]}?w=800&h=600&fit=crop&auto=format`, caption: 'City view', type: 'view' },
+    ],
+    hero_url: `https://images.unsplash.com/photo-${BUILDING_PHOTOS[extIdx]}?w=1200&h=800&fit=crop&auto=format`,
+  };
 }
 
 // ============================================================
@@ -495,7 +499,7 @@ function generatePropertiesForCity(
         completion_date: mCompletionDate(propStatus),
         rera_status: propStatus === 'resale' ? 'not_applicable' : pick(['approved', 'applied', 'approved']),
         amenities,
-        images: extImg(id),
+        ...extImg(id),
         tags: isLuxury ? [...tags, 'luxury', 'premium'] : tags,
         description,
         highlights,
