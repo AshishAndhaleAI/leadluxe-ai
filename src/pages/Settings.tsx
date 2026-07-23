@@ -32,18 +32,36 @@ export function Settings() {
   const [coachPrefs, setCoachPrefs] = useState<CoachPreferences>(() => getCoachPreferences());
   const [cloudSyncStatus, setCloudSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
 
-  // On mount: try to load preferences from Supabase (cross-device sync)
-  // If a newer version exists in the cloud, overwrite local and update state.
+  // On mount: load from Supabase + subscribe to real-time changes.
+  // When preferences change on another device, the form updates live.
   useEffect(() => {
     if (!user?.id) return;
-    const loadCloudPrefs = async () => {
-      const cloudPrefs = await tryLoadFromSupabase(user.id);
+    let unsub: (() => void) | undefined;
+
+    const init = async () => {
+      const mod = await import('../lib/coach-preferences');
+
+      // 1. Pull latest from Supabase (one-time, cross-device sync)
+      const cloudPrefs = await mod.tryLoadFromSupabase(user.id);
       if (cloudPrefs) {
-        saveCoachPreferences(cloudPrefs); // overwrite local
+        mod.saveCoachPreferences(cloudPrefs);
         setCoachPrefs(cloudPrefs);
       }
+
+      // 2. Subscribe to real-time preference changes
+      unsub = mod.subscribeToPreferenceChanges(user.id, (newPrefs: any) => {
+        // Another device changed preferences — update local + refresh form
+        setCoachPrefs(newPrefs);
+        setCloudSyncStatus('synced');
+        setTimeout(() => setCloudSyncStatus('idle'), 2000);
+      });
     };
-    loadCloudPrefs();
+
+    init();
+
+    return () => {
+      if (unsub) unsub();
+    };
   }, [user?.id]);
 
   const tabs: { key: SettingsTab; label: string; icon: typeof User }[] = [

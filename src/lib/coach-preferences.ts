@@ -122,6 +122,72 @@ export async function syncToSupabase(userId: string, prefs: CoachPreferences): P
   }
 }
 
+// ============================================================
+// SUPABASE REALTIME SUBSCRIPTION
+// ============================================================
+
+/**
+ * Subscribe to real-time preference changes for a specific user.
+ * When preferences are updated on another device, the callback fires
+ * with the updated preferences so the UI can reflect the change instantly.
+ * Returns an unsubscribe function (call on cleanup).
+ */
+export function subscribeToPreferenceChanges(
+  userId: string,
+  onPreferencesChanged: (prefs: CoachPreferences) => void
+): () => void {
+  let unsubscribed = false;
+  let subscription: { unsubscribe: () => void } | null = null;
+
+  const setupSubscription = async () => {
+    const { supabase } = await import('./supabase');
+    if (!supabase || unsubscribed) return;
+
+    // Listen for INSERT and UPDATE on user_preferences for this user
+    const channel = supabase
+      .channel('coach-preferences-realtime')
+      .on(
+        'postgres_changes' as any,
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_preferences',
+          filter: `user_id=eq.${userId}`,
+        },
+        async (payload: any) => {
+          if (unsubscribed) return;
+          // Avoid processing our own saves by checking the sync timestamp
+          const newPrefs = payload.new?.preferences;
+          if (!newPrefs) return;
+          const merged = { ...DEFAULT_PREFERENCES, ...newPrefs } as CoachPreferences;
+          // Only trigger callback if this wasn't our own change
+          const localSyncTime = parseInt(localStorage.getItem(SYNC_KEY) || '0', 10);
+          const cloudUpdated = payload.new?.updated_at
+            ? new Date(payload.new.updated_at).getTime()
+            : Date.now();
+          if (cloudUpdated > localSyncTime) {
+            saveCoachPreferences(merged); // overwrite local
+            onPreferencesChanged(merged);
+          }
+        }
+      )
+      .subscribe();
+
+    subscription = channel;
+  };
+
+  // Fire and forget — subscription setup is async
+  setupSubscription();
+
+  // Return cleanup function
+  return () => {
+    unsubscribed = true;
+    if (subscription) {
+      subscription.unsubscribe();
+    }
+  };
+}
+
 /** Human-readable labels for style options */
 export const STYLE_OPTIONS: { value: CoachPreferences['style']; label: string; desc: string }[] = [
   { value: 'direct', label: 'Direct', desc: 'Clear, straight-to-the-point recommendations' },

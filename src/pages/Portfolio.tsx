@@ -527,22 +527,34 @@ export function Portfolio() {
     setFavoriteIds(next);
   };
 
-  // AI Deal Coach — attempt to sync from Supabase on mount (cross-device)
-  // so users who log in on a new device get their cloud preferences immediately
-  // without needing to visit Settings first.
+  // AI Deal Coach — sync from Supabase on mount + real-time subscription
+  // so users who log in on a new device get their cloud preferences immediately,
+  // and any changes made on another browser are reflected live.
   useEffect(() => {
     if (!user?.id) return;
-    const syncCloud = async () => {
-      const { tryLoadFromSupabase } = await import('../lib/coach-preferences');
-      const cloudPrefs = await tryLoadFromSupabase(user.id);
+    let unsub: (() => void) | undefined;
+
+    const init = async () => {
+      const mod = await import('../lib/coach-preferences');
+
+      // 1. Pull latest from Supabase (cross-device sync)
+      const cloudPrefs = await mod.tryLoadFromSupabase(user.id);
       if (cloudPrefs) {
-        const { saveCoachPreferences } = await import('../lib/coach-preferences');
-        saveCoachPreferences(cloudPrefs);
-        // Force re-render by toggling a counter
+        mod.saveCoachPreferences(cloudPrefs);
         setSyncVersion(v => v + 1);
       }
+
+      // 2. Subscribe to real-time changes
+      unsub = mod.subscribeToPreferenceChanges(user.id, (_newPrefs: any) => {
+        setSyncVersion(v => v + 1);
+      });
     };
-    syncCloud();
+
+    init();
+
+    return () => {
+      if (unsub) unsub();
+    };
   }, [user?.id]);
 
   const coachRecommendations = useMemo(() =>
