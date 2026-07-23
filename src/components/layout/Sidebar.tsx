@@ -29,6 +29,7 @@ const navItems = [
   { path: '/competitors', label: 'Competitors', icon: Building2 },
   { path: '/forecasts', label: 'Forecasts', icon: TrendingUp },
   { path: '/coach', label: 'AI Coach', icon: Bot },
+  { path: '/blog', label: 'Market Intel', icon: Globe },
   { path: '/settings', label: 'Settings', icon: Settings },
 ];
 

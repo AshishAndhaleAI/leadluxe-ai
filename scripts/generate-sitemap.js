@@ -18,16 +18,83 @@ const STATIC_PAGES = [
   { url: '/deal-room', priority: 0.9, changefreq: 'daily' },
   { url: '/global-map', priority: 0.8, changefreq: 'weekly' },
   { url: '/deal-compass', priority: 0.8, changefreq: 'weekly' },
+  { url: '/gravity', priority: 0.8, changefreq: 'weekly' },
+  { url: '/match', priority: 0.7, changefreq: 'weekly' },
+  { url: '/portfolio', priority: 0.5, changefreq: 'weekly' },
+  { url: '/blog', priority: 0.9, changefreq: 'weekly' },
   { url: '/login', priority: 0.3, changefreq: 'monthly' },
 ];
 
-// Generate XML
-function generateSitemap() {
-  const urls = [...STATIC_PAGES];
+// Countries (25 countries)
+const COUNTRIES = [
+  'in','ae','us','gb','sg','sa','de','fr','jp','kr','th','vn',
+  'br','mx','tr','es','it','nl','ca','au','my','qa','za','ng','eg'
+];
 
-  // We can't import the property database here since it uses DOM APIs,
-  // but we can still generate a sitemap structure.
-  // In production, you'd run this as a build step with the actual data.
+// Blog posts
+const BLOG_POSTS = [
+  'dubai-real-estate-market-2026',
+  'pune-real-estate-investment-guide-2026',
+  'saudi-arabia-vision-2030-real-estate',
+  'berlin-real-estate-market-2026',
+  'mumbai-vs-dubai-investment-comparison',
+  'tokyo-real-estate-foreign-investment',
+  'ai-in-real-estate-2026',
+  'istanbul-real-estate-opportunity',
+  'bangkok-vs-ho-chi-minh-city',
+  'london-prime-property-2026',
+  'miami-latin-american-wealth',
+  'real-estate-commission-model-vs-subscription',
+];
+
+function generateSitemap() {
+  const urls = [];
+
+  // Static pages
+  for (const page of STATIC_PAGES) {
+    urls.push(page);
+  }
+
+  // Country pages
+  for (const code of COUNTRIES) {
+    urls.push({ url: `/country/${code}`, priority: 0.7, changefreq: 'weekly' });
+  }
+
+  // Blog posts
+  for (const slug of BLOG_POSTS) {
+    urls.push({ url: `/blog/${slug}`, priority: 0.7, changefreq: 'monthly' });
+  }
+
+  // City pages (major cities)
+  const CITIES = [
+    'mumbai','pune','bengaluru','hyderabad','delhi','chennai','gurgaon','kolkata',
+    'dubai','abu-dhabi',
+    'new-york-city','san-francisco','los-angeles','miami','chicago','austin',
+    'london','manchester',
+    'singapore',
+    'riyadh','jeddah',
+    'toronto','vancouver',
+    'sydney','melbourne','brisbane',
+    'kuala-lumpur','doha',
+    'berlin','munich','frankfurt','hamburg',
+    'paris','lyon','nice',
+    'tokyo','osaka','kyoto',
+    'seoul','busan',
+    'bangkok','phuket',
+    'ho-chi-minh-city','hanoi',
+    'sao-paulo','rio-de-janeiro',
+    'mexico-city','cancun',
+    'istanbul','antalya',
+    'madrid','barcelona',
+    'milan','rome',
+    'cape-town','johannesburg',
+    'lagos','abuja',
+    'cairo','alexandria',
+  ];
+
+  for (const city of CITIES) {
+    urls.push({ url: `/city/${city}`, priority: 0.6, changefreq: 'weekly' });
+  }
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

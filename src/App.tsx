@@ -23,6 +23,10 @@ import { GravityBriefing } from './pages/GravityBriefing';
 import { Portfolio } from './pages/Portfolio';
 import { DealCompass } from './pages/DealCompass';
 import { PropertyDetail } from './pages/PropertyDetail';
+import { CountryLanding } from './pages/CountryLanding';
+import { CityLanding } from './pages/CityLanding';
+import { Blog } from './pages/Blog';
+import { BlogPost } from './pages/BlogPost';
 import { SEOHelmet, OrganizationLD } from './components/seo/SEOHelmet';
 import type { ReactNode } from 'react';
 
@@ -54,8 +58,12 @@ function AppRoutes() {
         <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
 
-        {/* Public property detail page — no auth required for SEO */}
+        {/* Public SEO pages — no auth required */}
         <Route path="/property/:slug" element={<PropertyDetail />} />
+        <Route path="/country/:countryCode" element={<CountryLanding />} />
+        <Route path="/city/:citySlug" element={<CityLanding />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:slug" element={<BlogPost />} />
 
         {/* Protected — Standard Dashboard Layout (with sidebar) */}
         <Route
