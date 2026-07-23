@@ -20,6 +20,7 @@ import { Match } from './pages/Match';
 import { GravityEngine } from './pages/GravityEngine';
 import { GravityBriefing } from './pages/GravityBriefing';
 import { Portfolio } from './pages/Portfolio';
+import { DealCompass } from './pages/DealCompass';
 import type { ReactNode } from 'react';
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
@@ -69,6 +70,7 @@ function AppRoutes() {
         <Route path="/commission" element={<CommissionDashboard />} />
         <Route path="/deal-room" element={<DealRoom />} />
         <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/deal-compass" element={<DealCompass />} />
       </Route>
 
       {/* 404 */}

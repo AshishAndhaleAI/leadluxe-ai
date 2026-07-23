@@ -11,6 +11,7 @@ import { useOpportunityEngine } from '../hooks/useOpportunityEngine';
 import { formatIndianCurrency, formatCommission } from '../lib/format';
 import { cn } from '../lib/utils';
 import { COUNTRIES, CITIES, getHotCities, formatGlobalCurrency } from '../lib/global-data';
+import { MarketPulse } from '../components/dashboard/MarketPulse';
 import { AIBrainHeartbeat } from '../components/ai/AIBrainHeartbeat';
 import { ConfidenceIndicator } from '../components/ai/ConfidenceIndicator';
 import { KPICard } from '../components/ui/KPICard';
@@ -41,6 +42,11 @@ export function Dashboard() {
       animate="visible"
       className="space-y-6"
     >
+      {/* Live Market Pulse Ticker */}
+      <motion.div variants={itemVariants}>
+        <MarketPulse />
+      </motion.div>
+
       {/* Header Row */}
       <motion.div variants={itemVariants} className="flex items-center justify-between">
         <div className="flex items-center gap-3">
