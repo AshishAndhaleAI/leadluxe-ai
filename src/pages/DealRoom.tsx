@@ -5,7 +5,7 @@
 // and track commissions on every deal.
 // ============================================================
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -553,8 +553,22 @@ function PropertyDetailModalInner({ property, isFavorite, onToggleFavorite, onEx
   onClose: () => void;
 }) {
   const [activeImage, setActiveImage] = useState(0);
+  const [scrollY, setScrollY] = useState(0);
+  const contentRef = useRef<HTMLDivElement>(null);
   const statusBadge = getStatusBadge(property.status);
   const salesBadge = getSalesBadge(property.sales_status);
+
+  // Parallax effect — hero image moves slower than scroll
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    const handleScroll = () => setScrollY(el.scrollTop);
+    el.addEventListener('scroll', handleScroll, { passive: true });
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Parallax offset: image moves at 35% of scroll speed
+  const parallaxY = scrollY * 0.35;
 
   return (
     <motion.div
@@ -569,10 +583,23 @@ function PropertyDetailModalInner({ property, isFavorite, onToggleFavorite, onEx
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={e => e.stopPropagation()}
+        ref={contentRef}
         className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-gray-950 border border-gray-800"
       >
-        {/* Hero Image — full-width header */}
+        {/* Hero Image — full-width header with parallax */}
         <div className="relative h-72 sm:h-96 overflow-hidden">
+          {/* Parallax image layer */}
+          <div
+            className="absolute inset-0 will-change-transform"
+            style={{ transform: `translateY(${parallaxY}px)` }}
+          >
+            <img
+              src={property.hero_url}
+              alt={property.name}
+              className="w-full h-[150%] object-cover"
+              style={{ objectPosition: '50% 30%' }}
+            />
+          </div>
           <img
             src={property.hero_url}
             alt={property.name}
