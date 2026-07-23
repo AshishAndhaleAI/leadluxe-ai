@@ -7,8 +7,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { knowledgeGraph } from '../lib/core/knowledge-graph';
 import { autonomousIntelligence } from '../lib/core/AutonomousIntelligence';
-import { formatIndianCurrency, calculateCommission } from '../lib/format';
-import { getPropertyDatabase, propertyToOpportunity, getTotalCommissionValue, getHotProperties, getPreLaunchProperties } from '../lib/property-database';
+import { formatIndianCurrency } from '../lib/format';
 import type { Developer, Project, Signal, Opportunity, CommissionRecord, 
   ActivityLog, RevenueForecast, DashboardMetrics } from '../types';
 
@@ -149,20 +148,10 @@ export function useOpportunityEngine(): OpportunityEngineState {
       .slice(0, 100)
       .map(n => convertToOpportunity(n));
 
-    // If the knowledge graph is empty, fall back to the property database
-    // which contains 500+ real estate projects across 25+ countries
-    let opportunities: Opportunity[];
-    if (graphOpportunities.length > 0) {
-      opportunities = graphOpportunities;
-    } else {
-      // Generate opportunities from the property database
-      const allProps = getPropertyDatabase();
-      opportunities = allProps
-        .filter(p => p.sales_status !== 'sold_out')
-        .sort((a, b) => b.price_max - a.price_max)
-        .slice(0, 100)
-        .map((p, i) => propertyToOpportunity(p, i) as unknown as Opportunity);
-    }
+    // Only use real opportunities from the knowledge graph.
+    // No fallback to generated data — if the autonomous system
+    // hasn't collected intelligence yet, we show empty states.
+    const opportunities = graphOpportunities;
 
     return { developers, projects, signals: allSignals, opportunities };
   }, [refreshKey]);
@@ -187,8 +176,8 @@ export function useOpportunityEngine(): OpportunityEngineState {
       activeDealsCount: active.length,
       avgConfidence: active.length > 0 ? Math.round(active.reduce((s, o) => s + o.confidence_score, 0) / active.length) : 0,
       criticalSignals: graphData.signals.filter(s => s.impact_level === 'critical' || s.impact_level === 'high').length,
-      hotProperties: getHotProperties().length,
-      preLaunchCount: getPreLaunchProperties().length,
+      hotProperties: 0,
+      preLaunchCount: 0,
       totalAvailable: graphData.opportunities.filter(o => o.is_active).length,
       opportunitiesByPriority: [
         { priority: 'critical', count: active.filter(o => o.priority === 'critical').length },

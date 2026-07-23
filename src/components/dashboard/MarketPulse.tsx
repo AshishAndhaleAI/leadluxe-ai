@@ -57,30 +57,21 @@ export function MarketPulse() {
       });
     }
 
-    // If no signals, show market pulse from global data
+    // If no signals, show a simple waiting message
     if (items.length < 5) {
-      const fallbackSignals = [
-        { text: 'Dubai luxury market up 18.5% YoY — strong foreign investor demand', emoji: '🇦🇪', positive: true },
-        { text: 'Pune Kharadi micro-market shows 94% confidence score with 12.3% price growth', emoji: '🇮🇳', positive: true },
-        { text: 'Berlin commercial real estate absorption at 72% — supply tightening', emoji: '🇩🇪', positive: true },
-        { text: 'Mumbai luxury segment sees 8.5% quarterly appreciation in Worli corridor', emoji: '🇮🇳', positive: true },
-        { text: 'Singapore CBD office vacancy drops to 4.2% — lowest in 8 years', emoji: '🇸🇬', positive: true },
-        { text: 'Riyadh NEOM project triggers 22% land price surge in surrounding areas', emoji: '🇸🇦', positive: true },
-        { text: 'London prime central prices stabilize after 6-month correction', emoji: '🇬🇧', positive: false },
-        { text: 'Tokyo luxury condo inventory at historic low — prices up 5.2% YoY', emoji: '🇯🇵', positive: true },
-        { text: 'Bangkok riverside luxury launches see 92% pre-sale absorption', emoji: '🇹🇭', positive: true },
-        { text: 'New York commercial-to-residential conversions surge 40% in 2024', emoji: '🇺🇸', positive: true },
-        { text: 'Dubai Marina waterfront apartments — 15.2% price growth, 95% investor interest', emoji: '🇦🇪', positive: true },
-        { text: 'São Paulo luxury high-rise market enters growth cycle with 6.5% appreciation', emoji: '🇧🇷', positive: true },
-      ];
-      fallbackSignals.forEach((sig, idx) => {
-        items.push({
-          id: `fallback-${idx}`,
-          text: sig.text,
-          emoji: sig.emoji,
-          positive: sig.positive,
-          critical: false,
-        });
+      items.push({
+        id: 'no-signal',
+        text: 'Awaiting intelligence data — start RSS proxy with: npm run server',
+        emoji: '⏳',
+        positive: false,
+        critical: false,
+      });
+      items.push({
+        id: 'no-signal-2',
+        text: 'No live market signals available yet — intelligence engine is idle',
+        emoji: '💤',
+        positive: false,
+        critical: false,
       });
     }
 

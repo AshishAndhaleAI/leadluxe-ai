@@ -356,10 +356,6 @@ export function getTopOpportunityCities(limit = 10): City[] {
   return allCities.sort((a, b) => b.confidence - a.confidence).slice(0, limit);
 }
 
-export function getHotCities(): City[] {
-  return Object.values(CITIES).flat().filter(c => c.investorInterest >= 80);
-}
-
 export function formatGlobalCurrency(amount: number, currencyCode = 'INR'): string {
   const symbols: Record<string, string> = {
     INR: '₹', USD: '$', AED: 'د.إ', GBP: '£', SGD: 'S$', SAR: '﷼', CAD: 'C$', AUD: 'A$', MYR: 'RM', QAR: '﷼',

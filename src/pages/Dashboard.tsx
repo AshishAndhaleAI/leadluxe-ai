@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -10,7 +10,7 @@ import {
 import { useOpportunityEngine } from '../hooks/useOpportunityEngine';
 import { formatIndianCurrency, formatCommission } from '../lib/format';
 import { cn } from '../lib/utils';
-import { COUNTRIES, CITIES, getHotCities, formatGlobalCurrency } from '../lib/global-data';
+import { COUNTRIES, CITIES } from '../lib/global-data';
 import { MarketPulse } from '../components/dashboard/MarketPulse';
 import { AIBrainHeartbeat } from '../components/ai/AIBrainHeartbeat';
 import { ConfidenceIndicator } from '../components/ai/ConfidenceIndicator';
@@ -31,8 +31,52 @@ export function Dashboard() {
   const navigate = useNavigate();
   const { dashboardMetrics, opportunities, signals, loading, developers, systemStatus } = useOpportunityEngine();
   const [showAiStatus, setShowAiStatus] = useState(false);
+  // Capture timestamp once when component mounts (stable per session)
+  const sessionStartRef = useRef(new Date().toLocaleString('en-IN', {
+    hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short'
+  }));
 
-  const hotCities = useMemo(() => getHotCities().slice(0, 4), []);
+  // Hot markets: derived from real opportunity data only
+  const hotCities = useMemo(() => {
+    // Use cities from active opportunities
+    const cityMap = new Map<string, { count: number; avgConfidence: number }>();
+    
+    opportunities
+      .filter(o => o.is_active && o.confidence_score >= 70)
+      .forEach(o => {
+        // Try to extract city from title or use developer location
+        const cityName = o.title?.split('—')[1]?.trim() || '';
+        if (!cityName) return;
+        
+        const existing = cityMap.get(cityName) || { count: 0, avgConfidence: 0 };
+        existing.count += 1;
+        existing.avgConfidence = Math.round((existing.avgConfidence * (existing.count - 1) + o.confidence_score) / existing.count);
+        cityMap.set(cityName, existing);
+      });
+
+    // Convert to array, sort by confidence, take top 4
+    const entries = Array.from(cityMap.entries());
+    
+    return entries
+      .sort((a, b) => b[1].avgConfidence - a[1].avgConfidence)
+      .slice(0, 4)
+      .map(([name, data]) => {
+        // Find the city's country code for display
+        for (const cc of Object.keys(CITIES)) {
+          const city = CITIES[cc].find(ct => ct.name.toLowerCase() === name.toLowerCase());
+          if (city) {
+            return { 
+              id: city.id, 
+              name: city.name, 
+              countryCode: cc, 
+              confidence: data.avgConfidence, // Use REAL confidence from opportunity data
+            };
+          }
+        }
+        return null;
+      })
+      .filter(Boolean) as { id: string; name: string; countryCode: string; confidence: number }[];
+  }, [opportunities]);
   const activeOpps = useMemo(() => opportunities.filter(o => o.is_active), [opportunities]);
 
   return (
@@ -56,7 +100,11 @@ export function Dashboard() {
           <div>
             <h2 className="text-lg font-semibold text-white">AI Deal Intelligence</h2>
             <p className="text-sm text-gray-500">
-              {loading ? 'Initializing...' : `${activeOpps.length} active opportunities · ${signals.length} signals today`}
+              {loading ? 'Initializing...' : `${activeOpps.length} active opportunities`}
+              {signals.length > 0 && ` · ${signals.length} signals`}
+              <span className="text-gray-700 ml-2 text-xs">
+                Session: {sessionStartRef.current}
+              </span>
             </p>
           </div>
         </div>
@@ -83,27 +131,24 @@ export function Dashboard() {
             value={dashboardMetrics.todayOpportunities}
             icon={<Zap className="w-5 h-5" />}
             subtitle={`${dashboardMetrics.highConfidenceDeals} high confidence`}
-            trend={{ value: 12, isPositive: true }}
           />
           <KPICard
             title="Pipeline Value"
-            value={formatIndianCurrency(dashboardMetrics.totalPipelineValue)}
+            value={dashboardMetrics.totalPipelineValue > 0 ? formatIndianCurrency(dashboardMetrics.totalPipelineValue) : '—'}
             icon={<IndianRupee className="w-5 h-5" />}
-            subtitle={`${dashboardMetrics.activeDealsCount} deals in pipeline`}
+            subtitle={dashboardMetrics.activeDealsCount > 0 ? `${dashboardMetrics.activeDealsCount} deals in pipeline` : 'No data'}
           />
           <KPICard
             title="Expected Commission"
-            value={formatCommission(dashboardMetrics.expectedCommission)}
+            value={dashboardMetrics.expectedCommission > 0 ? formatCommission(dashboardMetrics.expectedCommission) : '—'}
             icon={<Percent className="w-5 h-5" />}
-            subtitle="3% on all active deals"
-            trend={{ value: dashboardMetrics.avgConfidence, isPositive: true }}
+            subtitle={dashboardMetrics.expectedCommission > 0 ? '3% on all active deals' : 'Awaiting deals'}
           />
           <KPICard
             title="AI Confidence"
-            value={`${dashboardMetrics.avgConfidence}%`}
+            value={dashboardMetrics.avgConfidence > 0 ? `${dashboardMetrics.avgConfidence}%` : '—'}
             icon={<Brain className="w-5 h-5" />}
-            subtitle={`${dashboardMetrics.criticalSignals} critical signals`}
-            trend={{ value: dashboardMetrics.avgConfidence > 70 ? 8 : -3, isPositive: dashboardMetrics.avgConfidence > 70 }}
+            subtitle={dashboardMetrics.criticalSignals > 0 ? `${dashboardMetrics.criticalSignals} critical signals` : 'No signals yet'}
           />
         </motion.div>
       )}
@@ -234,31 +279,39 @@ export function Dashboard() {
               <h3 className="text-sm font-semibold text-white">🔥 Hot Markets</h3>
             </div>
             <div className="space-y-2">
-              {hotCities.map((city, i) => {
-                const country = COUNTRIES.find(c => c.code === city.countryCode);
-                return (
-                  <motion.div
-                    key={city.id}
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    onClick={() => navigate('/global-map')}
-                    className="flex items-center justify-between p-2.5 rounded-lg hover:bg-white/5 cursor-pointer transition-colors group"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">{country?.flag || '🌍'}</span>
-                      <div>
-                        <p className="text-xs font-medium text-white group-hover:text-luxury-gold-300 transition-colors">{city.name}</p>
-                        <p className="text-[9px] text-gray-500">{country?.name} · {city.activeProjects} projects</p>
+              {hotCities.length === 0 ? (
+                <div className="text-center py-6">
+                  <MapPin className="w-6 h-6 text-gray-700 mx-auto mb-2" />
+                  <p className="text-xs text-gray-500">No live market data available for your selected location yet.</p>
+                  <p className="text-[9px] text-gray-600 mt-1">Markets appear here once intelligence is collected.</p>
+                </div>
+              ) : (
+                hotCities.map((city, i) => {
+                  const country = COUNTRIES.find(c => c.code === city.countryCode);
+                  return (
+                    <motion.div
+                      key={city.id}
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      onClick={() => navigate('/global-map')}
+                      className="flex items-center justify-between p-2.5 rounded-lg hover:bg-white/5 cursor-pointer transition-colors group"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">{country?.flag || '🌍'}</span>
+                        <div>
+                          <p className="text-xs font-medium text-white group-hover:text-luxury-gold-300 transition-colors">{city.name}</p>
+                          <p className="text-[9px] text-gray-500">{country?.name}</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs font-bold text-emerald-400">+{city.priceTrend}%</p>
-                      <p className="text-[9px] text-gray-600">{city.confidence}% conf</p>
-                    </div>
-                  </motion.div>
-                );
-              })}
+                      <div className="text-right">
+                        <p className="text-xs font-bold text-emerald-400">{city.confidence}% AI</p>
+                        <p className="text-[9px] text-gray-600">confidence</p>
+                      </div>
+                    </motion.div>
+                  );
+                })
+              )}
             </div>
             <button
               onClick={() => navigate('/global-map')}

@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { formatIndianCurrency } from '../lib/format';
-import { CITIES, COUNTRIES, getHotCities, getCitiesByCountry, formatGlobalCurrency } from '../lib/global-data';
+import { CITIES, COUNTRIES, getCitiesByCountry, formatGlobalCurrency } from '../lib/global-data';
 import { useAuth } from '../context/AuthContext';
 import type { City, InvestmentGoal, PropertyType } from '../lib/global-data';
 
