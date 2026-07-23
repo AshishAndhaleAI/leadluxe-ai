@@ -16,6 +16,7 @@ import { GlobeControls } from '../components/globe/GlobeControls';
 import { InteractiveGlobe } from '../components/globe/Globe3D';
 import { GeoSearch } from '../components/globe/GeoSearch';
 import { DebugGeoOverlay } from '../components/globe/DebugGeoOverlay';
+import { MapDebugPanel } from '../components/globe/MapDebugPanel';
 import type { GeoSearchResult } from '../lib/geo/GeocodingEngine';
 
 type ViewLevel = 'world' | 'country' | 'city';
@@ -309,6 +310,9 @@ export function GlobalMap() {
 
       {/* Debug Geo Overlay (Ctrl+Shift+G) */}
       <DebugGeoOverlay />
+
+      {/* Map Debug Panel (Ctrl+Shift+M) */}
+      <MapDebugPanel />
     </div>
   );
 }
