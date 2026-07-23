@@ -15,6 +15,7 @@ import {
   Camera, Bath, Bed, Maximize, Shield, Zap, Eye,
   ExternalLink, MessageSquare, Share2, Globe, Layers,
   BarChart3, Target, AlertCircle, ChevronDown, Phone, Mail,
+  Award,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { getPropertyDatabase } from '../lib/property-database';
@@ -22,6 +23,8 @@ import type { Property, PropertyStatus, PropertyType, PropertyImage, PropertyUni
 import { getEnrichedPropertyById } from '../services/property-enrichment';
 import { trackPropertyClick, trackContactSubmit } from '../lib/analytics';
 import { EvidenceDrawer, EvidenceBadge, generatePropertyEvidence, type PropertyEvidence } from '../components/evidence/EvidenceDrawer';
+import { DealRoomOnboarding } from '../components/deal/DealRoomOnboarding';
+import { getDealPassports, getCommissionPipeline } from '../components/deal/DealPassport';
 
 // ============================================================
 // TYPES
@@ -146,6 +149,12 @@ export function DealRoom() {
   });
   const [showMyInterests, setShowMyInterests] = useState(false);
   const [evidenceModal, setEvidenceModal] = useState<{ open: boolean; property: Property | null }>({ open: false, property: null });
+  const [onboardingModal, setOnboardingModal] = useState<{ open: boolean; property: Property | null }>({ open: false, property: null });
+  const [showPassportSummary, setShowPassportSummary] = useState(false);
+
+  // Deal Passport pipeline
+  const dealPassports = useMemo(() => getDealPassports(), []);
+  const commissionPipeline = useMemo(() => getCommissionPipeline(), [dealPassports]);
 
   // Pre-compute evidence for all properties (deterministic, based on property id + data)
   const evidenceMap = useMemo(() => {
@@ -502,7 +511,7 @@ export function DealRoom() {
                 isFavorite={favorites.has(property.id)}
                 onToggleFavorite={() => toggleFavorite(property.id)}
                 onClick={() => setDetailModal({ open: true, property })}
-                onExpressInterest={() => setInterestModal({ open: true, property })}
+                onExpressInterest={() => setOnboardingModal({ open: true, property })}
                 onViewEvidence={() => setEvidenceModal({ open: true, property })}
               />
             ))}
@@ -523,13 +532,97 @@ export function DealRoom() {
                 isFavorite={favorites.has(property.id)}
                 onToggleFavorite={() => toggleFavorite(property.id)}
                 onClick={() => setDetailModal({ open: true, property })}
-                onExpressInterest={() => setInterestModal({ open: true, property })}
+                onExpressInterest={() => setOnboardingModal({ open: true, property })}
                 onViewEvidence={() => setEvidenceModal({ open: true, property })}
               />
             ))}
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Deal Passport Summary (when there are active passports) */}
+      {dealPassports.length > 0 && !showPassportSummary && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card p-3 border-luxury-gold-500/10"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                <CheckCircle className="w-4 h-4 text-emerald-400" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-white">Active Deal Passports</p>
+                <p className="text-[9px] text-gray-500">
+                  {commissionPipeline.pending.length} pending · {commissionPipeline.due.length} due · 
+                  Pipeline: {formatPrice(commissionPipeline.totalPending + commissionPipeline.totalDue, 'IN')}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowPassportSummary(true)}
+              className="text-[10px] text-luxury-gold-400 hover:underline"
+            >
+              View All
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Passport Summary Detail */}
+      {showPassportSummary && dealPassports.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="premium-card p-4"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Award className="w-4 h-4 text-luxury-gold-400" />
+              <h2 className="text-sm font-bold text-white">Deal Passports</h2>
+              <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-[9px] font-medium text-emerald-400">
+                {dealPassports.length} active
+              </span>
+            </div>
+            <button onClick={() => setShowPassportSummary(false)} className="text-[9px] text-gray-500 hover:text-white">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <div className="space-y-2">
+            {dealPassports.slice(0, 5).map(p => (
+              <div key={p.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-900/50 border border-gray-800">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <h3 className="text-xs font-semibold text-white truncate">{p.propertyName}</h3>
+                    <span className={cn(
+                      'px-1 py-0.5 rounded text-[8px] font-medium',
+                      p.stage === 'deal_closed' ? 'bg-emerald-500/10 text-emerald-400' :
+                      p.stage === 'negotiation_active' ? 'bg-amber-500/10 text-amber-400' :
+                      'bg-blue-500/10 text-blue-400'
+                    )}>
+                      {p.stage.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+                  <p className="text-[9px] text-gray-500">
+                    {p.developerName} · {p.city} · {p.investorType || 'pending profile'}
+                  </p>
+                </div>
+                <div className="text-right shrink-0 ml-3">
+                  <p className="text-xs font-bold text-emerald-400">{p.currencySymbol}{(p.estimatedCommission / 100000).toFixed(1)}L</p>
+                  <p className="text-[8px] text-gray-500">
+                    {p.buyerQualification.aiCloseScore ? `${p.buyerQualification.aiCloseScore}/100` : 'scoring...'}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-3 flex items-center justify-between text-[9px] text-gray-600">
+            <span>Pipeline: {formatPrice(commissionPipeline.totalPending + commissionPipeline.totalDue, 'IN')}</span>
+            <span>{dealPassports.length} total · {commissionPipeline.pending.length} pending · {commissionPipeline.due.length} due</span>
+          </div>
+        </motion.div>
+      )}
 
       {/* Evidence Drawer */}
       <EvidenceDrawer
@@ -538,7 +631,34 @@ export function DealRoom() {
         onClose={() => setEvidenceModal({ open: false, property: null })}
       />
 
-      {/* Interest Modal */}
+      {/* Deal Room Onboarding (replaces old InterestModal) */}
+      {onboardingModal.open && onboardingModal.property && (
+        <DealRoomOnboarding
+          property={{
+            id: onboardingModal.property.id,
+            name: onboardingModal.property.name,
+            developer_name: onboardingModal.property.developer_name,
+            developer_website: onboardingModal.property.developer_website || null,
+            city: onboardingModal.property.city,
+            country: onboardingModal.property.country,
+            countryCode: onboardingModal.property.countryCode,
+            price_min: onboardingModal.property.price_min,
+            price_max: onboardingModal.property.price_max,
+            estimated_commission: onboardingModal.property.estimated_commission,
+            currency: onboardingModal.property.currency,
+            currencySymbol: onboardingModal.property.currencySymbol,
+          }}
+          onComplete={(passportId) => {
+            setOnboardingModal({ open: false, property: null });
+            try {
+              setSavedDeals(JSON.parse(localStorage.getItem('leadluxe-deals') || '[]'));
+            } catch {}
+          }}
+          onClose={() => setOnboardingModal({ open: false, property: null })}
+        />
+      )}
+
+      {/* Interest Modal (kept for backward compatibility) */}
       {interestModal.open && interestModal.property && (
         <InterestModal
           property={interestModal.property}
