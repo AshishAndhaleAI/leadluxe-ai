@@ -6,8 +6,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { CalendarIcon, Check, Sparkles, Send, ArrowRight, Clock, Users, Globe } from 'lucide-react';
+import { CalendarIcon, Check, Send, ArrowRight, Globe } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { SEOHelmet } from '../components/seo/SEOHelmet';
 
 const timeSlots = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'];
 
@@ -58,7 +59,14 @@ export function BookDemo() {
   }
 
   return (
-    <div className="min-h-screen bg-luxury-black flex items-center justify-center p-4">
+    <>
+      <SEOHelmet
+        title="Book a Live Demo — LeadLuxe AI"
+        description="Schedule a 30-minute walkthrough of the LeadLuxe AI platform. See live market intelligence, verified property data, and the Deal Room system in action."
+        url="https://leadluxe-ai.vercel.app/book-demo"
+        canonical="https://leadluxe-ai.vercel.app/book-demo"
+      />
+      <div className="min-h-screen bg-luxury-black flex items-center justify-center p-4">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-lg glass-card p-6 sm:p-8 border-luxury-gold-500/20 bg-luxury-black/60 backdrop-blur-xl">
         <div className="text-center mb-6">
@@ -146,6 +154,7 @@ export function BookDemo() {
           </div>
         )}
       </motion.div>
-    </div>
+      </div>
+    </>
   );
 }

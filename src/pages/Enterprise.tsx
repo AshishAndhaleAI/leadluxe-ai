@@ -9,11 +9,12 @@ import { useNavigate } from 'react-router-dom';
 import {
   Building2, ArrowRight, Check, Globe, Zap, Shield,
   Bot, BarChart3, Layers, Sparkles, ChevronRight,
-  Mail, Phone, Send, Star, TrendingUp, Users
+  Send, Star, TrendingUp, Users
 } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
 import { supabase } from '../lib/supabase';
 import { cn } from '../lib/utils';
+import { SEOHelmet } from '../components/seo/SEOHelmet';
 
 const benefits = [
   { icon: Layers, title: 'Data & Intelligence Stack', desc: 'Access 120+ cities, 25 countries, AI opportunity engine, capital flow analysis, and infrastructure signals.' },
@@ -121,7 +122,14 @@ export function Enterprise() {
   }
 
   return (
-    <div className="min-h-screen bg-luxury-black">
+    <>
+      <SEOHelmet
+        title="Enterprise — AI Intelligence Layer for Global Real Estate Deal Flow"
+        description="LeadLuxe analyzes infrastructure signals, capital flows, developer activity, and investor behavior to identify high-probability real estate opportunities. Partnership, white-label, and acquisition inquiries."
+        url="https://leadluxe-ai.vercel.app/enterprise"
+        canonical="https://leadluxe-ai.vercel.app/enterprise"
+      />
+      <div className="min-h-screen bg-luxury-black">
       {/* Hero */}
       <section className="relative pt-24 pb-16 px-4">
         <div className="absolute inset-0 bg-grid opacity-20" />
@@ -365,6 +373,7 @@ export function Enterprise() {
           </motion.div>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 }

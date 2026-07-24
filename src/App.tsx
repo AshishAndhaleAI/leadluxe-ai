@@ -46,7 +46,7 @@ import { CountryLanding } from './pages/CountryLanding';
 import { CityLanding } from './pages/CityLanding';
 import { Blog } from './pages/Blog';
 import { BlogPost } from './pages/BlogPost';
-import { SEOHelmet, OrganizationLD } from './components/seo/SEOHelmet';
+import { SEOHelmet, OrganizationLD, WebSiteLD } from './components/seo/SEOHelmet';
 import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 
@@ -109,6 +109,7 @@ function AppRoutes() {
       {/* Global SEO meta and structured data */}
       <SEOHelmet />
       <OrganizationLD />
+      <WebSiteLD />
 
       <Routes>
         {/* Public Routes */}

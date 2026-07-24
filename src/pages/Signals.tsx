@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Globe, Search, Clock, Zap, Activity } from 'lucide-react';
 import { useOpportunityEngine } from '../hooks/useOpportunityEngine';
 import { cn, formatRelativeTime } from '../lib/utils';
+import { SEOHelmet } from '../components/seo/SEOHelmet';
 
 export function Signals() {
   const { signals, loading } = useOpportunityEngine();
@@ -22,7 +23,12 @@ export function Signals() {
   const highImpact = signals.filter(s => s.impact_level === 'high' || s.impact_level === 'critical').length;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <>
+      <SEOHelmet
+        title="AI Signals — Real-Time Market Intelligence"
+        description="Live market signals from public sources — interest rate changes, infrastructure announcements, FDI spikes, and luxury transaction anomalies across global real estate markets."
+      />
+      <div className="space-y-6 animate-fade-in">
       <div className="flex items-center gap-3 mb-2">
         <div className="w-10 h-10 rounded-xl bg-luxury-gold-500/20 flex items-center justify-center">
           <Globe className="w-5 h-5 text-luxury-gold-400" />
@@ -104,7 +110,7 @@ export function Signals() {
             </motion.div>
           ))}
         </div>
-      )}
-    </div>
+      )}      </div>
+    </>
   );
 }

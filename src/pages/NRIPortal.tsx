@@ -8,11 +8,12 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
-  Globe, MapPin, TrendingUp, Shield, ChevronRight,
-  Check, Star, DollarSign, ArrowRight, ExternalLink,
-  Building2, BarChart3, Target, Send, Users, Award,
+  Globe, Shield, ChevronRight,
+  Check, ArrowRight, Target,
+  Building2, Send, Users, Award,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { SEOHelmet } from '../components/seo/SEOHelmet';
 import { COUNTRIES, CITIES } from '../lib/global-data';
 
 const NRI_MARKETS = [
@@ -49,7 +50,14 @@ export function NRIPortal() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505]">
+    <>
+      <SEOHelmet
+        title="NRI Investors — Verified Indian Real Estate for Global Investors"
+        description="Explore source-verified real estate opportunities across 27 Indian cities. Designed for NRI investors in UAE, Singapore, UK, USA, Canada, and Australia. Backed by RERA records and institutional research."
+        url="https://leadluxe-ai.vercel.app/nri"
+        canonical="https://leadluxe-ai.vercel.app/nri"
+      />
+      <div className="min-h-screen bg-[#050505]">
       {/* ─── Hero ───────────────────────────────────────── */}
       <section className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="absolute inset-0 bg-gradient-to-b from-blue-500/[0.02] to-transparent" />
@@ -307,6 +315,7 @@ export function NRIPortal() {
           </p>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 }

@@ -8,11 +8,12 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
-  Building2, ArrowRight, Check, Globe, Zap, Shield,
-  Bot, BarChart3, Target, ChevronRight, Star, TrendingUp,
-  Users, DollarSign, MapPin, Award, Send, ExternalLink,
+  Building2, ArrowRight, Check, Shield, Globe,
+  ChevronRight, Star, TrendingUp,
+  Users, DollarSign, MapPin, Award, Send, BarChart3,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { SEOHelmet } from '../components/seo/SEOHelmet';
 import { COUNTRIES, CITIES } from '../lib/global-data';
 
 const indiaData = {
@@ -85,7 +86,14 @@ export function Developers() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505]">
+    <>
+      <SEOHelmet
+        title="Developers — Reach Qualified Capital with AI-Powered Intelligence"
+        description="LeadLuxe AI connects verified Indian developers with AI-qualified domestic and NRI investors through source-backed market intelligence, RERA-aligned verification, and transaction-ready Deal Rooms."
+        url="https://leadluxe-ai.vercel.app/developers"
+        canonical="https://leadluxe-ai.vercel.app/developers"
+      />
+      <div className="min-h-screen bg-[#050505]">
       {/* ─── Hero ───────────────────────────────────────── */}
       <section className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="absolute inset-0 bg-gradient-to-b from-luxury-gold-500/[0.02] to-transparent" />
@@ -433,6 +441,7 @@ export function Developers() {
           </div>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 }

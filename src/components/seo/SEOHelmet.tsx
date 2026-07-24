@@ -149,6 +149,35 @@ export function BreadcrumbLD({ items }: { items: BreadcrumbItem[] }) {
 }
 
 // ============================================================
+// WebSite Structured Data
+// Enables Google Sitelinks Search Box in SERP
+// ============================================================
+
+export function WebSiteLD() {
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'LeadLuxe AI',
+    url: SITE_URL,
+    description: 'AI-powered global real estate intelligence platform for developers and investors.',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${SITE_URL}/deal-room?search={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
+  return (
+    <Helmet>
+      <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
+    </Helmet>
+  );
+}
+
+// ============================================================
 // Organization Structured Data
 // Makes the brand appear in Google Knowledge Panel
 // ============================================================

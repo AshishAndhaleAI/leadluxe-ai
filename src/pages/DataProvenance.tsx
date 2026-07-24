@@ -5,6 +5,7 @@
 // ============================================================
 
 import { Shield, ExternalLink, Globe, Building2, Database, FileText, CheckCircle, AlertTriangle, HelpCircle } from 'lucide-react';
+import { SEOHelmet } from '../components/seo/SEOHelmet';
 
 const SOURCE_TABLE = [
   { source: 'MahaRERA (Maharashtra)', type: 'Government Portal', url: 'https://maharera.maharashtra.gov.in', coverage: 'Maharashtra, India', status: 'Available' },
@@ -22,7 +23,14 @@ const SOURCE_TABLE = [
 
 export function DataProvenance() {
   return (
-    <div className="min-h-screen bg-[#03030a] text-white p-4 md:p-8">
+    <>
+      <SEOHelmet
+        title="Data Provenance — Verification Policy & Data Sources"
+        description="LeadLuxe AI's data verification policy. Every property field is attributed to its original source from government registries, institutional research, and official developer websites."
+        url="https://leadluxe-ai.vercel.app/data-provenance"
+        canonical="https://leadluxe-ai.vercel.app/data-provenance"
+      />
+      <div className="min-h-screen bg-[#03030a] text-white p-4 md:p-8">
       <div className="max-w-4xl mx-auto space-y-8">
 
         {/* Header */}
@@ -207,6 +215,7 @@ export function DataProvenance() {
         </div>
 
       </div>
-    </div>
+      </div>
+    </>
   );
 }

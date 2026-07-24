@@ -10,12 +10,11 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Building2, MapPin, TrendingUp, DollarSign, Shield,
   ChevronRight, Play, Pause, ChevronLeft, Globe,
-  BarChart3, FileText, Target, ExternalLink, Award,
+  BarChart3, FileText, Target, Shield, Award,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { COUNTRIES, CITIES } from '../lib/global-data';
+import { SEOHelmet } from '../components/seo/SEOHelmet';
 
 // ─── Demo Steps ─────────────────────────────────────────────
 const DEMO_STEPS = [
@@ -152,7 +151,14 @@ export function Demo() {
   if (!step) return null;
 
   return (
-    <div className="relative min-h-screen bg-[#050505] overflow-hidden">
+    <>
+      <SEOHelmet
+        title="Investor Demo — 90-Second Guided Overview"
+        description="Watch a 90-second guided overview of LeadLuxe AI — India's first AI-powered real estate investment intelligence platform with verified data, source attribution, and Deal Room onboarding."
+        url="https://leadluxe-ai.vercel.app/demo"
+        canonical="https://leadluxe-ai.vercel.app/demo"
+      />
+      <div className="relative min-h-screen bg-[#050505] overflow-hidden">
       {/* ─── Progress bar ──────────────────────────────────── */}
       <div className="fixed top-0 left-0 right-0 z-50 h-0.5 bg-white/5">
         <motion.div
@@ -369,7 +375,7 @@ export function Demo() {
         <span className="text-[9px] text-white/20 group-hover:text-white/40 font-mono tracking-[0.2em] uppercase transition-colors">
           Exit Demo
         </span>
-      </button>
-    </div>
+      </button>      </div>
+    </>
   );
 }
