@@ -35,6 +35,8 @@ import { NRIPortal } from './pages/NRIPortal';
 import { AcquisitionDashboard } from './pages/AcquisitionDashboard';
 import { CRMPipeline } from './pages/CRMPipeline';
 import { RevenueDashboard } from './pages/RevenueDashboard';
+import { AdminOutreach } from './pages/AdminOutreach';
+import { DealPassports } from './pages/DealPassports';
 import { FounderDashboard } from './pages/FounderDashboard';
 import { InvestorStory } from './pages/InvestorStory';
 import { VerificationBadges } from './pages/VerificationBadges';
@@ -134,6 +136,8 @@ function AppRoutes() {
         <Route path="/admin/acquisition" element={<ProtectedRoute><AcquisitionDashboard /></ProtectedRoute>} />
         <Route path="/admin/crm" element={<ProtectedRoute><CRMPipeline /></ProtectedRoute>} />
         <Route path="/admin/revenue" element={<ProtectedRoute><RevenueDashboard /></ProtectedRoute>} />
+        <Route path="/admin/outreach" element={<ProtectedRoute><AdminOutreach /></ProtectedRoute>} />
+        <Route path="/admin/deal-passports" element={<ProtectedRoute><DealPassports /></ProtectedRoute>} />
         <Route path="/founder" element={<ProtectedRoute><FounderDashboard /></ProtectedRoute>} />
         <Route path="/investor-story" element={<InvestorStory />} />
         <Route path="/verification" element={<VerificationBadges />} />
