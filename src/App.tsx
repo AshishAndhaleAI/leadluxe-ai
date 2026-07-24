@@ -33,6 +33,12 @@ import { Demo } from './pages/Demo';
 import { Developers } from './pages/Developers';
 import { NRIPortal } from './pages/NRIPortal';
 import { AcquisitionDashboard } from './pages/AcquisitionDashboard';
+import { CRMPipeline } from './pages/CRMPipeline';
+import { RevenueDashboard } from './pages/RevenueDashboard';
+import { FounderDashboard } from './pages/FounderDashboard';
+import { InvestorStory } from './pages/InvestorStory';
+import { VerificationBadges } from './pages/VerificationBadges';
+import { IndiaOpportunityReport } from './pages/IndiaOpportunityReport';
 import { DataProvenance } from './pages/DataProvenance';
 import { AIGovernancePanel } from './components/investor/AIGovernancePanel';
 import { NeuralCapitalMap } from './pages/NeuralCapitalMap';
@@ -126,6 +132,12 @@ function AppRoutes() {
         <Route path="/developers" element={<Developers />} />
         <Route path="/nri" element={<NRIPortal />} />
         <Route path="/admin/acquisition" element={<ProtectedRoute><AcquisitionDashboard /></ProtectedRoute>} />
+        <Route path="/admin/crm" element={<ProtectedRoute><CRMPipeline /></ProtectedRoute>} />
+        <Route path="/admin/revenue" element={<ProtectedRoute><RevenueDashboard /></ProtectedRoute>} />
+        <Route path="/founder" element={<ProtectedRoute><FounderDashboard /></ProtectedRoute>} />
+        <Route path="/investor-story" element={<InvestorStory />} />
+        <Route path="/verification" element={<VerificationBadges />} />
+        <Route path="/reports/india-opportunity" element={<IndiaOpportunityReport />} />
 
         {/* Public Info pages — no auth required */}
         <Route path="/data-provenance" element={<DataProvenance />} />
