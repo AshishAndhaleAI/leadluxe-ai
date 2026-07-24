@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Knowledge Graph Core
+// TerraNexus AI — Knowledge Graph Core
 // Links developers, projects, locations, signals, entities
 // ============================================================
 

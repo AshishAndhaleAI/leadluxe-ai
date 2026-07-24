@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — AI Twin Dashboard (/twin)
+// TerraNexus AI — AI Twin Dashboard (/twin)
 // 
 // The user's personal command center. Shows:
 //   - Top 5 matching opportunities

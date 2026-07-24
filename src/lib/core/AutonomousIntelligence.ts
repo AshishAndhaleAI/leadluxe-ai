@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Autonomous Intelligence Core
+// TerraNexus AI — Autonomous Intelligence Core
 // Ties agents, connectors, knowledge graph, and memory together
 // ============================================================
 

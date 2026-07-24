@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Operational Memory System
+// TerraNexus AI — Operational Memory System
 // Tracks predictions, outcomes, feedback, and learns over time
 // ============================================================
 

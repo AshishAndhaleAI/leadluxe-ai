@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Digital Twin Workspace
+// TerraNexus AI — Digital Twin Workspace
 // 7-layer institutional-grade property research workspace.
 // Orchestrates all Digital Twin section components.
 // ============================================================
@@ -347,10 +347,10 @@ export function DigitalTwinWorkspace({ property, onBack }: DigitalTwinWorkspaceP
               <div className="w-5 h-5 rounded-md bg-luxury-gold-500/20 flex items-center justify-center">
                 <Building2 className="w-2.5 h-2.5 text-luxury-gold-400" />
               </div>
-              <span className="text-[10px] font-semibold text-white">LeadLuxe AI</span>
+              <span className="text-[10px] font-semibold text-white">TerraNexus AI</span>
               <span className="text-[8px] text-gray-700">· Digital Twin Research · {property.name}</span>
             </div>
-            <p className="text-[8px] text-gray-700">© 2026 LeadLuxe AI. Research-grade data — verify independently before investment.</p>
+            <p className="text-[8px] text-gray-700">© 2026 TerraNexus AI. Research-grade data — verify independently before investment.</p>
           </div>
         </div>
       </footer>

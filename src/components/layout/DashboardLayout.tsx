@@ -25,7 +25,7 @@ export function DashboardLayout() {
         
         // Compute alert count from current rankings
         const watchlist = getWatchlist();
-        const briefingSeenToday = localStorage.getItem('leadluxe-briefing-last-seen');
+        const briefingSeenToday = localStorage.getItem('terranexus-briefing-last-seen');
         const isToday = briefingSeenToday
           ? new Date(briefingSeenToday).toISOString().split('T')[0] === new Date().toISOString().split('T')[0]
           : false;

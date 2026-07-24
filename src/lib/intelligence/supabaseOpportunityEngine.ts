@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Supabase Opportunity Engine
+// TerraNexus AI — Supabase Opportunity Engine
 // Queries Supabase directly for opportunities.
 // Falls back to our generated data if Supabase is unavailable
 // or the table is empty.

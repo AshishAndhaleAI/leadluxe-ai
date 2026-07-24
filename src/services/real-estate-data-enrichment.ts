@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Real Estate Data Enrichment Service
+// TerraNexus AI — Real Estate Data Enrichment Service
 // Provides real addresses, Google Maps links, builder contacts,
 // and properly curated real property images from Unsplash.
 // ============================================================

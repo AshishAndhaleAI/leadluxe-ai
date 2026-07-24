@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Deal Compass
+// TerraNexus AI — Deal Compass
 // A unique visual tool that helps users navigate global markets
 // with AI-driven recommendations. This is NOT a traditional
 // dashboard — it's an intelligence navigation system.

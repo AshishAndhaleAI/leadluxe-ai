@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Global Property Database
+// TerraNexus AI — Global Property Database
 // Rich property-level data across 25+ countries with builder
 // details, exact coordinates, prices, images, and amenities.
 // ============================================================

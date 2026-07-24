@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Geometric 'T' — abstract capital-flow symbol -->
+  <rect x="10" y="6" width="44" height="6" rx="3" fill="currentColor"/>
+  <rect x="27" y="6" width="10" height="44" rx="4" fill="currentColor"/>
+  <!-- Connection node — capital flow intersection -->
+  <circle cx="32" cy="40" r="5" fill="currentColor" opacity="0.9"/>
+  <!-- Grid reference dots -->
+  <circle cx="32" cy="14" r="2" fill="currentColor" opacity="0.3"/>
+  <circle cx="32" cy="52" r="2" fill="currentColor" opacity="0.3"/>
+  <circle cx="14" cy="9" r="2" fill="currentColor" opacity="0.2"/>
+  <circle cx="50" cy="9" r="2" fill="currentColor" opacity="0.2"/>
+</svg>

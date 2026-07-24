@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Supabase Saver
+// TerraNexus AI — Supabase Saver
 // Persists geocoded locations to the verified_locations table
 // and creates ingestion_runs tracking records.
 // ============================================================
@@ -57,7 +57,7 @@ export async function saveToSupabase(input: SaveInput): Promise<IngestionRun> {
               district_name: loc.district || null,
               latitude: loc.latitude,
               longitude: loc.longitude,
-              geocode_source: loc.source || 'leadluxe_verified',
+              geocode_source: loc.source || 'terranexus_verified',
               geocode_confidence: loc.confidence,
               verification_status: 'verified',
               verified_at: new Date().toISOString(),

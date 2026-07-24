@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Investor Twin Engine
+// TerraNexus AI — Investor Twin Engine
 // 
 // The twin engine encodes user preferences into a match vector,
 // scores every opportunity against that vector, adjusts for risk,
@@ -302,7 +302,7 @@ export function runTwinMatching(
       upside: risk.upside,
       downside: risk.downside,
       confidence: opp.confidence,
-      sources: opp.sourceUrl ? [{ name: opp.sourceName || 'LeadLuxe Intelligence', url: opp.sourceUrl }] : [],
+      sources: opp.sourceUrl ? [{ name: opp.sourceName || 'TerraNexus Intelligence', url: opp.sourceUrl }] : [],
     };
   }).sort((a, b) => b.riskAdjustedScore - a.riskAdjustedScore);
 }

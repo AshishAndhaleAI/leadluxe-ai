@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Legal Evidence Room
+// TerraNexus AI — Legal Evidence Room
 // Layer 7 of the Digital Twin workspace.
 // Secure document vault with verification badges,
 // source attribution, and evidence tracking.

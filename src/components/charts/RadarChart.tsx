@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Radar Chart (SVG, no external dependencies)
+// TerraNexus AI — Radar Chart (SVG, no external dependencies)
 // Used by Deal Compass to compare market KPIs side-by-side.
 // Pure SVG with Framer Motion animations.
 // ============================================================

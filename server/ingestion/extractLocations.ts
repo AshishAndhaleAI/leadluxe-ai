@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Location Extractor
+// TerraNexus AI — Location Extractor
 // Parses fetched reports to extract city, project, and
 // market signal locations for geocoding.
 // ============================================================

@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Ingestion Scheduler
+// TerraNexus AI — Ingestion Scheduler
 // Orchestrates the full pipeline:
 //   Schedule → Fetch Reports → Extract Cities/Projects →
 //   Geocode → Verify → Deduplicate → Save to Supabase

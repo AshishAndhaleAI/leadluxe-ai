@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Construction Timeline Tab
+// TerraNexus AI — Construction Timeline Tab
 // Layer 5 of the Digital Twin workspace.
 // Shows milestone tracking with dates, satellite comparison,
 // and schedule delay analysis.

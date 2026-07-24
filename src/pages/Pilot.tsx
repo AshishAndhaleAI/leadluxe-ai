@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Pilot Program Page (/pilot)
+// TerraNexus AI — Pilot Program Page (/pilot)
 // 30-Day AI Deal Flow Pilot offering
 // ============================================================
 
@@ -75,10 +75,10 @@ export function Pilot() {
   return (
     <>
       <SEOHelmet
-        title="30-Day AI Deal Flow Pilot — LeadLuxe AI"
-        description="Experience LeadLuxe AI with your actual portfolio. Get personalized intelligence, opportunity matching, and weekly strategy briefs — at no cost for 30 days. No commitment required."
-        url="https://leadluxe-ai.vercel.app/pilot"
-        canonical="https://leadluxe-ai.vercel.app/pilot"
+        title="30-Day AI Deal Flow Pilot — TerraNexus AI"
+        description="Experience TerraNexus AI with your actual portfolio. Get personalized intelligence, opportunity matching, and weekly strategy briefs — at no cost for 30 days. No commitment required."
+        url="https://terranexus-ai.vercel.app/pilot"
+        canonical="https://terranexus-ai.vercel.app/pilot"
       />
       <div className="min-h-screen bg-luxury-black">
         {/* Hero */}
@@ -94,7 +94,7 @@ export function Pilot() {
                 30-Day <span className="text-gradient-gold">AI Deal Flow Pilot</span>
               </h1>
               <p className="text-base text-gray-400 max-w-xl mx-auto">
-                Experience LeadLuxe AI with your actual portfolio. Get personalized intelligence,
+                Experience TerraNexus AI with your actual portfolio. Get personalized intelligence,
                 opportunity matching, and weekly strategy briefs — at no cost for 30 days.
               </p>
             </motion.div>
@@ -131,7 +131,7 @@ export function Pilot() {
 
               <div className="mt-6 p-4 rounded-lg bg-luxury-gold-500/5 border border-luxury-gold-500/10">
                 <p className="text-xs text-luxury-gold-400 font-medium">No commitment required.</p>
-                <p className="text-[10px] text-gray-500 mt-1">If LeadLuxe doesn't deliver measurable value in 30 days, you owe nothing. No invoices, no follow-up calls.</p>
+                <p className="text-[10px] text-gray-500 mt-1">If TerraNexus doesn't deliver measurable value in 30 days, you owe nothing. No invoices, no follow-up calls.</p>
               </div>
             </div>
 

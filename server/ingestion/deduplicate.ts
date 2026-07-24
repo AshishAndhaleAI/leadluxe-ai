@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Location Deduplicator
+// TerraNexus AI — Location Deduplicator
 // Removes duplicate locations by city name and proximity
 // to ensure no duplicate markers on the globe.
 // ============================================================

@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Personalized Email Generator
+// TerraNexus AI — Personalized Email Generator
 // Creates outreach drafts for developers and investors.
 // References database facts only — no hallucinated claims.
 // ============================================================
@@ -41,7 +41,7 @@ export function generateDeveloperEmail(
   const body = [
     `Hi ${developer.companyName.split(' ')[0]} Team,`,
     '',
-    `LeadLuxe AI has identified ${matchedInvestorCount} qualified investors matching projects in ${property.city}.`,
+    `TerraNexus AI has identified ${matchedInvestorCount} qualified investors matching projects in ${property.city}.`,
     '',
     `Here is what we know:`,
     `• Property Segment: ${property.property_type?.replace(/_/g, ' ') || 'Premium Residential'} in ${property.city}`,
@@ -57,11 +57,11 @@ export function generateDeveloperEmail(
     '',
     `Would you be open to a demo this week to see the qualified investor pipeline?`,
     '',
-    `Demo Link: https://leadluxe-ai.vercel.app/book-demo`,
-    `Platform: https://leadluxe-ai.vercel.app/`,
+    `Demo Link: https://terranexus-ai.vercel.app/book-demo`,
+    `Platform: https://terranexus-ai.vercel.app/`,
     '',
     `Best regards,`,
-    `LeadLuxe AI Team`,
+    `TerraNexus AI Team`,
     `Verified Intelligence · Source-Attributed Data`,
   ].join('\n');
 
@@ -120,12 +120,12 @@ export function generateInvestorEmail(
     `• Map coordinates verified via OpenStreetMap`,
     '',
     `Access the full Deal Room to review evidence, AI analysis, and commission structure:`,
-    `https://leadluxe-ai.vercel.app/property/${property.slug}`,
+    `https://terranexus-ai.vercel.app/property/${property.slug}`,
     '',
     `Interested? Click below to mark your interest and we will set up a dedicated Deal Room.`,
     '',
     `Best regards,`,
-    `LeadLuxe AI Team`,
+    `TerraNexus AI Team`,
     `Verified Intelligence · Source-Attributed Data`,
   ].join('\n');
 
@@ -154,7 +154,7 @@ export function generateInvestorEmail(
 }
 
 // ─── Email Queue Management ──────────────────────────────────
-const EMAIL_QUEUE_KEY = 'leadluxe-email-queue';
+const EMAIL_QUEUE_KEY = 'terranexus-email-queue';
 
 export function getEmailQueue(): EmailDraft[] {
   try {
@@ -190,9 +190,9 @@ export function updateEmailStatus(
 export function getComplianceFooter(): string {
   return [
     '---',
-    'LeadLuxe AI — Verified Intelligence, Source-Attributed Data',
-    'View our data sources: https://leadluxe-ai.vercel.app/data-provenance',
-    'Verification policy: https://leadluxe-ai.vercel.app/verification',
+    'TerraNexus AI — Verified Intelligence, Source-Attributed Data',
+    'View our data sources: https://terranexus-ai.vercel.app/data-provenance',
+    'Verification policy: https://terranexus-ai.vercel.app/verification',
     '',
     'If you no longer wish to receive these introductions, reply with UNSUBSCRIBE.',
     'We respect your inbox. Max 5 emails per month per contact.',

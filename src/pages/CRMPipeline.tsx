@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — CRM Pipeline (/admin/crm)
+// TerraNexus AI — CRM Pipeline (/admin/crm)
 // Internal deal-flow tracking with pipeline stages.
 // Uses localStorage for demo — connect Supabase for production.
 // Admin-only route.
@@ -96,7 +96,7 @@ export function CRMPipeline() {
 
   return (
     <>
-      <SEOHelmet title="CRM Pipeline — LeadLuxe AI" noindex />
+      <SEOHelmet title="CRM Pipeline — TerraNexus AI" noindex />
       <div className="min-h-screen bg-[#050505] p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}

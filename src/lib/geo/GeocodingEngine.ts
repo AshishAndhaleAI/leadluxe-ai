@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Authoritative Geocoding Engine
+// TerraNexus AI — Authoritative Geocoding Engine
 // Sources:
 //   1. Verified coordinates from global-data.ts (primary)
 //   2. OpenStreetMap Nominatim API (fallback/adapter)
@@ -144,7 +144,7 @@ export function getVerifiedCoordinates(cityName: string, countryCode?: string): 
   // 1. Check VERIFIED_COORDINATES map (exact match)
   const verified = VERIFIED_COORDINATES[cityName];
   if (verified) {
-    return { latitude: verified.lat, longitude: verified.lng, source: 'LeadLuxe Verified' };
+    return { latitude: verified.lat, longitude: verified.lng, source: 'TerraNexus Verified' };
   }
 
   // 2. Check normalized name
@@ -154,7 +154,7 @@ export function getVerifiedCoordinates(cityName: string, countryCode?: string): 
   );
   if (normalizedKey) {
     const v = VERIFIED_COORDINATES[normalizedKey];
-    return { latitude: v.lat, longitude: v.lng, source: 'LeadLuxe Verified (normalized)' };
+    return { latitude: v.lat, longitude: v.lng, source: 'TerraNexus Verified (normalized)' };
   }
 
   // 3. Fall back to global-data.ts
@@ -198,7 +198,7 @@ export function buildAllGeoRecords(): GeoRecord[] {
         longitude: verified?.lng ?? city.longitude,
         timezone: COUNTRY_TIMEZONES[country.code] || 'UTC',
         population: city.population,
-        source: verified ? 'LeadLuxe Verified' : 'global-data.ts',
+        source: verified ? 'TerraNexus Verified' : 'global-data.ts',
         verificationStatus: verified ? 'verified' : 'plausible',
       });
     }

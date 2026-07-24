@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Sitemap Generator
+// TerraNexus AI — Sitemap Generator
 // Run: node scripts/generate-sitemap.js
 // Generates public/sitemap.xml for search engine indexing
 // ============================================================
@@ -9,7 +9,7 @@ import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const SITE_URL = 'https://leadluxe-ai.vercel.app';
+const SITE_URL = 'https://terranexus-ai.vercel.app';
 const NOW = new Date().toISOString().split('T')[0];
 
 // Static pages

@@ -424,14 +424,14 @@ function generatePitch(dev: Developer, project: Project | undefined, estimatedVa
 
 We've been following your impressive work in ${dev.city || 'the real estate sector'} — especially your ${project?.name || 'recent developments'} in the ${segment} segment.
 
-LeadLuxe AI can help you convert more leads into bookings with zero upfront cost. We only earn a 3% success fee when a deal closes.
+TerraNexus AI can help you convert more leads into bookings with zero upfront cost. We only earn a 3% success fee when a deal closes.
 
 With your current growth trajectory (${dev.growth_rate || 'strong'}% YoY), I believe we could add significant value to your sales pipeline.
 
 Would you be open to a 15-minute call this ${score >= 80 ? 'Tuesday' : 'Wednesday'} to explore how we can help close more deals?
 
 Best regards,
-[AIM] — LeadLuxe AI"`;
+[AIM] — TerraNexus AI"`;
 }
 
 function getBestPractices(dev: Developer, signals: Signal[]): { bestContactDay: string; bestContactChannel: string; bestFollowupTiming: string } {

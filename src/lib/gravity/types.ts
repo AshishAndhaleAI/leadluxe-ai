@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Investment Gravity Engine Types
+// TerraNexus AI — Investment Gravity Engine Types
 // Predictive capital flow intelligence for real estate
 // ============================================================
 

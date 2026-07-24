@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Investor Demo Mode
+// TerraNexus AI — Investor Demo Mode
 // 90-second guided auto-play presentation for India launch.
 // Shows: Zaha-style hero → India intelligence map → Verified
 // property → Source evidence → Deal Room onboarding → Commission
@@ -20,7 +20,7 @@ import { SEOHelmet } from '../components/seo/SEOHelmet';
 const DEMO_STEPS = [
   {
     id: 'welcome',
-    title: 'LeadLuxe AI',
+    title: 'TerraNexus AI',
     subtitle: 'Intelligence for India\'s Most Valuable Buildings',
     body: 'Watch a 90-second overview of India\'s first AI-powered real estate investment intelligence platform.',
     image: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1920&q=85&auto=format',
@@ -30,7 +30,7 @@ const DEMO_STEPS = [
     id: 'india',
     title: 'India Intelligence Network',
     subtitle: '27 Cities · 25+ Developers · AI-Powered Scoring',
-    body: 'LeadLuxe tracks verified real estate data across 27 Indian cities — from Mumbai to Bhubaneswar — analyzing RERA-registered projects, infrastructure pipelines, capital flows, and developer momentum.',
+    body: 'TerraNexus tracks verified real estate data across 27 Indian cities — from Mumbai to Bhubaneswar — analyzing RERA-registered projects, infrastructure pipelines, capital flows, and developer momentum.',
     image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=85&auto=format',
     duration: 12000,
     metrics: [
@@ -64,7 +64,7 @@ const DEMO_STEPS = [
     id: 'dealroom',
     title: 'Deal Room Onboarding',
     subtitle: 'Revenue-Capturing Deal Infrastructure',
-    body: 'When a buyer expresses interest, they enter a structured onboarding flow — investor profile, budget, timeline, funding source, and digital introduction agreement. LeadLuxe earns only when deals close.',
+    body: 'When a buyer expresses interest, they enter a structured onboarding flow — investor profile, budget, timeline, funding source, and digital introduction agreement. TerraNexus earns only when deals close.',
     image: 'https://images.unsplash.com/photo-1600566753376-12c8ab7c4a7c?w=1920&q=85&auto=format',
     duration: 14000,
   },
@@ -72,7 +72,7 @@ const DEMO_STEPS = [
     id: 'pipeline',
     title: 'Commission Pipeline Dashboard',
     subtitle: 'Track Every Introduction',
-    body: 'Every qualified buyer, site visit, and negotiation is tracked through the Deal Passport system — the core defensible asset that proves LeadLuxe-originated introductions for commission entitlement.',
+    body: 'Every qualified buyer, site visit, and negotiation is tracked through the Deal Passport system — the core defensible asset that proves TerraNexus-originated introductions for commission entitlement.',
     image: 'https://images.unsplash.com/photo-1600607688964-a1925a9e0a0e?w=1920&q=85&auto=format',
     duration: 12000,
     metrics: [
@@ -85,7 +85,7 @@ const DEMO_STEPS = [
     id: 'cta',
     title: 'Ready to Transform Your Real Estate Intelligence?',
     subtitle: 'India Launch — Live Now',
-    body: 'Request an AI Deal Report for any Indian city. Join the growing network of developers, family offices, and institutional investors using LeadLuxe AI.',
+    body: 'Request an AI Deal Report for any Indian city. Join the growing network of developers, family offices, and institutional investors using TerraNexus AI.',
     image: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=1920&q=85&auto=format',
     duration: 12000,
     isCta: true,
@@ -154,9 +154,9 @@ export function Demo() {
     <>
       <SEOHelmet
         title="Investor Demo — 90-Second Guided Overview"
-        description="Watch a 90-second guided overview of LeadLuxe AI — India's first AI-powered real estate investment intelligence platform with verified data, source attribution, and Deal Room onboarding."
-        url="https://leadluxe-ai.vercel.app/demo"
-        canonical="https://leadluxe-ai.vercel.app/demo"
+        description="Watch a 90-second guided overview of TerraNexus AI — India's first AI-powered real estate investment intelligence platform with verified data, source attribution, and Deal Room onboarding."
+        url="https://terranexus-ai.vercel.app/demo"
+        canonical="https://terranexus-ai.vercel.app/demo"
       />
       <div className="relative min-h-screen bg-[#050505] overflow-hidden">
       {/* ─── Progress bar ──────────────────────────────────── */}

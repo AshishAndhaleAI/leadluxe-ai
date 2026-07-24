@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Property Detail Page
+// TerraNexus AI — Property Detail Page
 // ZERO-HALLUCINATION design. Every visible field is either:
 //   - VERIFIED (has source_url, verified_at, confidence)
 //   - HIDDEN  (replaced with "Verification pending" message)
@@ -81,7 +81,7 @@ function SourceVerificationTab({ property }: { property: EnrichedProperty }) {
     { name: 'Unit Availability', value: `${property.available_units} / ${property.total_units}`, source: null, verified: false },
     { name: 'GPS Coordinates', value: `${property.latitude.toFixed(4)}°N, ${property.longitude.toFixed(4)}°E`, source: null, verified: false },
     { name: 'Price Range', value: `${formatPrice(property.price_min, property.countryCode)} — ${formatPrice(property.price_max, property.countryCode)}`, source: null, verified: false },
-    { name: 'AI Confidence', value: `${property.confidence}%`, source: 'LeadLuxe AI Engine', verified: true },
+    { name: 'AI Confidence', value: `${property.confidence}%`, source: 'TerraNexus AI Engine', verified: true },
     { name: 'Commission (3%)', value: formatPrice(property.estimated_commission, property.countryCode), source: null, verified: false },
   ];
 
@@ -141,7 +141,7 @@ function SourceVerificationTab({ property }: { property: EnrichedProperty }) {
       </div>
       <div className="mt-4 p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
         <p className="text-[9px] text-amber-400/70 text-center">
-          LeadLuxe AI displays only data that can be attributed to a verified source.
+          TerraNexus AI displays only data that can be attributed to a verified source.
           Fields marked "Not verified" have not yet been independently confirmed from an official registry.
           <a href="/data-provenance" className="text-luxury-gold-400 hover:underline ml-1">Data policy</a>
         </p>
@@ -331,8 +331,8 @@ export function PropertyDetail() {
 
   // SEO data
   const pageUrl = property
-    ? `https://leadluxe-ai.vercel.app/property/${property.slug}`
-    : 'https://leadluxe-ai.vercel.app';
+    ? `https://terranexus-ai.vercel.app/property/${property.slug}`
+    : 'https://terranexus-ai.vercel.app';
 
   if (!property) {
     return (
@@ -398,7 +398,7 @@ export function PropertyDetail() {
                   <div className="w-6 h-6 rounded-md bg-luxury-gold-500/20 flex items-center justify-center">
                     <Building2 className="w-3 h-3 text-luxury-gold-400" />
                   </div>
-                  <span className="text-sm font-semibold text-white">LeadLuxe</span>
+                  <span className="text-sm font-semibold text-white">TerraNexus</span>
                 </Link>
               </div>
               <div className="flex items-center gap-2">
@@ -882,7 +882,7 @@ export function PropertyDetail() {
                     )}
                     <button
                       onClick={() => {
-                        const deals = JSON.parse(localStorage.getItem('leadluxe-deals') || '[]');
+                        const deals = JSON.parse(localStorage.getItem('terranexus-deals') || '[]');
                         deals.push({
                           id: property.id,
                           propertyName: property.name,
@@ -902,7 +902,7 @@ export function PropertyDetail() {
                           timestamp: new Date().toISOString(),
                           status: 'new',
                         });
-                        localStorage.setItem('leadluxe-deals', JSON.stringify(deals));
+                        localStorage.setItem('terranexus-deals', JSON.stringify(deals));
                         navigate('/portfolio');
                       }}
                       className="btn-outline w-full text-xs"
@@ -1051,14 +1051,14 @@ export function PropertyDetail() {
                 <div className="w-6 h-6 rounded-md bg-luxury-gold-500/20 flex items-center justify-center">
                   <Building2 className="w-3 h-3 text-luxury-gold-400" />
                 </div>
-                <span className="text-xs font-semibold text-white">LeadLuxe AI</span>
+                <span className="text-xs font-semibold text-white">TerraNexus AI</span>
               </div>
               <div className="flex items-center gap-4 text-[10px] text-gray-600">
                 <Link to="/" className="hover:text-gray-400 transition-colors">Home</Link>
                 <Link to="/deal-room" className="hover:text-gray-400 transition-colors">Properties</Link>
                 <Link to={`/country/${property.countryCode.toLowerCase()}`} className="hover:text-gray-400 transition-colors">{property.country}</Link>
                 <Link to={`/city/${property.city.toLowerCase().replace(/\\s+/g, '-')}`} className="hover:text-gray-400 transition-colors">{property.city}</Link>
-                <span>© 2026 LeadLuxe AI. Global Real Estate Intelligence.</span>
+                <span>© 2026 TerraNexus AI. Global Real Estate Intelligence.</span>
               </div>
             </div>
           </footer>

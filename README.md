@@ -1,8 +1,8 @@
-# LeadLuxe AI 🏗️🤖
+# TerraNexus AI 🏗️🤖
 
 **AI-Powered Lead Conversion Platform for Real Estate Developers**
 
-LeadLuxe AI is a premium B2B SaaS application that helps real estate builders and developers convert website and WhatsApp leads into qualified site visits and property bookings using AI automation.
+TerraNexus AI is a premium B2B SaaS application that helps real estate builders and developers convert website and WhatsApp leads into qualified site visits and property bookings using AI automation.
 
 ## ✨ Features
 
@@ -30,8 +30,8 @@ LeadLuxe AI is a premium B2B SaaS application that helps real estate builders an
 ### 1. Clone and Install
 
 ```bash
-git clone <repo-url> leadluxe-ai
-cd leadluxe-ai
+git clone <repo-url> terranexus-ai
+cd terranexus-ai
 npm install
 ```
 
@@ -62,7 +62,7 @@ The app will start at `http://localhost:5173`
 ## 🏗️ Project Structure
 
 ```
-leadluxe-ai/
+terranexus-ai/
 ├── supabase/
 │   ├── schema.sql              # Database schema (13 tables)
 │   └── seed.sql                # Sample data (30 Indian real estate leads)

@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Unified Multi-Factor Ranking Engine
+// TerraNexus AI — Unified Multi-Factor Ranking Engine
 // Single scoring formula used by ALL tabs.
 // Score = price_momentum*0.20 + rental_yield*0.15 + infra*0.15
 // + inventory_absorption*0.10 + developer_reputation*0.10

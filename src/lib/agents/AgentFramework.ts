@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Autonomous Agent Framework
+// TerraNexus AI — Autonomous Agent Framework
 // 10 specialized agents with shared message bus
 // ============================================================
 
@@ -455,7 +455,7 @@ export class NewsMonitoringAgent extends Agent {
 
   constructor() {
     super('agent-news-monitoring', 'News Monitoring Agent');
-    this.proxyBase = (typeof window !== 'undefined' && (window as any).__LEADLUXE_PROXY_URL)
+    this.proxyBase = (typeof window !== 'undefined' && (window as any).__TERRANEXUS_PROXY_URL)
       || 'http://localhost:3001';
   }
 

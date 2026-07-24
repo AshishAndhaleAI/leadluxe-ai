@@ -54,7 +54,7 @@ export function Experience() {
             <Building2 className="w-5 h-5 text-luxury-gold-400" />
           </div>
           <div className="hidden sm:block">
-            <p className="text-sm font-bold text-white">LeadLuxe</p>
+            <p className="text-sm font-bold text-white">TerraNexus</p>
             <p className="text-[9px] text-luxury-gold-400 font-medium">AI Intelligence</p>
           </div>
         </div>

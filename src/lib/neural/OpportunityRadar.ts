@@ -63,7 +63,7 @@ export function scanGlobalRadar(): RadarScanReport {
           confidence: Math.min(85, 60 + city.confidence * 0.2),
           affectedPropertiesCount: Math.round(city.activeProjects * 0.3),
           estimatedValueImpact: Math.round(city.pricePerSqft * city.activeProjects * 10),
-          sourceName: 'LeadLuxe Price Index Monitor',
+          sourceName: 'TerraNexus Price Index Monitor',
           isAlerted: false,
           detectedAt: now.toISOString(),
         });
@@ -82,7 +82,7 @@ export function scanGlobalRadar(): RadarScanReport {
           confidence: Math.round(65 + city.confidence * 0.25),
           affectedPropertiesCount: city.activeProjects - city.upcomingLaunches,
           estimatedValueImpact: Math.round(city.pricePerSqft * city.activeProjects * 5 * (city.absorptionRate / 100)),
-          sourceName: 'LeadLuxe Absorption Tracker',
+          sourceName: 'TerraNexus Absorption Tracker',
           isAlerted: false,
           detectedAt: now.toISOString(),
         });
@@ -101,7 +101,7 @@ export function scanGlobalRadar(): RadarScanReport {
           confidence: Math.round(60 + city.confidence * 0.2),
           affectedPropertiesCount: Math.round(city.activeProjects * 0.4),
           estimatedValueImpact: Math.round(city.pricePerSqft * city.activeProjects * 8 * (city.priceTrend / 100)),
-          sourceName: 'LeadLuxe Infrastructure Monitor',
+          sourceName: 'TerraNexus Infrastructure Monitor',
           isAlerted: false,
           detectedAt: now.toISOString(),
         });
@@ -120,7 +120,7 @@ export function scanGlobalRadar(): RadarScanReport {
           confidence: Math.round(55 + city.confidence * 0.25),
           affectedPropertiesCount: Math.round(city.activeProjects * 0.15),
           estimatedValueImpact: Math.round(city.pricePerSqft * city.activeProjects * 12 * (city.foreignDemand / 100)),
-          sourceName: 'LeadLuxe Luxury Transaction Monitor',
+          sourceName: 'TerraNexus Luxury Transaction Monitor',
           isAlerted: false,
           detectedAt: now.toISOString(),
         });
@@ -139,7 +139,7 @@ export function scanGlobalRadar(): RadarScanReport {
           confidence: Math.round(60 + (city.foreignDemand + city.investorInterest) / 2 * 0.2),
           affectedPropertiesCount: Math.round(city.activeProjects * 0.2),
           estimatedValueImpact: Math.round(city.pricePerSqft * city.activeProjects * 15),
-          sourceName: 'LeadLuxe Capital Flow Analyzer',
+          sourceName: 'TerraNexus Capital Flow Analyzer',
           isAlerted: false,
           detectedAt: now.toISOString(),
         });
@@ -186,7 +186,7 @@ export function getRadarAlertSummary(report: RadarScanReport): string {
       `${e.severity === 'critical' ? '🚨' : e.severity === 'high' ? '🔴' : '🟡'} ${e.title}`
     ),
     '',
-    'Sources: LeadLuxe AI Autonomous Intelligence Network',
+    'Sources: TerraNexus AI Autonomous Intelligence Network',
   ];
 
   return summary.join('\n');

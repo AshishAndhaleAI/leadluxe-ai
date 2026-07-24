@@ -2,9 +2,9 @@
 
 ## Post Copy
 
-I'm excited to announce the India launch of LeadLuxe AI — an intelligence platform that connects verified Indian developers with AI-qualified domestic and NRI investors.
+I'm excited to announce the India launch of TerraNexus AI — an intelligence platform that connects verified Indian developers with AI-qualified domestic and NRI investors.
 
-LeadLuxe is not another real estate listing portal. We are a verification and transaction infrastructure layer for Indian real estate.
+TerraNexus is not another real estate listing portal. We are a verification and transaction infrastructure layer for Indian real estate.
 
 What we've built:
 
@@ -20,18 +20,18 @@ We track 27 Indian cities and target the $125B NRI remittance market.
 For developers: Reach qualified capital, not website traffic.
 For investors: Access source-verified opportunities across India.
 
-Watch the demo: https://leadluxe-ai.vercel.app/demo
-Explore opportunities: https://leadluxe-ai.vercel.app/
+Watch the demo: https://terranexus-ai.vercel.app/demo
+Explore opportunities: https://terranexus-ai.vercel.app/
 
 Built by a team that believes real estate intelligence should be verified, transparent, and institutional-grade.
 
-#LeadLuxeAI #RealEstate #Proptech #IndiaRealEstate #NRI #AI #Verification
+#TerraNexusAI #RealEstate #Proptech #IndiaRealEstate #NRI #AI #Verification
 
 ---
 
 ## Twitter/X Launch Thread
 
-1/ We're launching LeadLuxe AI in India today. 🏗️🤖
+1/ We're launching TerraNexus AI in India today. 🏗️🤖
 
 An intelligence platform that connects verified Indian developers with AI-qualified investors. Not a listing portal. A verification and transaction infrastructure layer.
 
@@ -47,5 +47,5 @@ An intelligence platform that connects verified Indian developers with AI-qualif
 
 7/ The experience? Zaha Hadid–inspired cinematic walkthrough. Not a dashboard. An architectural experience.
 
-Watch: https://leadluxe-ai.vercel.app/demo
-Explore: https://leadluxe-ai.vercel.app/
+Watch: https://terranexus-ai.vercel.app/demo
+Explore: https://terranexus-ai.vercel.app/

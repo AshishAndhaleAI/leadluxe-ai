@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — RSS News Proxy Server
+// TerraNexus AI — RSS News Proxy Server
 // Fetches RSS feeds server-side to avoid CORS restrictions
 // Endpoints:
 //   GET /api/proxy/rss?url=...     — Fetch & parse RSS feed
@@ -257,7 +257,7 @@ app.get('/api/proxy/google-news', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`\n`);
   console.log(`  ╔══════════════════════════════════════════╗`);
-  console.log(`  ║     LeadLuxe AI — RSS Proxy Server      ║`);
+  console.log(`  ║     TerraNexus AI — RSS Proxy Server      ║`);
   console.log(`  ║──────────────────────────────────────────║`);
   console.log(`  ║  Port:     ${String(PORT).padEnd(32)}║`);
   console.log(`  ║  Origins:  ${ALLOWED_ORIGINS.padEnd(32)}║`);

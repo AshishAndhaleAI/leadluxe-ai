@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Admin Outreach Queue (/admin/outreach)
+// TerraNexus AI — Admin Outreach Queue (/admin/outreach)
 // Human-in-the-loop approval for capital introduction emails.
 // Shows: opportunity, developer/investor matches, email previews,
 // source citations, confidence score. Actions: Approve, Edit,

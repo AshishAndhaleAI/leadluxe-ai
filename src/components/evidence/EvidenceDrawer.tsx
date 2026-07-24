@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Evidence Drawer & Generator
+// TerraNexus AI — Evidence Drawer & Generator
 // Right-side slide-over panel showing AI evidence layers.
 // Exports generatePropertyEvidence() for use in parent components
 // so evidence is computed once and passed down as props.

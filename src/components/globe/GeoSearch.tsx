@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Geo Search (Autocomplete + Fly-to)
+// TerraNexus AI — Geo Search (Autocomplete + Fly-to)
 // Debounced search across all cities with keyboard navigation
 // ============================================================
 

@@ -1,7 +1,7 @@
-# LeadLuxe AI — One-Page Product Brief
+# TerraNexus AI — One-Page Product Brief
 
 ## What We Are
-LeadLuxe AI is an AI-powered real estate intelligence platform that connects verified Indian developers with AI-qualified domestic and NRI investors through source-backed data and transaction-ready Deal Rooms.
+TerraNexus AI is an AI-powered real estate intelligence platform that connects verified Indian developers with AI-qualified domestic and NRI investors through source-backed data and transaction-ready Deal Rooms.
 
 ## The Problem
 Real estate portals show listings, not intelligence. Investors cannot verify data. Developers cannot reach qualified capital. Cross-border investors lack trust.
@@ -38,4 +38,4 @@ Real estate portals show listings, not intelligence. Investors cannot verify dat
 5. RERA-integrated verification layer
 
 ## Product URL
-https://leadluxe-ai.vercel.app/
+https://terranexus-ai.vercel.app/

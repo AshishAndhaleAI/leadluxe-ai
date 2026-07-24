@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Opportunity Discovery Engine
+// TerraNexus AI — Opportunity Discovery Engine
 // Orchestrates: Signal Aggregation → Market Scoring →
 // Commission Calculation → Evidence Collection → Generation
 // ============================================================
@@ -73,7 +73,7 @@ function generateEvidence(city: City, developerName: string): EvidenceRecord[] {
   });
 
   evidence.push({
-    sourceName: 'LeadLuxe Market Intelligence',
+    sourceName: 'TerraNexus Market Intelligence',
     sourceUrl: '',
     evidenceType: 'market_report',
     extractedStatement: `${city.name} shows ${city.priceTrend}% YoY price growth with ${city.absorptionRate}% absorption rate`,
@@ -188,7 +188,7 @@ export function generateAllOpportunities(): GeneratedOpportunity[] {
         liquidityScore,
         signalCount: city.activeProjects,
         evidenceCount: evidence.length,
-        sourceName: 'LeadLuxe AI Engine',
+        sourceName: 'TerraNexus AI Engine',
         cityId: city.id,
         latitude: city.latitude,
         longitude: city.longitude,

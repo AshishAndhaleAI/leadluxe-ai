@@ -76,7 +76,7 @@ export class RERAConnector {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'User-Agent': 'LeadLuxeAI/1.0',
+            'User-Agent': 'TerraNexusAI/1.0',
           },
           body: JSON.stringify({
             limit,

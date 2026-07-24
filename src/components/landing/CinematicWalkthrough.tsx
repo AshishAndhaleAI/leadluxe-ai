@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Cinematic Walkthrough
+// TerraNexus AI — Cinematic Walkthrough
 // Scroll-driven architectural camera system.
 //
 // ARCHITECTURE:
@@ -59,7 +59,7 @@ const CAMERA_POSITIONS: CameraPosition[] = [
     id: 'approach',
     label: '01 · City Approach',
     title: 'India\'s Most Valuable Buildings.',
-    body: 'From Mumbai to Bengaluru, Pune to Gurugram — LeadLuxe monitors 27 Indian cities, tracking infrastructure signals, capital flows, and developer momentum to surface opportunities before the market moves.',
+    body: 'From Mumbai to Bengaluru, Pune to Gurugram — TerraNexus monitors 27 Indian cities, tracking infrastructure signals, capital flows, and developer momentum to surface opportunities before the market moves.',
     image: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=1920&q=85&auto=format',
     range: [0, 0.10],
     dataIndex: 0,
@@ -68,7 +68,7 @@ const CAMERA_POSITIONS: CameraPosition[] = [
     id: 'plaza',
     label: '02 · Arrival Plaza',
     title: 'The Approach.',
-    body: 'Scale, material, light — architecture communicates intent before a single word is spoken. LeadLuxe applies the same rigor to market analysis, reading RERA data, infrastructure signals, and transaction patterns to identify emerging Indian corridors.',
+    body: 'Scale, material, light — architecture communicates intent before a single word is spoken. TerraNexus applies the same rigor to market analysis, reading RERA data, infrastructure signals, and transaction patterns to identify emerging Indian corridors.',
     image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=85&auto=format',
     range: [0.10, 0.25],
     dataIndex: 1,
@@ -86,7 +86,7 @@ const CAMERA_POSITIONS: CameraPosition[] = [
     id: 'elevator',
     label: '04 · Elevator Ascent',
     title: 'Vertical Intelligence.',
-    body: 'As the elevator rises, floor-by-floor data reveals itself: infrastructure scores at the ground level, metro impact at mid-rise, and capital flow analytics at the top — the same layered intelligence LeadLuxe applies to every opportunity.',
+    body: 'As the elevator rises, floor-by-floor data reveals itself: infrastructure scores at the ground level, metro impact at mid-rise, and capital flow analytics at the top — the same layered intelligence TerraNexus applies to every opportunity.',
     image: 'https://images.unsplash.com/photo-1600566753376-12c8ab7c4a7c?w=1920&q=85&auto=format',
     range: [0.40, 0.55],
     dataIndex: 3,
@@ -95,7 +95,7 @@ const CAMERA_POSITIONS: CameraPosition[] = [
     id: 'corridor',
     label: '05 · Sky Corridor',
     title: 'Connecting Indian Markets.',
-    body: 'A corridor bridges spaces — just as capital flows bridge cities. LeadLuxe tracks cross-border investment corridors between Mumbai–Dubai, Bengaluru–Singapore, and Delhi NCR–London in real time, with verified source attribution.',
+    body: 'A corridor bridges spaces — just as capital flows bridge cities. TerraNexus tracks cross-border investment corridors between Mumbai–Dubai, Bengaluru–Singapore, and Delhi NCR–London in real time, with verified source attribution.',
     image: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf5cb3?w=1920&q=85&auto=format',
     range: [0.55, 0.70],
     dataIndex: 4,
@@ -113,7 +113,7 @@ const CAMERA_POSITIONS: CameraPosition[] = [
     id: 'command',
     label: '07 · AI Command Center',
     title: 'India Intelligence, Live.',
-    body: 'From this vantage, the entire market is visible. LeadLuxe combines verified RERA data, infrastructure intelligence, capital flow analysis, and AI-driven scoring to give you clarity — before the market moves.',
+    body: 'From this vantage, the entire market is visible. TerraNexus combines verified RERA data, infrastructure intelligence, capital flow analysis, and AI-driven scoring to give you clarity — before the market moves.',
     image: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=1920&q=85&auto=format',
     range: [0.85, 1.0],
     dataIndex: 6,
@@ -640,7 +640,7 @@ export function CinematicWalkthrough({ onEnterExperience }: CinematicWalkthrough
               Intelligence for India's Most Valuable Buildings.
             </h2>
             <p className="body-lg text-gray-400 mb-10 max-w-xl mx-auto leading-relaxed">
-              LeadLuxe analyzes verified RERA data, infrastructure activity, capital flows, developer momentum, and market signals across India to identify high-probability real-estate opportunities — surfaced before traditional portals recognize them.
+              TerraNexus analyzes verified RERA data, infrastructure activity, capital flows, developer momentum, and market signals across India to identify high-probability real-estate opportunities — surfaced before traditional portals recognize them.
             </p>
 
             {/* Credibility strip */}

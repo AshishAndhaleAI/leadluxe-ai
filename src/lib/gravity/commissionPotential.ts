@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Commission Potential Analysis
+// TerraNexus AI — Commission Potential Analysis
 // Predicts the expected commission for each market based on:
 //   - Estimated deal value (price per sqft × typical unit size)
 //   - Commission rate (3% standard)

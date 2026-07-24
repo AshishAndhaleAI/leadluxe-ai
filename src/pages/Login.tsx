@@ -141,7 +141,7 @@ export function Login() {
               <Building2 className="w-6 h-6 text-luxury-gold-400" />
             </div>
             <div className="text-left">
-              <span className="text-xl font-bold text-white">LeadLuxe</span>
+              <span className="text-xl font-bold text-white">TerraNexus</span>
               <span className="text-xl font-bold text-luxury-gold-400"> AI</span>
             </div>
           </div>
@@ -247,7 +247,7 @@ export function Login() {
                 <button
                   onClick={async () => {
                     setLoading(true);
-                    await signIn('builder@leadluxe.ai', 'demo');
+                    await signIn('builder@terranexus.ai', 'demo');
                     navigate('/dashboard');
                   }}
                   className="text-xs text-gray-600 hover:text-gray-400 transition-colors"

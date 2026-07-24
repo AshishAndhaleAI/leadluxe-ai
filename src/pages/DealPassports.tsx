@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Deal Passports (/admin/deal-passports)
+// TerraNexus AI — Deal Passports (/admin/deal-passports)
 // Revenue-capture tracking for capital introductions.
 // Records: property, developer, investor, report, introduction
 // date, site visit, offer, negotiation, commission, closure.
@@ -137,7 +137,7 @@ export function DealPassports() {
 
   return (
     <>
-      <SEOHelmet title="Deal Passports — LeadLuxe AI" noindex />
+      <SEOHelmet title="Deal Passports — TerraNexus AI" noindex />
       <div className="min-h-screen bg-[#050505] p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}

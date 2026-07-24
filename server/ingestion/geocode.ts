@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Ingestion Geocoder
+// TerraNexus AI — Ingestion Geocoder
 // Wraps the Nominatim/Photon geocoder for the ingestion pipeline
 // ============================================================
 

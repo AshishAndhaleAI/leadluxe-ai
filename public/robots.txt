@@ -1,6 +1,6 @@
-# LeadLuxe AI — Robots.txt
-# https://leadluxe-ai.vercel.app/
-# Last updated: 2026-07-23
+# TerraNexus AI — Robots.txt
+# https://terranexus-ai.vercel.app/
+# Last updated: 2026-07-24
 
 User-agent: *
 Allow: /
@@ -9,7 +9,7 @@ Disallow: /login
 Disallow: /dashboard
 Disallow: /settings
 
-Sitemap: https://leadluxe-ai.vercel.app/sitemap.xml
+Sitemap: https://terranexus-ai.vercel.app/sitemap.xml
 
 # Crawl delay for responsible crawling
 Crawl-delay: 10

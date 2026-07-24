@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Traction Dashboard (/traction)
+// TerraNexus AI — Traction Dashboard (/traction)
 // Admin-only live business metrics dashboard
 // Shows: enterprise leads, reports generated, demos, pilots,
 // active opportunities, evidence records, twin users, pipeline

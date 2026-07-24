@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Debug Geo Overlay
+// TerraNexus AI — Debug Geo Overlay
 // Toggle: Ctrl + Shift + G
 // Shows city name, latitude, longitude, source, verification
 // status, and linked projects for every city.
@@ -55,7 +55,7 @@ export function DebugGeoOverlay() {
           flag: country.flag,
           latitude: city.latitude,
           longitude: city.longitude,
-          source: isVerified ? 'LeadLuxe Verified' : 'global-data.ts',
+          source: isVerified ? 'TerraNexus Verified' : 'global-data.ts',
           verificationStatus: isVerified ? 'verified' : 'plausible',
           linkedProjects: city.activeProjects,
         });

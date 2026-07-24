@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Trust Bar
+// TerraNexus AI — Trust Bar
 // Sticky data provenance summary shown at the top of the
 // Digital Twin property research workspace.
 // ============================================================

@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Error Boundary
+// TerraNexus AI — Error Boundary
 // Catches rendering errors and shows a premium error state
 // instead of a blank white screen
 // ============================================================

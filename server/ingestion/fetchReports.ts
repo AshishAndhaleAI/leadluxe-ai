@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Report Fetcher
+// TerraNexus AI — Report Fetcher
 // Fetches market reports, property listings, and signals from
 // publicly accessible real estate data sources.
 // ============================================================
@@ -136,7 +136,7 @@ async function fetchFromKnownData(sourceName: string): Promise<FetchedReport[]> 
     title: `${sourceName} — Market Intelligence Report`,
     url: SOURCE_ENDPOINTS[sourceName]?.baseUrl || '',
     publishedAt: new Date().toISOString(),
-    content: `Market data from ${sourceName} — processed by LeadLuxe AI ingestion pipeline`,
+    content: `Market data from ${sourceName} — processed by TerraNexus AI ingestion pipeline`,
     confidence: 75,
   }];
 }

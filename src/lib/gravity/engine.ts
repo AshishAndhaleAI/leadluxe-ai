@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Investment Gravity Engine
+// TerraNexus AI — Investment Gravity Engine
 // Predictive capital flow scoring for real estate micro-markets
 //
 // Computes a "Gravity Score" for each tracked city by analyzing

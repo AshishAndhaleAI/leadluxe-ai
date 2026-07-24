@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Investment Gravity Engine Page
+// TerraNexus AI — Investment Gravity Engine Page
 // The world's first predictive capital flow intelligence system
 // Shows where institutional money is heading before it arrives
 // ============================================================

@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — City Landing Page
+// TerraNexus AI — City Landing Page
 // SEO-optimized page for each city showing local property
 // opportunities, market analysis, and nearby options.
 // ============================================================
@@ -126,7 +126,7 @@ export function CityLanding() {
       <SEOHelmet
         title={`${cityData.name}, ${country.name} Real Estate & Property`}
         description={seoDesc}
-        url={`https://leadluxe-ai.vercel.app/city/${slug}`}
+        url={`https://terranexus-ai.vercel.app/city/${slug}`}
       />
       <BreadcrumbLD items={[
         { name: 'Home', url: '/' },
@@ -279,7 +279,7 @@ export function CityLanding() {
               <p>
                 Total commission opportunity across all tracked properties in {cityData.name} is 
                 <strong className="text-emerald-400"> {formatPrice(stats.totalCommission, country.code)}</strong> 
-                at a 3% success fee. LeadLuxe AI earns only when deals close — no upfront cost.
+                at a 3% success fee. TerraNexus AI earns only when deals close — no upfront cost.
               </p>
             </div>
           </div>

@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Google Analytics 4 Event Tracking Service
+// TerraNexus AI — Google Analytics 4 Event Tracking Service
 // Centralized analytics with production-only guard
 // ============================================================
 

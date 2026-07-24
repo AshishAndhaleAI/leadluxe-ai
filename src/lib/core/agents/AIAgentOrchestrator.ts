@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Autonomous AI Agent Orchestration Layer
+// TerraNexus AI — Autonomous AI Agent Orchestration Layer
 //
 // Specialized agents that continuously analyze public data to
 // generate market insights, opportunities, and recommendations.
@@ -192,7 +192,7 @@ class AIAgentOrchestrator {
           title: `${city.name} price acceleration detected`,
           description: `${city.name} showing ${city.priceTrend}% YoY price growth with ${city.absorptionRate}% absorption rate`,
           confidence: city.confidence / 100,
-          source: 'LeadLuxe Market Scanner',
+          source: 'TerraNexus Market Scanner',
           entities: [{ type: 'city', id: city.id, name: city.name }],
           metadata: { priceTrend: city.priceTrend, absorptionRate: city.absorptionRate },
         });
@@ -219,7 +219,7 @@ class AIAgentOrchestrator {
         title: 'Cross-border capital shifting toward high-growth corridors',
         description: 'Analysis indicates institutional capital rotating from mature markets toward Pune, Riyadh, and Ho Chi Minh City corridors',
         confidence: 0.72,
-        source: 'LeadLuxe Capital Flow Analyzer',
+        source: 'TerraNexus Capital Flow Analyzer',
         entities: [],
         metadata: { regions: ['Asia', 'Middle East'] },
       },

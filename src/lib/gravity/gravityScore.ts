@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Gravity Score Formula
+// TerraNexus AI — Gravity Score Formula
 // Core scoring engine that computes a 0-100 gravity score
 // from 8 weighted signal components.
 //

@@ -528,7 +528,7 @@ export function Settings() {
           </div>
           <div className="space-y-3">
             {[
-              { name: 'Rajesh Mehta', email: user?.email || 'builder@leadluxe.ai', role: 'Admin' },
+              { name: 'Rajesh Mehta', email: user?.email || 'builder@terranexus.ai', role: 'Admin' },
             ].map((member, i) => (
               <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-luxury-gray/50 border border-luxury-border">
                 <div className="flex items-center gap-3">

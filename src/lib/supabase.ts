@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Supabase Client
+// TerraNexus AI — Supabase Client
 // Lightweight client for Supabase-backed persistence.
 // Falls back gracefully when env vars are not set.
 // ============================================================

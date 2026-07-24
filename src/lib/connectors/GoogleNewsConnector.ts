@@ -1,14 +1,14 @@
 // ============================================================
 // Google News RSS Connector — Real public source
 // Fetches real-time real estate news from Google News RSS
-// via the LeadLuxe RSS proxy server (avoids CORS)
+// via the TerraNexus RSS proxy server (avoids CORS)
 // ============================================================
 
 import { memorySystem } from '../core/memory';
 import { knowledgeGraph } from '../core/knowledge-graph';
 
 /** Proxy server URL — configurable via env or default */
-const PROXY_BASE = (typeof window !== 'undefined' && (window as any).__LEADLUXE_PROXY_URL)
+const PROXY_BASE = (typeof window !== 'undefined' && (window as any).__TERRANEXUS_PROXY_URL)
   || import.meta.env?.VITE_PROXY_URL
   || 'http://localhost:3001';
 

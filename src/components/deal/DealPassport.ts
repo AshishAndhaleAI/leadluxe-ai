@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Deal Passport
+// TerraNexus AI — Deal Passport
 // Persistent deal record with source URLs, verification,
 // activity tracking, audit trail, and commission entitlement.
 // Stores to localStorage. Can be upgraded to Supabase.
@@ -92,7 +92,7 @@ export interface AuditEntry {
 // DEAL PASSPORT STORAGE
 // ============================================================
 
-const STORAGE_KEY = 'leadluxe-deal-passports';
+const STORAGE_KEY = 'terranexus-deal-passports';
 
 function getStoredPassports(): DealPassport[] {
   try {

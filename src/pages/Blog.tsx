@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Market Intelligence
+// TerraNexus AI — Market Intelligence
 // Premium dashboard-style market intelligence with KPI cards,
 // intelligence cards with source badges, confidence scores,
 // verification badges, and right-side intelligence panel.
@@ -112,7 +112,7 @@ const BLOG_POSTS: BlogPost[] = [
     slug: 'dubai-real-estate-market-2026', title: 'Dubai Real Estate Market 2026: Premium Segment Driving 18% Growth as Off-Plan Sales Surge',
     excerpt: 'Dubai\'s luxury property prices surging 18.5% year-on-year. Off-plan sales hit AED 85 billion in H1 2026, driven by foreign investment and new mega-projects.',
     content: 'Dubai\'s real estate market has entered a new phase of maturity and growth in 2026.', category: 'market-report',
-    region: 'Dubai', countryCode: 'AE', readTime: 5, publishedDate: '2026-07-15', author: 'LeadLuxe AI Research',
+    region: 'Dubai', countryCode: 'AE', readTime: 5, publishedDate: '2026-07-15', author: 'TerraNexus AI Research',
     imageCredit: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&h=500&fit=crop&auto=format',
     tags: ['dubai', 'uae', 'luxury', 'off-plan'], confidenceScore: 94, verificationStatus: 'verified',
     dataSources: ['DLD', 'Knight Frank', 'CBRE'],
@@ -127,7 +127,7 @@ const BLOG_POSTS: BlogPost[] = [
     slug: 'pune-real-estate-investment-guide-2026', title: 'Pune Real Estate: Kharadi, Baner, Hinjewadi Lead Growth with 15.8% Average ROI',
     excerpt: 'Pune has emerged as India\'s most attractive real estate investment destination with 12.3% price growth and 15.8% average ROI. IT corridor expansion and metro connectivity driving demand.',
     content: 'Pune\'s real estate market continues to outperform other Indian metros.', category: 'market-report',
-    region: 'Pune', countryCode: 'IN', readTime: 4, publishedDate: '2026-07-12', author: 'LeadLuxe AI Analytics',
+    region: 'Pune', countryCode: 'IN', readTime: 4, publishedDate: '2026-07-12', author: 'TerraNexus AI Analytics',
     imageCredit: 'https://images.unsplash.com/photo-1560448204-603b69fc5a79?w=800&h=500&fit=crop&auto=format',
     tags: ['pune', 'india', 'investment', 'it-corridor'], confidenceScore: 89, verificationStatus: 'verified',
     dataSources: ['MahaRERA', 'JLL'],
@@ -142,7 +142,7 @@ const BLOG_POSTS: BlogPost[] = [
     slug: 'saudi-arabia-vision-2030-real-estate', title: 'Saudi Arabia Vision 2030: Riyadh, Jeddah, NEOM Creating Unprecedented Opportunities',
     excerpt: 'Saudi Arabia\'s giga-projects transforming the real estate landscape. Riyadh leads with 18.5% price growth, while NEOM projects open new frontiers.',
     content: 'Saudi Arabia\'s Vision 2030 continues to reshape the kingdom\'s real estate landscape.', category: 'trend-analysis',
-    region: 'Saudi Arabia', countryCode: 'SA', readTime: 6, publishedDate: '2026-07-10', author: 'LeadLuxe AI Global Research',
+    region: 'Saudi Arabia', countryCode: 'SA', readTime: 6, publishedDate: '2026-07-10', author: 'TerraNexus AI Global Research',
     imageCredit: 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&h=500&fit=crop&auto=format',
     tags: ['saudi-arabia', 'vision-2030', 'riyadh', 'neom'], confidenceScore: 85, verificationStatus: 'partial',
     dataSources: ['World Bank', 'CBRE'],
@@ -157,7 +157,7 @@ const BLOG_POSTS: BlogPost[] = [
     slug: 'berlin-real-estate-market-2026', title: 'Berlin Real Estate: Steady Growth in Europe\'s Most Dynamic Capital City',
     excerpt: 'Berlin\'s property market shows resilient 7.8% growth as tech sector expansion and international demand offset higher interest rates.',
     content: 'Berlin continues to be one of Europe\'s most dynamic real estate markets.', category: 'city-guide',
-    region: 'Berlin', countryCode: 'DE', readTime: 5, publishedDate: '2026-07-08', author: 'LeadLuxe AI Research',
+    region: 'Berlin', countryCode: 'DE', readTime: 5, publishedDate: '2026-07-08', author: 'TerraNexus AI Research',
     imageCredit: 'https://images.unsplash.com/photo-1560969184-10fe8719e047?w=800&h=500&fit=crop&auto=format',
     tags: ['berlin', 'germany', 'europe', 'tech-hub'], confidenceScore: 82, verificationStatus: 'partial',
     dataSources: ['World Bank', 'CBRE'],
@@ -172,7 +172,7 @@ const BLOG_POSTS: BlogPost[] = [
     slug: 'mumbai-vs-dubai-investment-comparison', title: 'Mumbai vs Dubai: AI-Powered Comparison of Returns, Risks, and Commissions',
     excerpt: 'A data-driven comparison of the two most popular real estate investment destinations for Indian investors — ROI, rental yields, appreciation, and commission potential.',
     content: 'Indian investors have long debated between Mumbai and Dubai for real estate investment.', category: 'investment-strategy',
-    region: 'Global', countryCode: 'AE', readTime: 7, publishedDate: '2026-07-05', author: 'LeadLuxe AI Analytics',
+    region: 'Global', countryCode: 'AE', readTime: 7, publishedDate: '2026-07-05', author: 'TerraNexus AI Analytics',
     imageCredit: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=500&fit=crop&auto=format',
     tags: ['mumbai', 'dubai', 'comparison', 'roi'], confidenceScore: 91, verificationStatus: 'verified',
     dataSources: ['MahaRERA', 'DLD', 'JLL', 'Knight Frank'],
@@ -187,7 +187,7 @@ const BLOG_POSTS: BlogPost[] = [
     slug: 'tokyo-real-estate-foreign-investment', title: 'Tokyo: Why International Investors Are Flocking to Japan\'s Property Market in 2026',
     excerpt: 'Tokyo offers rare stability with 2.8% steady appreciation, strong rental demand, and record-low rates. Foreign investment surged 72%.',
     content: 'Tokyo\'s real estate market has become a magnet for international investors.', category: 'market-report',
-    region: 'Tokyo', countryCode: 'JP', readTime: 6, publishedDate: '2026-07-01', author: 'LeadLuxe AI Global Research',
+    region: 'Tokyo', countryCode: 'JP', readTime: 6, publishedDate: '2026-07-01', author: 'TerraNexus AI Global Research',
     imageCredit: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&h=500&fit=crop&auto=format',
     tags: ['tokyo', 'japan', 'foreign-investment', 'yen'], confidenceScore: 86, verificationStatus: 'verified',
     dataSources: ['MLIT', 'World Bank'],
@@ -200,9 +200,9 @@ const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: 'ai-in-real-estate-2026', title: 'How AI Is Transforming Real Estate Investment: From Discovery to Closing in 2026',
-    excerpt: 'AI is revolutionizing how real estate deals are discovered, analyzed, and closed. LeadLuxe AI explains how autonomous agents find opportunities before human analysts.',
+    excerpt: 'AI is revolutionizing how real estate deals are discovered, analyzed, and closed. TerraNexus AI explains how autonomous agents find opportunities before human analysts.',
     content: 'The real estate industry is undergoing a fundamental transformation driven by artificial intelligence.', category: 'ai-insights',
-    region: 'Global', countryCode: 'US', readTime: 8, publishedDate: '2026-06-28', author: 'LeadLuxe AI Technology Team',
+    region: 'Global', countryCode: 'US', readTime: 8, publishedDate: '2026-06-28', author: 'TerraNexus AI Technology Team',
     imageCredit: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=500&fit=crop&auto=format',
     tags: ['ai', 'technology', 'prop-tech'], confidenceScore: 95, verificationStatus: 'verified',
     dataSources: ['World Bank', 'CBRE', 'JLL'],
@@ -217,7 +217,7 @@ const BLOG_POSTS: BlogPost[] = [
     slug: 'istanbul-real-estate-opportunity', title: 'Istanbul: Europe\'s Most Affordable Major City for Property Investment in 2026',
     excerpt: 'With prices at just €180/sqft and 12.5% annual appreciation, Istanbul offers compelling value with 5-8% rental yields.',
     content: 'Istanbul occupies a unique position as a transcontinental city.', category: 'city-guide',
-    region: 'Istanbul', countryCode: 'TR', readTime: 5, publishedDate: '2026-06-25', author: 'LeadLuxe AI Research',
+    region: 'Istanbul', countryCode: 'TR', readTime: 5, publishedDate: '2026-06-25', author: 'TerraNexus AI Research',
     imageCredit: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=800&h=500&fit=crop&auto=format',
     tags: ['istanbul', 'turkey', 'affordable', 'emerging-market'], confidenceScore: 80, verificationStatus: 'partial',
     dataSources: ['World Bank'],
@@ -232,7 +232,7 @@ const BLOG_POSTS: BlogPost[] = [
     slug: 'bangkok-vs-ho-chi-minh-city', title: 'Bangkok vs Ho Chi Minh City: Southeast Asia\'s Hottest Markets Compared for 2026',
     excerpt: 'Bangkok offers tourism-driven stability while Ho Chi Minh City delivers explosive 16.5% returns. Which is right for you?',
     content: 'Southeast Asia continues to attract global real estate investors.', category: 'investment-strategy',
-    region: 'Southeast Asia', countryCode: 'TH', readTime: 6, publishedDate: '2026-06-22', author: 'LeadLuxe AI Southeast Asia Desk',
+    region: 'Southeast Asia', countryCode: 'TH', readTime: 6, publishedDate: '2026-06-22', author: 'TerraNexus AI Southeast Asia Desk',
     imageCredit: 'https://images.unsplash.com/photo-1504214208698-ea1916a2195a?w=800&h=500&fit=crop&auto=format',
     tags: ['bangkok', 'ho-chi-minh-city', 'southeast-asia', 'emerging-markets'], confidenceScore: 83, verificationStatus: 'partial',
     dataSources: ['CBRE', 'World Bank'],
@@ -247,7 +247,7 @@ const BLOG_POSTS: BlogPost[] = [
     slug: 'london-prime-property-2026', title: 'London Prime Property 2026: Why the World\'s Wealthy Still Choose the UK Capital',
     excerpt: 'Despite global uncertainty, London\'s prime market shows resilience with foreign buyers accounting for 55% of £5M+ transactions.',
     content: 'London remains one of the world\'s most sought-after real estate markets.', category: 'market-report',
-    region: 'London', countryCode: 'GB', readTime: 6, publishedDate: '2026-06-19', author: 'LeadLuxe AI Global Research',
+    region: 'London', countryCode: 'GB', readTime: 6, publishedDate: '2026-06-19', author: 'TerraNexus AI Global Research',
     imageCredit: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&h=500&fit=crop&auto=format',
     tags: ['london', 'uk', 'prime-property', 'safe-haven'], confidenceScore: 86, verificationStatus: 'verified',
     dataSources: ['HM Land Registry', 'Knight Frank'],
@@ -262,7 +262,7 @@ const BLOG_POSTS: BlogPost[] = [
     slug: 'miami-latin-american-wealth', title: 'Miami: The New York of Latin America — Wealth Migration Reshaping Florida\'s Market',
     excerpt: 'Miami\'s transformation into a global financial hub continues with 8.5% annual growth. Latin American wealth and crypto capital drive demand.',
     content: 'Miami has undergone a remarkable transformation into a global financial hub.', category: 'trend-analysis',
-    region: 'Miami', countryCode: 'US', readTime: 5, publishedDate: '2026-06-16', author: 'LeadLuxe AI Americas Research',
+    region: 'Miami', countryCode: 'US', readTime: 5, publishedDate: '2026-06-16', author: 'TerraNexus AI Americas Research',
     imageCredit: 'https://images.unsplash.com/photo-1533106497176-45ae19e68ba2?w=800&h=500&fit=crop&auto=format',
     tags: ['miami', 'usa', 'latin-america', 'wealth-migration'], confidenceScore: 87, verificationStatus: 'verified',
     dataSources: ['CBRE', 'Knight Frank'],
@@ -275,9 +275,9 @@ const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: 'real-estate-commission-model-vs-subscription', title: 'Commission-Only vs Subscription: Why 3% Success Fee Wins for Developers',
-    excerpt: 'LeadLuxe AI\'s commission-only model means zero upfront cost — we only earn when properties close, saving developers ₹13-32L annually.',
+    excerpt: 'TerraNexus AI\'s commission-only model means zero upfront cost — we only earn when properties close, saving developers ₹13-32L annually.',
     content: 'Real estate developers have traditionally paid for CRM platforms through subscriptions.', category: 'ai-insights',
-    region: 'Global', countryCode: 'IN', readTime: 4, publishedDate: '2026-06-13', author: 'LeadLuxe AI Business Team',
+    region: 'Global', countryCode: 'IN', readTime: 4, publishedDate: '2026-06-13', author: 'TerraNexus AI Business Team',
     imageCredit: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&h=500&fit=crop&auto=format',
     tags: ['commission-model', 'subscription', 'business-model'], confidenceScore: 97, verificationStatus: 'verified',
     dataSources: ['JLL', 'CBRE'],
@@ -486,7 +486,7 @@ export function Blog() {
       <SEOHelmet
         title="Market Intelligence & Real Estate Reports"
         description="AI-powered real estate market intelligence reports covering 25+ countries. Expert analysis, investment strategies, city guides, and market trends for global property investors."
-        url="https://leadluxe-ai.vercel.app/blog"
+        url="https://terranexus-ai.vercel.app/blog"
       />
       <BreadcrumbLD items={[
         { name: 'Home', url: '/' },

@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Globe Error Boundary
+// TerraNexus AI — Globe Error Boundary
 // Catches Three.js / WebGL / Canvas rendering errors without
 // crashing the rest of the application.
 // ============================================================

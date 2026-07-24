@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Gravity Daily Briefing
+// TerraNexus AI — Gravity Daily Briefing
 // Autonomous alert system that notifies users BEFORE their
 // competitors see market gravity score changes.
 //

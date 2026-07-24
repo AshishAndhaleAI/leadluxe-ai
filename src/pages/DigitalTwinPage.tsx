@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Digital Twin Page (Route)
+// TerraNexus AI — Digital Twin Page (Route)
 // Loads property by slug and renders the full 7-layer
 // Digital Twin research workspace.
 // ============================================================

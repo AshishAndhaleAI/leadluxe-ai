@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Globe 3D Entry Point (SSR-safe)
+// TerraNexus AI — Globe 3D Entry Point (SSR-safe)
 // Provides lazy-loaded globe component with Suspense fallback.
 // ============================================================
 

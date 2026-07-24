@@ -1,6 +1,6 @@
 // ============================================================
-// LeadLuxe AI — Developer Acquisition Portal (/developers)
-// Convinces verified Indian developers to partner with LeadLuxe
+// TerraNexus AI — Developer Acquisition Portal (/developers)
+// Convinces verified Indian developers to partner with TerraNexus
 // to reach AI-qualified domestic and NRI investors.
 // ============================================================
 
@@ -37,7 +37,7 @@ const BENEFITS = [
   },
   {
     icon: Globe, title: 'NRI & Cross-Border Capital',
-    desc: 'Tap into the $125B NRI remittance market. LeadLuxe targets investors in UAE, Singapore, UK, USA, Canada, and Australia.',
+    desc: 'Tap into the $125B NRI remittance market. TerraNexus targets investors in UAE, Singapore, UK, USA, Canada, and Australia.',
   },
   {
     icon: Award, title: 'AI Developer Score',
@@ -79,9 +79,9 @@ export function Developers() {
     e.preventDefault();
     if (!formData.company || !formData.email) return;
     // Store to localStorage for now
-    const leads = JSON.parse(localStorage.getItem('leadluxe-developer-leads') || '[]');
+    const leads = JSON.parse(localStorage.getItem('terranexus-developer-leads') || '[]');
     leads.unshift({ ...formData, timestamp: new Date().toISOString() });
-    localStorage.setItem('leadluxe-developer-leads', JSON.stringify(leads));
+    localStorage.setItem('terranexus-developer-leads', JSON.stringify(leads));
     setSubmitted(true);
   };
 
@@ -89,9 +89,9 @@ export function Developers() {
     <>
       <SEOHelmet
         title="Developers — Reach Qualified Capital with AI-Powered Intelligence"
-        description="LeadLuxe AI connects verified Indian developers with AI-qualified domestic and NRI investors through source-backed market intelligence, RERA-aligned verification, and transaction-ready Deal Rooms."
-        url="https://leadluxe-ai.vercel.app/developers"
-        canonical="https://leadluxe-ai.vercel.app/developers"
+        description="TerraNexus AI connects verified Indian developers with AI-qualified domestic and NRI investors through source-backed market intelligence, RERA-aligned verification, and transaction-ready Deal Rooms."
+        url="https://terranexus-ai.vercel.app/developers"
+        canonical="https://terranexus-ai.vercel.app/developers"
       />
       <div className="min-h-screen bg-[#050505]">
       {/* ─── Hero ───────────────────────────────────────── */}
@@ -109,7 +109,7 @@ export function Developers() {
               , Not Just Website Traffic
             </h1>
             <p className="text-base sm:text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
-              LeadLuxe AI connects verified Indian developers with AI-qualified domestic and NRI investors 
+              TerraNexus AI connects verified Indian developers with AI-qualified domestic and NRI investors 
               through source-backed market intelligence and transaction-ready Deal Rooms.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -158,7 +158,7 @@ export function Developers() {
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl font-bold text-white mb-8 text-center font-display">
-            Why Developers Choose LeadLuxe
+            Why Developers Choose TerraNexus
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {BENEFITS.map((benefit, i) => (

@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Nominatim Geocoding Adapter
+// TerraNexus AI — Nominatim Geocoding Adapter
 // Primary: OpenStreetMap Nominatim API
 // Fallback: Photon Geocoder
 // Respects: robots.txt, rate limits (1 req/sec), usage policy
@@ -105,7 +105,7 @@ async function nominatimGeocode(
     const response = await rateLimiter.schedule(async () => {
       const res = await fetch(url, {
         headers: {
-          'User-Agent': 'LeadLuxeAI/1.0 (real-estate-intelligence-platform)',
+          'User-Agent': 'TerraNexusAI/1.0 (real-estate-intelligence-platform)',
           'Accept': 'application/json',
         },
         signal: AbortSignal.timeout(5000),

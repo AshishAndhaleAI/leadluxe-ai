@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Revenue Dashboard (/admin/revenue)
+// TerraNexus AI — Revenue Dashboard (/admin/revenue)
 // Founder analytics tracking real events from the database.
 // Admin-only route.
 // ============================================================
@@ -19,8 +19,8 @@ export function RevenueDashboard() {
   const navigate = useNavigate();
 
   // Simulated metrics from localStorage
-  const developerLeads = JSON.parse(localStorage.getItem('leadluxe-developer-leads') || '[]');
-  const nriSignups = JSON.parse(localStorage.getItem('leadluxe-nri-signups') || '[]');
+  const developerLeads = JSON.parse(localStorage.getItem('terranexus-developer-leads') || '[]');
+  const nriSignups = JSON.parse(localStorage.getItem('terranexus-nri-signups') || '[]');
   const reportViews = 12;
 
   const totalLeads = developerLeads.length + nriSignups.length;
@@ -40,7 +40,7 @@ export function RevenueDashboard() {
 
   return (
     <>
-      <SEOHelmet title="Revenue Dashboard — LeadLuxe AI" noindex />
+      <SEOHelmet title="Revenue Dashboard — TerraNexus AI" noindex />
       <div className="min-h-screen bg-[#050505] p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
@@ -52,7 +52,7 @@ export function RevenueDashboard() {
                 </div>
                 <h1 className="text-lg font-bold text-white">Revenue Analytics</h1>
               </div>
-              <p className="text-[10px] text-gray-500">Real-time business metrics from the LeadLuxe platform</p>
+              <p className="text-[10px] text-gray-500">Real-time business metrics from the TerraNexus platform</p>
             </div>
             <button onClick={() => navigate('/founder')} className="btn-arch text-[10px]">
               Founder Dashboard

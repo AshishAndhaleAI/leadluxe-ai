@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Map Debug Panel
+// TerraNexus AI — Map Debug Panel
 // Developer stats overlay for the Global Map page.
 // Shows: total projects, verified/unverified locations,
 // duplicate coordinates, failed geocodes, last ingestion.

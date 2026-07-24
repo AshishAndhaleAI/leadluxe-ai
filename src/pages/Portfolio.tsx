@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — My Portfolio
+// TerraNexus AI — My Portfolio
 // Aggregate view of saved deals, favorites, and tracked
 // commissions with pipeline analytics and revenue tracking.
 // ============================================================
@@ -418,14 +418,14 @@ export function Portfolio() {
 
   // Load saved deals from localStorage
   const [savedDeals, setSavedDeals] = useState<SavedDeal[]>(() => {
-    try { return JSON.parse(localStorage.getItem('leadluxe-deals') || '[]'); }
+    try { return JSON.parse(localStorage.getItem('terranexus-deals') || '[]'); }
     catch { return []; }
   });
 
   // Load favorites from localStorage
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(() => {
     try {
-      const saved = localStorage.getItem('leadluxe-favorites');
+      const saved = localStorage.getItem('terranexus-favorites');
       return saved ? new Set<string>(JSON.parse(saved)) : new Set<string>();
     } catch { return new Set<string>(); }
   });
@@ -508,7 +508,7 @@ export function Portfolio() {
 
   const removeDeal = (id: string) => {
     const updated = savedDeals.filter(d => d.id !== id);
-    localStorage.setItem('leadluxe-deals', JSON.stringify(updated));
+    localStorage.setItem('terranexus-deals', JSON.stringify(updated));
     setSavedDeals(updated);
   };
 
@@ -516,14 +516,14 @@ export function Portfolio() {
     const updated = savedDeals.map(d =>
       d.id === id ? { ...d, status: newStatus } : d
     );
-    localStorage.setItem('leadluxe-deals', JSON.stringify(updated));
+    localStorage.setItem('terranexus-deals', JSON.stringify(updated));
     setSavedDeals(updated);
   };
 
   const removeFavorite = (id: string) => {
     const next = new Set(favoriteIds);
     next.delete(id);
-    localStorage.setItem('leadluxe-favorites', JSON.stringify([...next]));
+    localStorage.setItem('terranexus-favorites', JSON.stringify([...next]));
     setFavoriteIds(next);
   };
 

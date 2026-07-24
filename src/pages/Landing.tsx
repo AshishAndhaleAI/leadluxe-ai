@@ -69,7 +69,7 @@ export function Landing() {
               >
                 <div className="w-2 h-2 bg-white rounded-full group-hover:scale-110 transition-transform" />
                 <span className="text-xs font-medium text-white tracking-[0.2em] uppercase font-mono">
-                  LeadLuxe AI
+                  TerraNexus AI
                 </span>
               </button>
 
@@ -185,7 +185,7 @@ export function Landing() {
                   transition={{ duration: 0.8, delay: 0.2 }}
                   className="editorial-label text-luxury-gold-400/70 mb-6 block"
                 >
-                  LeadLuxe AI
+                  TerraNexus AI
                 </motion.span>
 
                 {/* Main headline — large serif */}
@@ -206,7 +206,7 @@ export function Landing() {
                   transition={{ duration: 0.8, delay: 0.6 }}
                   className="body-lg text-gray-400 max-w-xl mb-10 leading-relaxed"
                 >
-                  LeadLuxe analyzes verified RERA data, infrastructure activity, capital flows, 
+                  TerraNexus analyzes verified RERA data, infrastructure activity, capital flows, 
                   developer momentum, and market signals across India to identify high-probability 
                   real-estate opportunities — surfaced before traditional portals recognize them.
                 </motion.p>
@@ -283,7 +283,7 @@ export function Landing() {
             >
               <div className="w-1.5 h-1.5 bg-white/50 rounded-full group-hover:bg-white transition-colors" />
               <span className="text-[9px] text-white/40 group-hover:text-white/70 tracking-[0.2em] uppercase font-mono transition-colors">
-                LeadLuxe AI
+                TerraNexus AI
               </span>
             </button>
             <button

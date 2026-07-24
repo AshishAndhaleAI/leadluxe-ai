@@ -1,6 +1,6 @@
 // ============================================================
-// LeadLuxe AI — Data Provenance & Verification Policy
-// Explains exactly where LeadLuxe obtains its real-estate data
+// TerraNexus AI — Data Provenance & Verification Policy
+// Explains exactly where TerraNexus obtains its real-estate data
 // and the verification status of every data point.
 // ============================================================
 
@@ -26,9 +26,9 @@ export function DataProvenance() {
     <>
       <SEOHelmet
         title="Data Provenance — Verification Policy & Data Sources"
-        description="LeadLuxe AI's data verification policy. Every property field is attributed to its original source from government registries, institutional research, and official developer websites."
-        url="https://leadluxe-ai.vercel.app/data-provenance"
-        canonical="https://leadluxe-ai.vercel.app/data-provenance"
+        description="TerraNexus AI's data verification policy. Every property field is attributed to its original source from government registries, institutional research, and official developer websites."
+        url="https://terranexus-ai.vercel.app/data-provenance"
+        canonical="https://terranexus-ai.vercel.app/data-provenance"
       />
       <div className="min-h-screen bg-[#03030a] text-white p-4 md:p-8">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -40,7 +40,7 @@ export function DataProvenance() {
           </div>
           <div>
             <h1 className="text-xl font-bold">Data Provenance</h1>
-            <p className="text-sm text-gray-500">How LeadLuxe AI obtains, verifies, and presents real-estate intelligence</p>
+            <p className="text-sm text-gray-500">How TerraNexus AI obtains, verifies, and presents real-estate intelligence</p>
           </div>
         </div>
 
@@ -52,7 +52,7 @@ export function DataProvenance() {
               <h2 className="text-sm font-bold text-white mb-2">Verification Policy</h2>
               <div className="space-y-2 text-xs text-gray-400 leading-relaxed">
                 <p>
-                  LeadLuxe AI aggregates publicly available real-estate information from government registries,
+                  TerraNexus AI aggregates publicly available real-estate information from government registries,
                   institutional research, official developer websites, and open data portals. Every data point
                   is attributed to its original source, and we clearly mark whether each record has been
                   independently verified.
@@ -144,7 +144,7 @@ export function DataProvenance() {
             <div>
               <h2 className="text-sm font-bold text-white mb-2">Commission Calculation</h2>
               <p className="text-xs text-gray-400 leading-relaxed">
-                LeadLuxe AI operates on a success-fee model. We only earn commission when a deal closes.
+                TerraNexus AI operates on a success-fee model. We only earn commission when a deal closes.
                 Estimated commissions are calculated as a percentage of the estimated deal value using
                 country-specific rates (India: 3%, UAE: 2.5%, UK: 1.5%, Germany: 3.57%, USA: 2.5%,
                 Japan: 3%, Singapore: 2%). These are estimates only — actual commissions are negotiated
@@ -204,7 +204,7 @@ export function DataProvenance() {
           <div className="flex items-start gap-2">
             <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
             <p className="text-[10px] text-gray-500 leading-relaxed">
-              <strong className="text-amber-400">Important Disclaimer:</strong> LeadLuxe AI aggregates
+              <strong className="text-amber-400">Important Disclaimer:</strong> TerraNexus AI aggregates
               publicly available information. We do not generate synthetic data, fabricate contacts, or
               invent property details. All records are clearly marked with their verification status.
               Users should independently verify any critical information before making investment decisions.

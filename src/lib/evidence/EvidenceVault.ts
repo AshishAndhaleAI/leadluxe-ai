@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Unified Evidence Vault
+// TerraNexus AI — Unified Evidence Vault
 // SINGLE source of truth for all tab data.
 // Every record has: source attribution, confidence, validation,
 // last verified date, and evidence links.
@@ -72,8 +72,8 @@ export const REAL_DATA_SOURCES = {
   // Licensed images
   unsplash: { name: 'Unsplash Architecture', type: 'licensed_image' as const, url: 'https://unsplash.com/license', confidence: 100 },
   
-  // LeadLuxe own calculation
-  leadluxeCalculated: { name: 'LeadLuxe AI Calculation', type: 'verified_calculated' as const, url: 'https://leadluxe.ai/methodology', confidence: 82 },
+  // TerraNexus own calculation
+  terranexusCalculated: { name: 'TerraNexus AI Calculation', type: 'verified_calculated' as const, url: 'https://terranexus.ai/methodology', confidence: 82 },
 };
 
 // =====================
@@ -160,7 +160,7 @@ export function validateImageUrl(url: string): boolean {
   if (!url || typeof url !== 'string') return false;
   if (!url.startsWith('http://') && !url.startsWith('https://')) return false;
   // Must be from a known licensed source or Unsplash
-  const allowedDomains = ['images.unsplash.com', 'plus.unsplash.com', 'leadluxe.ai'];
+  const allowedDomains = ['images.unsplash.com', 'plus.unsplash.com', 'terranexus.ai'];
   try {
     const domain = new URL(url).hostname;
     return allowedDomains.some(d => domain.includes(d)) || domain.endsWith('unsplash.com');
@@ -188,7 +188,7 @@ export function generateAttribution(
       };
     }),
     lastVerified: new Date().toISOString(),
-    dataProvenance: sourceKeys.length === 1 && sourceKeys[0] === 'leadluxeCalculated' 
+    dataProvenance: sourceKeys.length === 1 && sourceKeys[0] === 'terranexusCalculated' 
       ? 'calculated_from_source' 
       : 'direct_api',
     validationStatus,

@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Enterprise / Partnerships Page (/enterprise)
+// TerraNexus AI — Enterprise / Partnerships Page (/enterprise)
 // Acquisition interest funnel, partnership request, deal flow
 // ============================================================
 
@@ -20,7 +20,7 @@ const benefits = [
   { icon: Layers, title: 'Data & Intelligence Stack', desc: 'Access 120+ cities, 25 countries, AI opportunity engine, capital flow analysis, and infrastructure signals.' },
   { icon: Bot, title: 'Digital Twin Experience', desc: 'Personalized 3D building walkthrough with live market intelligence overlays tailored to your portfolio.' },
   { icon: BarChart3, title: 'AI Opportunity Engine', desc: 'Continuous scanning and scoring of global real estate opportunities with evidence-backed recommendations.' },
-  { icon: Shield, title: 'White-Label & API Options', desc: 'Deploy LeadLuxe intelligence under your brand. Full API access for custom integrations.' },
+  { icon: Shield, title: 'White-Label & API Options', desc: 'Deploy TerraNexus intelligence under your brand. Full API access for custom integrations.' },
 ];
 
 const interestOptions = [
@@ -104,7 +104,7 @@ export function Enterprise() {
           <h1 className="text-2xl font-bold text-white mb-2">Thank You</h1>
           <p className="text-sm text-gray-400 mb-6">
             We've received your inquiry and will respond within 24 hours.
-            Our team will prepare a tailored overview of the LeadLuxe platform
+            Our team will prepare a tailored overview of the TerraNexus platform
             for your specific market and use case.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -125,9 +125,9 @@ export function Enterprise() {
     <>
       <SEOHelmet
         title="Enterprise — AI Intelligence Layer for Global Real Estate Deal Flow"
-        description="LeadLuxe analyzes infrastructure signals, capital flows, developer activity, and investor behavior to identify high-probability real estate opportunities. Partnership, white-label, and acquisition inquiries."
-        url="https://leadluxe-ai.vercel.app/enterprise"
-        canonical="https://leadluxe-ai.vercel.app/enterprise"
+        description="TerraNexus analyzes infrastructure signals, capital flows, developer activity, and investor behavior to identify high-probability real estate opportunities. Partnership, white-label, and acquisition inquiries."
+        url="https://terranexus-ai.vercel.app/enterprise"
+        canonical="https://terranexus-ai.vercel.app/enterprise"
       />
       <div className="min-h-screen bg-luxury-black">
       {/* Hero */}
@@ -148,7 +148,7 @@ export function Enterprise() {
               <span className="text-gradient-gold">Global Real Estate Deal Flow</span>
             </h1>
             <p className="text-base sm:text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
-              LeadLuxe analyzes infrastructure signals, capital flows, developer activity, and investor behavior
+              TerraNexus analyzes infrastructure signals, capital flows, developer activity, and investor behavior
               to identify high-probability real estate opportunities before traditional portals surface them.
             </p>
 
@@ -175,7 +175,7 @@ export function Enterprise() {
         <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8">
           {/* Left: Benefits */}
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-white mb-6 font-display">Why Platforms Partner With LeadLuxe</h2>
+            <h2 className="text-2xl font-bold text-white mb-6 font-display">Why Platforms Partner With TerraNexus</h2>
             {benefits.map((benefit, i) => (
               <motion.div
                 key={i}
@@ -350,7 +350,7 @@ export function Enterprise() {
               Explore Acquisition or Strategic Investment
             </h2>
             <p className="text-sm text-gray-400 mb-6 max-w-lg mx-auto">
-              LeadLuxe AI has built a proprietary global real estate intelligence platform
+              TerraNexus AI has built a proprietary global real estate intelligence platform
               covering 120+ cities, 25 countries, with an AI opportunity engine, evidence-backed
               recommendations, and a commission-based revenue model.
             </p>

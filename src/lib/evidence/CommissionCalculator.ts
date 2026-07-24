@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Transparent Commission Calculator
+// TerraNexus AI — Transparent Commission Calculator
 // Full breakdown: gross commission → platform share → partner
 // share → net payout → tax estimate → payment schedule
 // ============================================================

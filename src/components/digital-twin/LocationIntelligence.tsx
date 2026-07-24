@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Location Intelligence
+// TerraNexus AI — Location Intelligence
 // Layer 2 of the Digital Twin workspace.
 // Interactive map with distance matrix showing verified
 // location details and proximity to key infrastructure.

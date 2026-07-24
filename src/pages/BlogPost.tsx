@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Blog Post Detail Page
+// TerraNexus AI — Blog Post Detail Page
 // Full article rendering with SEO, related posts, and
 // article structured data for Google Rich Results.
 // ============================================================
@@ -43,13 +43,13 @@ const BLOG_POSTS: BlogPost[] = [
     slug: 'dubai-real-estate-market-2026',
     title: 'Dubai Real Estate Market 2026: Premium Segment Driving 18% Growth as Off-Plan Sales Surge',
     excerpt: 'Dubai\'s real estate market continues its remarkable trajectory with luxury property prices surging 18.5% year-on-year.',
-    content: `## Market Overview\n\nDubai's real estate market has entered a new phase of maturity and growth in 2026. The luxury segment continues to outperform, with prices in prime areas seeing significant appreciation.\n\n## Key Market Indicators\n\n- **Average Price per Sqft:** AED 1,800\n- **Foreign Investment:** 72% of off-plan buyers are international\n- **Rental Yields:** Average 6.8% across the city\n- **New Launches:** 62 new projects in H1 2026\n\n## AI Confidence Score: 94/100\n\nLeadLuxe AI rates Dubai as a **Critical** opportunity market. The combination of strong foreign demand, government initiatives, and infrastructure spending creates a favorable environment for real estate investment.`,
+    content: `## Market Overview\n\nDubai's real estate market has entered a new phase of maturity and growth in 2026. The luxury segment continues to outperform, with prices in prime areas seeing significant appreciation.\n\n## Key Market Indicators\n\n- **Average Price per Sqft:** AED 1,800\n- **Foreign Investment:** 72% of off-plan buyers are international\n- **Rental Yields:** Average 6.8% across the city\n- **New Launches:** 62 new projects in H1 2026\n\n## AI Confidence Score: 94/100\n\nTerraNexus AI rates Dubai as a **Critical** opportunity market. The combination of strong foreign demand, government initiatives, and infrastructure spending creates a favorable environment for real estate investment.`,
     category: 'market-report',
     region: 'Dubai',
     countryCode: 'AE',
     readTime: 5,
     publishedDate: '2026-07-15',
-    author: 'LeadLuxe AI Research',
+    author: 'TerraNexus AI Research',
     imageCredit: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&h=500&fit=crop&auto=format',
     tags: ['dubai', 'uae', 'luxury', 'market-report'],
   },
@@ -57,13 +57,13 @@ const BLOG_POSTS: BlogPost[] = [
     slug: 'pune-real-estate-investment-guide-2026',
     title: 'Pune Real Estate Investment Guide 2026: Kharadi, Baner, and Hinjewadi Lead Growth with 15.8% Average ROI',
     excerpt: 'Pune has emerged as India\'s most attractive real estate investment destination with 12.3% price growth.',
-    content: `## Market Overview\n\nPune's real estate market continues to outperform other Indian metros, driven by IT sector growth, infrastructure development, and increasing demand for quality housing.\n\n## Top Investment Areas\n\n1. **Kharadi** — 18.2% annual appreciation\n2. **Baner** — 14.5% growth, premium residential\n3. **Hinjewadi** — 16.8% growth, IT park proximity\n\n## AI Recommendation\n\nWith a confidence score of 89/100, LeadLuxe AI recommends Pune as a High-Priority investment market.`,
+    content: `## Market Overview\n\nPune's real estate market continues to outperform other Indian metros, driven by IT sector growth, infrastructure development, and increasing demand for quality housing.\n\n## Top Investment Areas\n\n1. **Kharadi** — 18.2% annual appreciation\n2. **Baner** — 14.5% growth, premium residential\n3. **Hinjewadi** — 16.8% growth, IT park proximity\n\n## AI Recommendation\n\nWith a confidence score of 89/100, TerraNexus AI recommends Pune as a High-Priority investment market.`,
     category: 'market-report',
     region: 'Pune',
     countryCode: 'IN',
     readTime: 4,
     publishedDate: '2026-07-12',
-    author: 'LeadLuxe AI Analytics',
+    author: 'TerraNexus AI Analytics',
     imageCredit: 'https://images.unsplash.com/photo-1560448204-603b69fc5a79?w=800&h=500&fit=crop&auto=format',
     tags: ['pune', 'india', 'investment', 'market-report'],
   },
@@ -71,13 +71,13 @@ const BLOG_POSTS: BlogPost[] = [
     slug: 'saudi-arabia-vision-2030-real-estate',
     title: 'Saudi Arabia Vision 2030 Real Estate Boom: Riyadh, Jeddah, NEOM Creating Unprecedented Opportunities',
     excerpt: 'Saudi Arabia\'s giga-projects and economic reforms are transforming the real estate landscape.',
-    content: `## The Transformation\n\nSaudi Arabia is investing over $1 trillion in giga-projects including NEOM, The Red Sea Project, Qiddiya, and Diriyah Gate.\n\n## Riyadh: The Capital's Boom\n\n- **Population Target:** 15-20 million by 2030\n- **New Units Needed:** 300,000+ residential units\n- **Price Growth:** 18.5% YoY\n\n## AI Confidence Score: 85/100\n\nLeadLuxe AI rates Saudi Arabia as a High-growth opportunity market.`,
+    content: `## The Transformation\n\nSaudi Arabia is investing over $1 trillion in giga-projects including NEOM, The Red Sea Project, Qiddiya, and Diriyah Gate.\n\n## Riyadh: The Capital's Boom\n\n- **Population Target:** 15-20 million by 2030\n- **New Units Needed:** 300,000+ residential units\n- **Price Growth:** 18.5% YoY\n\n## AI Confidence Score: 85/100\n\nTerraNexus AI rates Saudi Arabia as a High-growth opportunity market.`,
     category: 'trend-analysis',
     region: 'Saudi Arabia',
     countryCode: 'SA',
     readTime: 6,
     publishedDate: '2026-07-10',
-    author: 'LeadLuxe AI Global Research',
+    author: 'TerraNexus AI Global Research',
     imageCredit: 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&h=500&fit=crop&auto=format',
     tags: ['saudi-arabia', 'vision-2030', 'riyadh', 'mega-projects'],
   },
@@ -85,13 +85,13 @@ const BLOG_POSTS: BlogPost[] = [
     slug: 'berlin-real-estate-market-2026',
     title: 'Berlin Real Estate Market 2026: Steady Growth in Europe\'s Most Dynamic Capital City',
     excerpt: 'Berlin\'s property market shows resilient 7.8% growth as tech sector expansion drives demand.',
-    content: `## Market Dynamics\n\nBerlin's real estate market has shown remarkable resilience in 2026, with prices growing at a steady 7.8%.\n\n## Key Metrics\n\n- **Average Price per Sqft:** €520\n- **Rental Yield:** 3.5-4.5%\n- **Price Growth:** 7.8% annual appreciation\n\n## LeadLuxe AI Analysis\n\nBerlin scores 82/100 on our confidence index. The market offers good value compared to other European capitals.`,
+    content: `## Market Dynamics\n\nBerlin's real estate market has shown remarkable resilience in 2026, with prices growing at a steady 7.8%.\n\n## Key Metrics\n\n- **Average Price per Sqft:** €520\n- **Rental Yield:** 3.5-4.5%\n- **Price Growth:** 7.8% annual appreciation\n\n## TerraNexus AI Analysis\n\nBerlin scores 82/100 on our confidence index. The market offers good value compared to other European capitals.`,
     category: 'city-guide',
     region: 'Berlin',
     countryCode: 'DE',
     readTime: 5,
     publishedDate: '2026-07-08',
-    author: 'LeadLuxe AI Research',
+    author: 'TerraNexus AI Research',
     imageCredit: 'https://images.unsplash.com/photo-1560969184-10fe8719e047?w=800&h=500&fit=crop&auto=format',
     tags: ['berlin', 'germany', 'europe', 'city-guide'],
   },
@@ -148,7 +148,7 @@ export function BlogPost() {
         title={post.title}
         description={post.excerpt}
         image={post.imageCredit}
-        url={`https://leadluxe-ai.vercel.app/blog/${post.slug}`}
+        url={`https://terranexus-ai.vercel.app/blog/${post.slug}`}
         type="article"
       />
       <BreadcrumbLD items={[
@@ -166,7 +166,7 @@ export function BlogPost() {
           image: post.imageCredit,
           datePublished: post.publishedDate,
           author: { '@type': 'Organization', name: post.author },
-          publisher: { '@type': 'Organization', name: 'LeadLuxe AI' },
+          publisher: { '@type': 'Organization', name: 'TerraNexus AI' },
         })}
       </script>
 

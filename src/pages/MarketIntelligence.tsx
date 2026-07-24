@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — India Market Intelligence
+// TerraNexus AI — India Market Intelligence
 // Institutional-grade research and analysis page.
 // Content references: JLL India, CBRE India, Knight Frank
 // India, Savills India, Colliers India, RBI, Ministry of
@@ -390,7 +390,7 @@ export function MarketIntelligence() {
             </div>
             <div className="space-y-2">
               <h3 className="text-white font-semibold">AI Scoring Methodology</h3>
-              <p>LeadLuxe AI scores are derived from price momentum (20%), rental yield (15%), infrastructure impact (15%), inventory absorption (10%), developer reputation (10%), foreign capital flow (10%), currency stability (10%), and liquidity score (10%).</p>
+              <p>TerraNexus AI scores are derived from price momentum (20%), rental yield (15%), infrastructure impact (15%), inventory absorption (10%), developer reputation (10%), foreign capital flow (10%), currency stability (10%), and liquidity score (10%).</p>
             </div>
           </div>
         </div>

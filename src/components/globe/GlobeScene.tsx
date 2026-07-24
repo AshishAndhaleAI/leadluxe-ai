@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Globe Scene (React Three Fiber)
+// TerraNexus AI — Globe Scene (React Three Fiber)
 // Complete rewrite using @react-three/fiber + Drei instead of
 // react-globe.gl for better stability and control.
 // ============================================================

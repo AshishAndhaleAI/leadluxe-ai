@@ -54,7 +54,7 @@ const DEFAULT_PREFERENCES: UserPreferences = {
 
 const DEMO_USER: User = {
   id: 'demo-001',
-  email: 'builder@leadluxe.ai',
+  email: 'builder@terranexus.ai',
   full_name: 'Rajesh Mehta',
   role: 'developer',
   preferences: {
@@ -81,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const saved = localStorage.getItem('leadluxe_user');
+    const saved = localStorage.getItem('terranexus_user');
     if (saved) {
       try { 
         const parsed = JSON.parse(saved);
@@ -98,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       full_name: _email?.split('@')[0].replace(/[._]/g, ' ') || DEMO_USER.full_name,
     };
     setUser(demoUser);
-    localStorage.setItem('leadluxe_user', JSON.stringify(demoUser));
+    localStorage.setItem('terranexus_user', JSON.stringify(demoUser));
     trackLogin('email');
     return {};
   }
@@ -113,14 +113,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       onboardingComplete: false,
     };
     setUser(newUser);
-    localStorage.setItem('leadluxe_user', JSON.stringify(newUser));
+    localStorage.setItem('terranexus_user', JSON.stringify(newUser));
     trackSignUp('email');
     return {};
   }
 
   async function signOut() {
     setUser(null);
-    localStorage.removeItem('leadluxe_user');
+    localStorage.removeItem('terranexus_user');
   }
 
   async function updatePreferences(prefs: Partial<UserPreferences>) {
@@ -130,14 +130,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       preferences: { ...user.preferences, ...prefs },
     };
     setUser(updated);
-    localStorage.setItem('leadluxe_user', JSON.stringify(updated));
+    localStorage.setItem('terranexus_user', JSON.stringify(updated));
   }
 
   async function completeOnboarding() {
     if (!user) return;
     const updated = { ...user, onboardingComplete: true };
     setUser(updated);
-    localStorage.setItem('leadluxe_user', JSON.stringify(updated));
+    localStorage.setItem('terranexus_user', JSON.stringify(updated));
   }
 
   return (

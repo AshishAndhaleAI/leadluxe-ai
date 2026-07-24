@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Deal Room
+// TerraNexus AI — Deal Room
 // Global property marketplace for real estate opportunities.
 // Browse properties, view AI-powered insights, express interest,
 // and track commissions on every deal.
@@ -137,14 +137,14 @@ export function DealRoom() {
   const [showFilters, setShowFilters] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(() => {
     try {
-      const saved = localStorage.getItem('leadluxe-favorites');
+      const saved = localStorage.getItem('terranexus-favorites');
       return saved ? new Set<string>(JSON.parse(saved)) : new Set<string>();
     } catch { return new Set<string>(); }
   });
   const [interestModal, setInterestModal] = useState<ModalState>({ open: false, property: null });
   const [detailModal, setDetailModal] = useState<ModalState>({ open: false, property: null });
   const [savedDeals, setSavedDeals] = useState<any[]>(() => {
-    try { return JSON.parse(localStorage.getItem('leadluxe-deals') || '[]'); }
+    try { return JSON.parse(localStorage.getItem('terranexus-deals') || '[]'); }
     catch { return []; }
   });
   const [showMyInterests, setShowMyInterests] = useState(false);
@@ -225,7 +225,7 @@ export function DealRoom() {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
-      localStorage.setItem('leadluxe-favorites', JSON.stringify([...next]));
+      localStorage.setItem('terranexus-favorites', JSON.stringify([...next]));
       return next;
     });
   }, []);
@@ -466,7 +466,7 @@ export function DealRoom() {
                   <button
                     onClick={() => {
                       const updated = savedDeals.filter((d: any) => d.id !== deal.id);
-                      localStorage.setItem('leadluxe-deals', JSON.stringify(updated));
+                      localStorage.setItem('terranexus-deals', JSON.stringify(updated));
                       setSavedDeals(updated);
                     }}
                     className="p-1 rounded hover:bg-white/5 text-gray-600 hover:text-red-400"
@@ -651,7 +651,7 @@ export function DealRoom() {
           onComplete={(passportId) => {
             setOnboardingModal({ open: false, property: null });
             try {
-              setSavedDeals(JSON.parse(localStorage.getItem('leadluxe-deals') || '[]'));
+              setSavedDeals(JSON.parse(localStorage.getItem('terranexus-deals') || '[]'));
             } catch {}
           }}
           onClose={() => setOnboardingModal({ open: false, property: null })}
@@ -665,7 +665,7 @@ export function DealRoom() {
           onClose={() => setInterestModal({ open: false, property: null })}
           onSubmitted={() => {
             setInterestModal({ open: false, property: null });
-            try { setSavedDeals(JSON.parse(localStorage.getItem('leadluxe-deals') || '[]')); }
+            try { setSavedDeals(JSON.parse(localStorage.getItem('terranexus-deals') || '[]')); }
             catch {}
           }}
         />
@@ -1211,9 +1211,9 @@ function InterestModal({ property, onClose, onSubmitted }: {
       status: 'new',
       createdAt: new Date().toISOString(),
     };
-    const existing = JSON.parse(localStorage.getItem('leadluxe-deals') || '[]');
+    const existing = JSON.parse(localStorage.getItem('terranexus-deals') || '[]');
     existing.unshift(deal);
-    localStorage.setItem('leadluxe-deals', JSON.stringify(existing));
+    localStorage.setItem('terranexus-deals', JSON.stringify(existing));
     // Track the contact form submission in GA4
     trackContactSubmit(property.id, property.name, 'form');
     setSubmitted(true);

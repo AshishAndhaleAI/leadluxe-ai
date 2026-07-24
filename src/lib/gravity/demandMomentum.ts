@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Demand Momentum Analysis
+// TerraNexus AI — Demand Momentum Analysis
 // Tracks search demand velocity and price momentum
 // to detect accelerating buyer interest before it
 // shows up in transaction data.

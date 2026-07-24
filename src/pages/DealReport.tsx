@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — AI Deal Report Generator (/report/:slug)
+// TerraNexus AI — AI Deal Report Generator (/report/:slug)
 // Professional branded investment report with PDF download
 // ============================================================
 
@@ -234,7 +234,7 @@ export function DealReport() {
             </div>
             <div className="hidden sm:flex items-center gap-1 text-[9px] text-gray-600">
               <Shield className="w-3 h-3 text-luxury-gold-400" />
-              LeadLuxe AI Intelligence
+              TerraNexus AI Intelligence
             </div>
           </div>
 
@@ -424,7 +424,7 @@ export function DealReport() {
 
         {/* Footer */}
         <div className="text-center text-[8px] text-gray-700 print:text-gray-500 pb-8">
-          <p>LeadLuxe AI — Generated {report.generatedAt} · This report is AI-generated for informational purposes.</p>
+          <p>TerraNexus AI — Generated {report.generatedAt} · This report is AI-generated for informational purposes.</p>
           <p>Verify critical data points with local professionals before making investment decisions.</p>
         </div>
       </div>

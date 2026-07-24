@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Coordinate Validation & Debug Utilities
+// TerraNexus AI — Coordinate Validation & Debug Utilities
 // Runtime guards for the globe rendering pipeline
 // ============================================================
 

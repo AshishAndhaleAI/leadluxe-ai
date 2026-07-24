@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Deal Room Onboarding Flow (Phase 9-10)
+// TerraNexus AI — Deal Room Onboarding Flow (Phase 9-10)
 // Multi-step onboarding that captures investor profile, budget,
 // funding, citizenship, purpose, and the Digital Introduction
 // Agreement. Creates a DealPassport on completion.
@@ -481,23 +481,23 @@ export function DealRoomOnboarding({ property, existingPassportId, onComplete, o
 
                       <div className="glass-card p-4 mb-4 border-luxury-gold-500/20 text-[11px] leading-relaxed text-gray-300 space-y-3">
                         <p>
-                          <strong className="text-white">LeadLuxe AI Introduction Agreement v1.0</strong>
+                          <strong className="text-white">TerraNexus AI Introduction Agreement v1.0</strong>
                         </p>
                         <p>
                           This opportunity — <strong className="text-luxury-gold-400">{property.name}</strong> by {property.developer_name} — 
-                          was sourced and presented to you through the LeadLuxe AI intelligence platform.
+                          was sourced and presented to you through the TerraNexus AI intelligence platform.
                         </p>
                         <p>
                           By accepting this agreement, you acknowledge that:
                         </p>
                         <ul className="list-disc pl-4 space-y-1 text-[10px] text-gray-400">
-                          <li>This property was introduced to you by LeadLuxe AI</li>
-                          <li>Any transaction with the identified developer or affiliated entity within 12 months is considered a LeadLuxe-originated introduction</li>
+                          <li>This property was introduced to you by TerraNexus AI</li>
+                          <li>Any transaction with the identified developer or affiliated entity within 12 months is considered a TerraNexus-originated introduction</li>
                           <li>A success fee of {property.estimated_commission ? '3% (estimated ' + property.currencySymbol : ''}{(property.estimated_commission / 100000).toFixed(1)}L{property.estimated_commission ? ')' : '3%'} applies upon deal closure</li>
                           <li>You may decline this introduction at any time before signing a purchase agreement</li>
                         </ul>
                         <p className="text-[9px] text-gray-600 mt-2">
-                          This agreement protects the value of the AI-driven introduction and ensures LeadLuxe can continue providing free access to its intelligence platform.
+                          This agreement protects the value of the AI-driven introduction and ensures TerraNexus can continue providing free access to its intelligence platform.
                         </p>
                       </div>
 
@@ -509,7 +509,7 @@ export function DealRoomOnboarding({ property, existingPassportId, onComplete, o
                           className="mt-1 w-4 h-4 rounded border-gray-700 bg-gray-900 text-luxury-gold-500 focus:ring-luxury-gold-500/30"
                         />
                         <span className="text-xs text-gray-400 leading-relaxed">
-                          I confirm that this property was introduced to me by LeadLuxe AI and agree to the terms of the Digital Introduction Agreement outlined above.
+                          I confirm that this property was introduced to me by TerraNexus AI and agree to the terms of the Digital Introduction Agreement outlined above.
                         </span>
                       </label>
                     </div>

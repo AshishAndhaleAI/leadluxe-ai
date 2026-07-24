@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Property Experience (Production Slice)
+// TerraNexus AI — Property Experience (Production Slice)
 //
 // ONE property through a complete cinematic walkthrough →
 // property detail → Deal Room onboarding → AI Deal Report.
@@ -119,7 +119,7 @@ export function PropertyExperience() {
   return (
     <>
       <SEOHelmet
-        title={`${p.name} — ${p.developer_name} | LeadLuxe AI`}
+        title={`${p.name} — ${p.developer_name} | TerraNexus AI`}
         description={`${p.name} by ${p.developer_name} in ${p.city}, ${p.country}. ${p.description?.slice(0, 150)}`}
       />
 
@@ -133,7 +133,7 @@ export function PropertyExperience() {
             >
               <div className="w-1.5 h-1.5 bg-white/50 rounded-full group-hover:bg-white transition-colors" />
               <span className="text-[9px] text-white/40 group-hover:text-white/70 tracking-[0.2em] uppercase font-mono transition-colors">
-                LeadLuxe AI
+                TerraNexus AI
               </span>
             </button>
             <div className="pointer-events-auto flex items-center gap-4">
@@ -418,7 +418,7 @@ export function PropertyExperience() {
                   { label: 'RERA Registration', source: 'State RERA portal', url: 'https://maharera.maharashtra.gov.in', status: p.rera_number ? 'Available' : 'Pending' },
                   { label: 'Market Reference', source: 'JLL India · Knight Frank', url: 'https://www.jll.co.in', status: 'Reference' },
                   { label: 'Verification Status', source: p.verification.status, url: '', status: p.verification.status === 'VERIFIED' ? 'Complete' : 'Requires source confirmation' },
-                  { label: 'Database Record', source: 'LeadLuxe property database', url: '', status: 'Available' },
+                  { label: 'Database Record', source: 'TerraNexus property database', url: '', status: 'Available' },
                 ].map((source) => (
                   <div key={source.label} className="premium-card p-4">
                     <div className="flex items-center justify-between mb-2">
@@ -464,7 +464,7 @@ export function PropertyExperience() {
               <p className="body-md text-gray-400 max-w-2xl mb-8">
                 Express interest to create a Deal Passport. The Deal Passport tracks your introduction 
                 milestones — from qualification through to deal closure — and ensures commission 
-                entitlement for LeadLuxe-originated introductions.
+                entitlement for TerraNexus-originated introductions.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -619,7 +619,7 @@ export function PropertyExperience() {
               Ready to Invest?
             </h2>
             <p className="body-lg text-gray-400 mb-6 max-w-xl mx-auto">
-              This opportunity is presented by LeadLuxe AI. Express interest to unlock the Deal Room 
+              This opportunity is presented by TerraNexus AI. Express interest to unlock the Deal Room 
               and access the full investment workflow.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

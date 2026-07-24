@@ -30,7 +30,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
 
   const currentTitle = Object.entries(pageTitles).find(([path]) =>
     location.pathname.startsWith(path)
-  )?.[1] || 'LeadLuxe AI';
+  )?.[1] || 'TerraNexus AI';
 
   return (
     <header className="sticky top-0 z-30 h-16 border-b border-luxury-border bg-luxury-black/90 backdrop-blur-xl">

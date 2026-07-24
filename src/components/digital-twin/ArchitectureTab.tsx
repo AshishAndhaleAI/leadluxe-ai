@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Architecture & Building Design Tab
+// TerraNexus AI — Architecture & Building Design Tab
 // Layer 3 of the Digital Twin workspace.
 // Shows design philosophy, facade materials, gallery, specs.
 // ============================================================

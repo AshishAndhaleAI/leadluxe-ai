@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Data Ingestion Adapters
+// TerraNexus AI — Data Ingestion Adapters
 // Placeholder Edge Functions for all real public data sources.
 // Each adapter documents the API endpoint, authentication,
 // rate limits, and data normalization logic.
@@ -190,7 +190,7 @@ export const INGESTION_ADAPTERS: IngestionAdapter[] = [
 // =====================
 // SUPABASE EDGE FUNCTION TEMPLATE
 // =====================
-export const EDGE_FUNCTION_TEMPLATE = `// LeadLuxe AI — Data Ingestion Edge Function
+export const EDGE_FUNCTION_TEMPLATE = `// TerraNexus AI — Data Ingestion Edge Function
 // Template for Supabase Edge Functions (Deno)
 // Copy this into supabase/functions/{adapter_id}/index.ts
 
@@ -235,7 +235,7 @@ export function generateEdgeFunctionFile(adapterId: string): { path: string; con
 
   return {
     path: `supabase/functions/ingest-${adapterId}/index.ts`,
-    content: `// LeadLuxe AI — Ingestion: ${adapter.name}
+    content: `// TerraNexus AI — Ingestion: ${adapter.name}
 // Source: ${adapter.sourceUrl}
 // Schedule: ${adapter.schedule}
 // Data types: ${adapter.dataTypes.join(', ')}

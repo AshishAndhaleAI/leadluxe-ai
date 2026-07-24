@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Founder Dashboard (/founder)
+// TerraNexus AI — Founder Dashboard (/founder)
 // Private admin command center for daily operations.
 // Shows today's leads, demos, highest-intent investors,
 // developers needing follow-up, report hotspots, revenue forecast.
@@ -39,8 +39,8 @@ export function FounderDashboard() {
   const [activeTab, setActiveTab] = useState<'today' | 'pipeline' | 'insights'>('today');
 
   // Simulated metrics from localStorage
-  const developerLeads = JSON.parse(localStorage.getItem('leadluxe-developer-leads') || '[]');
-  const nriSignups = JSON.parse(localStorage.getItem('leadluxe-nri-signups') || '[]');
+  const developerLeads = JSON.parse(localStorage.getItem('terranexus-developer-leads') || '[]');
+  const nriSignups = JSON.parse(localStorage.getItem('terranexus-nri-signups') || '[]');
   const totalLeads = developerLeads.length + nriSignups.length;
 
   const pipelineValue = developerLeads.length * 50000000 + nriSignups.length * 20000000;
@@ -48,7 +48,7 @@ export function FounderDashboard() {
 
   return (
     <>
-      <SEOHelmet title="Founder Dashboard — LeadLuxe AI" noindex />
+      <SEOHelmet title="Founder Dashboard — TerraNexus AI" noindex />
       <div className="min-h-screen bg-[#050505] p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
@@ -168,7 +168,7 @@ export function FounderDashboard() {
                     { label: 'CRM Pipeline', action: () => navigate('/admin/crm'), icon: Users },
                     { label: 'Revenue Dashboard', action: () => navigate('/admin/revenue'), icon: DollarSign },
                     { label: 'Acquisition View', action: () => navigate('/admin/acquisition'), icon: TrendingUp },
-                    { label: 'Send Outreach', action: () => window.open('mailto:?subject=LeadLuxe%20AI%20Partnership', '_blank'), icon: Mail },
+                    { label: 'Send Outreach', action: () => window.open('mailto:?subject=TerraNexus%20AI%20Partnership', '_blank'), icon: Mail },
                   ].map(item => (
                     <button key={item.label} onClick={item.action}
                       className="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02] hover:bg-white/[0.04] transition-colors text-left"

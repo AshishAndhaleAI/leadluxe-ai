@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Cinematic Experience Scene
+// TerraNexus AI — Cinematic Experience Scene
 // Refactored entry point that wraps the existing BuildingScene
 // with GSAP ScrollTrigger integration and live data overlays.
 // ============================================================
@@ -159,7 +159,7 @@ export function getHologramDataForChapter(chapter: number, data: ReturnType<type
     },
     // Chapter 2: Building Entry — welcome
     {
-      title: 'Welcome to LeadLuxe',
+      title: 'Welcome to TerraNexus',
       metrics: [
         { label: 'AI Discovered', value: `${data.opCount} opportunities` },
         { label: 'Commission Model', value: '3% on closed deals' },

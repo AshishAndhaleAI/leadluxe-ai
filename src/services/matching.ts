@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Capital Introduction Matching Engine
+// TerraNexus AI — Capital Introduction Matching Engine
 // Matches developers + investors to high-scoring opportunities.
 // Used by: capital-introduction-workflow.ts, AdminOutreach.tsx
 // ============================================================
@@ -66,8 +66,8 @@ const KNOWN_DEVELOPERS: DeveloperMatch[] = [
 // ─── Investor Discovery — from consented CRM data only ───────
 function getConsentedInvestors(): InvestorMatch[] {
   try {
-    const nriSignups = JSON.parse(localStorage.getItem('leadluxe-nri-signups') || '[]');
-    const developerLeads = JSON.parse(localStorage.getItem('leadluxe-developer-leads') || '[]');
+    const nriSignups = JSON.parse(localStorage.getItem('terranexus-nri-signups') || '[]');
+    const developerLeads = JSON.parse(localStorage.getItem('terranexus-developer-leads') || '[]');
 
     const investors: InvestorMatch[] = [];
 

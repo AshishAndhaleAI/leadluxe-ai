@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Closing Probability Analysis
+// TerraNexus AI — Closing Probability Analysis
 // Predicts the likelihood that a deal in a given market
 // will close within 30 days.
 //

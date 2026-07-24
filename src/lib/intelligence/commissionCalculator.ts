@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Commission Calculator
+// TerraNexus AI — Commission Calculator
 // Calculates estimated commission from property value using
 // country-specific commission rates.
 // ============================================================

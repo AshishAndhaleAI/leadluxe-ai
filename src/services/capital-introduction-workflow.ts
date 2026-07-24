@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Capital Introduction Workflow Orchestrator
+// TerraNexus AI — Capital Introduction Workflow Orchestrator
 // 10-step autonomous workflow: score → report → match → draft
 // → approve → send → track → deal room → revenue pipeline.
 // ============================================================
@@ -35,7 +35,7 @@ export interface WorkflowState {
   errors: string[];
 }
 
-const WORKFLOW_STATE_KEY = 'leadluxe-workflow-state';
+const WORKFLOW_STATE_KEY = 'terranexus-workflow-state';
 
 function getWorkflowState(): WorkflowState {
   try {

@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Opportunity Detail Page
+// TerraNexus AI — Opportunity Detail Page
 // Fetches from the same data source as Opportunities page.
 // Falls back to generated records and property database.
 // ============================================================
@@ -122,7 +122,7 @@ export function OpportunityDetail() {
           evidence_count: fromProperty.evidence.length,
           status: 'active',
           priority: fromProperty.confidence >= 85 ? 'critical' : fromProperty.confidence >= 75 ? 'high' : 'medium',
-          source_name: 'LeadLuxe Property Database',
+          source_name: 'TerraNexus Property Database',
           latitude: fromProperty.latitude,
           longitude: fromProperty.longitude,
           created_at: fromProperty.created_at,

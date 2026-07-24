@@ -62,7 +62,7 @@ export function generateInvestmentMemo(deal: DataRoomDeal): string {
   
   return `CONFIDENTIAL — INVESTMENT MEMORANDUM
 
-LeadLuxe AI Enterprise Data Room
+TerraNexus AI Enterprise Data Room
 Generated: ${now}
 
 DEAL: ${deal.dealName}
@@ -105,9 +105,9 @@ This opportunity is evaluated based on market fundamentals, comparable transacti
 DISCLAIMER
 ═══════════════════════════════════════
 
-This memorandum is confidential and intended solely for authorized parties. LeadLuxe AI provides analysis and recommendations only — no investment decisions are made by AI. All transactions require human approval.
+This memorandum is confidential and intended solely for authorized parties. TerraNexus AI provides analysis and recommendations only — no investment decisions are made by AI. All transactions require human approval.
 
-LeadLuxe AI · Enterprise Data Room`;
+TerraNexus AI · Enterprise Data Room`;
 }
 
 // =====================
@@ -124,7 +124,7 @@ ${partyB} ("Receiving Party")
 Regarding: ${dealName}
 
 1. CONFIDENTIAL INFORMATION
-All information shared in the LeadLuxe AI Data Room regarding ${dealName} is confidential.
+All information shared in the TerraNexus AI Data Room regarding ${dealName} is confidential.
 
 2. OBLIGATIONS
 The Receiving Party shall not disclose, distribute, or use Confidential Information for any purpose other than evaluating the opportunity.
@@ -138,7 +138,7 @@ This agreement is governed by the laws specified in the jurisdiction of the prop
 Signed: _______________  Date: _______________
 Signed: _______________  Date: _______________
 
-LeadLuxe AI · Enterprise Data Room`;
+TerraNexus AI · Enterprise Data Room`;
 }
 
 function formatCurrency(value: number): string {

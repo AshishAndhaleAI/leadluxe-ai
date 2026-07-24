@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Matching Engine
+// TerraNexus AI — Matching Engine
 // Calculates opportunity scores, expected appreciation,
 // commission values, and confidence levels for any city
 // based on user preferences and real market data

@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Market Pulse Live Ticker
+// TerraNexus AI — Market Pulse Live Ticker
 // A scrolling ticker bar that shows global real estate signals
 // in real-time, creating a "live intelligence" feel.
 // ============================================================

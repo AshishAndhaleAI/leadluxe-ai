@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Digital Twin Generator
+// TerraNexus AI — Digital Twin Generator
 // Creates a PropertyDigitalTwin from an EnrichedProperty.
 // Uses deterministic seed values based on property data.
 // All fields are marked with provenance showing source.
@@ -15,7 +15,7 @@ function getSeed(property: EnrichedProperty): number {
 function makeSource(sourceName: string): SourceProvenance {
   return {
     sourceName,
-    sourceUrl: 'https://leadluxe-ai.vercel.app/data-provenance',
+    sourceUrl: 'https://terranexus-ai.vercel.app/data-provenance',
     fetchedAt: '23 Jul 2026',
     verificationStatus: 'UNVERIFIED',
     confidenceScore: 0,

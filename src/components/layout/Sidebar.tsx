@@ -67,7 +67,7 @@ export function Sidebar({ isCollapsed, onToggle, onMobileClose, unreadAlertCount
             </div>
             {!isCollapsed && (
               <div className="min-w-0">
-                <p className="text-sm font-bold text-white truncate">LeadLuxe</p>
+                <p className="text-sm font-bold text-white truncate">TerraNexus</p>
                 <p className="text-[10px] text-luxury-gold-400/70 font-medium">AI Intelligence</p>
               </div>
             )}

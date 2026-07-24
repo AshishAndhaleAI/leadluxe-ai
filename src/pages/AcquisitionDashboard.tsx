@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Acquisition-Ready Analytics (/admin/acquisition)
+// TerraNexus AI — Acquisition-Ready Analytics (/admin/acquisition)
 // Internal dashboard showing metrics that future acquirers care about.
 // NOT a public page — accessible via direct URL only.
 // ============================================================
@@ -383,7 +383,7 @@ export function AcquisitionDashboard() {
       {/* ─── Footer ──────────────────────────────────────── */}
       <div className="border-t border-white/[0.03] mt-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between text-[7px] text-gray-700">
-          <span>LeadLuxe AI — Acquisition Dashboard (Internal)</span>
+          <span>TerraNexus AI — Acquisition Dashboard (Internal)</span>
           <span>Data reflects simulated production metrics. Connect Supabase for live values.</span>
         </div>
       </div>

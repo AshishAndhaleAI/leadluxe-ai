@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Multi-Factor Investment Scoring Engine
+// TerraNexus AI — Multi-Factor Investment Scoring Engine
 // Phase 2: Scores every opportunity 0-100 using 8 weighted factors
 // ============================================================
 

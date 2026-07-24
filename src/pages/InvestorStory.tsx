@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Investor Story (/investor-story)
+// TerraNexus AI — Investor Story (/investor-story)
 // Complete acquisition narrative with 11 sections.
 // Reference: JLL Capital Markets, CBRE IM, Knight Frank
 // ============================================================
@@ -31,26 +31,26 @@ const SECTIONS = [
     number: '02',
     title: 'Why Listings Fail',
     subtitle: 'The Portal Model Cannot Solve Trust',
-    body: 'Traditional real estate portals generate revenue through listing fees and advertising. Their incentive is to maximize inventory volume, not data accuracy. This creates a fundamental misalignment: more listings means more noise, not more signal.\n\nA 2025 JLL report found that 68% of cross-border investors cite data trust as their primary barrier to entering new markets. LeadLuxe solves this with source-attributed verification — every data point links back to its original government or institutional source.',
+    body: 'Traditional real estate portals generate revenue through listing fees and advertising. Their incentive is to maximize inventory volume, not data accuracy. This creates a fundamental misalignment: more listings means more noise, not more signal.\n\nA 2025 JLL report found that 68% of cross-border investors cite data trust as their primary barrier to entering new markets. TerraNexus solves this with source-attributed verification — every data point links back to its original government or institutional source.',
   },
   {
     id: 'verification',
     number: '03',
     title: 'Why Verification Matters',
     subtitle: 'Source-Backed Trust Is the Moat',
-    body: 'LeadLuxe does not generate synthetic data. Every property field — developer name, address, RERA number, coordinates, completion date — is either verified against a trusted source or marked as UNVERIFIED. No fabricated contacts, no invented addresses.\n\nThis creates a defensible data asset: verified records that cannot be replicated by a competitor without the same government registry integrations and institutional research partnerships.',
+    body: 'TerraNexus does not generate synthetic data. Every property field — developer name, address, RERA number, coordinates, completion date — is either verified against a trusted source or marked as UNVERIFIED. No fabricated contacts, no invented addresses.\n\nThis creates a defensible data asset: verified records that cannot be replicated by a competitor without the same government registry integrations and institutional research partnerships.',
   },
   {
     id: 'nri',
     number: '04',
     title: 'Why NRI Capital Is Inefficient',
     subtitle: '$125B Remittance Market, Poorly Served',
-    body: 'NRI remittances to India reached $125B in 2025, with 12-15% directed into real estate. Yet NRIs face: no trusted verification of projects from abroad, currency uncertainty, lack of AI-qualified buyer matching, and no institutional-grade research for Indian markets.\n\nLeadLuxe targets this $15-18B annual NRI real estate segment with: RERA-verified projects, currency-aware intelligence, AI-qualified matching, and a dedicated NRI portal.',
+    body: 'NRI remittances to India reached $125B in 2025, with 12-15% directed into real estate. Yet NRIs face: no trusted verification of projects from abroad, currency uncertainty, lack of AI-qualified buyer matching, and no institutional-grade research for Indian markets.\n\nTerraNexus targets this $15-18B annual NRI real estate segment with: RERA-verified projects, currency-aware intelligence, AI-qualified matching, and a dedicated NRI portal.',
   },
   {
     id: 'architecture',
     number: '05',
-    title: 'LeadLuxe Architecture',
+    title: 'TerraNexus Architecture',
     subtitle: 'Intelligence Infrastructure for Real Estate',
     body: 'The platform is built on four layers:\n\n1. Data Ingestion Layer — Government registries (RERA, DLD, Land Registry), institutional research (JLL, CBRE, Knight Frank), macro data (World Bank, RBI), and geospatial (Mapbox, OSM).\n\n2. Verification Engine — Every record is attributed, timestamped, and confidence-scored. Records without verified sources are hidden from featured listings.\n\n3. AI Intelligence Layer — Opportunity scoring, investor matching, capital flow analysis, infrastructure impact assessment, and commission calculation.\n\n4. Deal Infrastructure — Deal Room onboarding, Deal Passport creation, introduction tracking, commission pipeline, and audit trail.',
   },
@@ -66,21 +66,21 @@ const SECTIONS = [
     number: '07',
     title: 'Government Data Layer',
     subtitle: 'Integrated Public Registries',
-    body: 'LeadLuxe maintains live integrations with: MahaRERA (Maharashtra), Karnataka RERA, Haryana RERA, Telangana RERA, Dubai Land Department (DLD), HM Land Registry (UK), URA Singapore, and Planning Portal (UK).\n\nAdditional sources include: World Bank Open Data, IMF, OECD, UN Habitat, RBI, Ministry of Housing, NITI Aayog, metro rail authorities, and highway authorities.',
+    body: 'TerraNexus maintains live integrations with: MahaRERA (Maharashtra), Karnataka RERA, Haryana RERA, Telangana RERA, Dubai Land Department (DLD), HM Land Registry (UK), URA Singapore, and Planning Portal (UK).\n\nAdditional sources include: World Bank Open Data, IMF, OECD, UN Habitat, RBI, Ministry of Housing, NITI Aayog, metro rail authorities, and highway authorities.',
   },
   {
     id: 'deal-room',
     number: '08',
     title: 'Deal Room Infrastructure',
     subtitle: 'Revenue-Capturing Deal Pipeline',
-    body: 'The Deal Room is the monetization layer. When a buyer expresses interest, they enter a structured onboarding flow: investor profile → budget → timeline → funding source → digital introduction agreement.\n\nEvery introduction is tracked through the Deal Passport system — a legally bindable record that proves LeadLuxe-originated introductions. Commission is 3% on closed deals, payable only upon successful transaction closing.',
+    body: 'The Deal Room is the monetization layer. When a buyer expresses interest, they enter a structured onboarding flow: investor profile → budget → timeline → funding source → digital introduction agreement.\n\nEvery introduction is tracked through the Deal Passport system — a legally bindable record that proves TerraNexus-originated introductions. Commission is 3% on closed deals, payable only upon successful transaction closing.',
   },
   {
     id: 'revenue',
     number: '09',
     title: 'Revenue Model',
     subtitle: 'Performance-Based, Asset-Light',
-    body: 'LeadLuxe operates on a pure success-fee model: 3% commission on closed deals. No subscription fees, no listing fees, no advertising revenue. This aligns incentives — LeadLuxe only earns when the investor buys and the developer sells.\n\nRevenue drivers:\n- Developer partnerships (NRI pipeline, market intelligence, AI scoring)\n- NRI investor matching (qualified buyer introductions)\n- AI investment memos (institutional-grade PDF reports)\n- White-label intelligence API (enterprise partnerships)\n- Data licensing (anonymized market intelligence)',
+    body: 'TerraNexus operates on a pure success-fee model: 3% commission on closed deals. No subscription fees, no listing fees, no advertising revenue. This aligns incentives — TerraNexus only earns when the investor buys and the developer sells.\n\nRevenue drivers:\n- Developer partnerships (NRI pipeline, market intelligence, AI scoring)\n- NRI investor matching (qualified buyer introductions)\n- AI investment memos (institutional-grade PDF reports)\n- White-label intelligence API (enterprise partnerships)\n- Data licensing (anonymized market intelligence)',
   },
   {
     id: 'expansion',
@@ -94,7 +94,7 @@ const SECTIONS = [
     number: '11',
     title: 'Acquisition Potential',
     subtitle: 'Strategic Value for Proptech & Institutions',
-    body: 'LeadLuxe AI has built:\n- A proprietary verification infrastructure (hard to replicate)\n- Government registry integrations (regulatory moat)\n- Institutional research partnerships (trust asset)\n- AI opportunity engine (technology asset)\n- Deal Passport system (legal infrastructure)\n- Commission pipeline (revenue asset)\n- Zaha-style brand experience (brand asset)\n\nStrategic acquirers include: global proptech platforms (Zillow, REA Group, Rightmove, Property Finder), institutional real estate advisors (JLL, CBRE, Savills, Knight Frank), and enterprise software companies seeking real estate vertical intelligence.',
+    body: 'TerraNexus AI has built:\n- A proprietary verification infrastructure (hard to replicate)\n- Government registry integrations (regulatory moat)\n- Institutional research partnerships (trust asset)\n- AI opportunity engine (technology asset)\n- Deal Passport system (legal infrastructure)\n- Commission pipeline (revenue asset)\n- Zaha-style brand experience (brand asset)\n\nStrategic acquirers include: global proptech platforms (Zillow, REA Group, Rightmove, Property Finder), institutional real estate advisors (JLL, CBRE, Savills, Knight Frank), and enterprise software companies seeking real estate vertical intelligence.',
   },
 ];
 
@@ -104,10 +104,10 @@ export function InvestorStory() {
   return (
     <>
       <SEOHelmet
-        title="Investor Story — LeadLuxe AI Architecture & Acquisition Potential"
-        description="LeadLuxe AI is building the verification and transaction infrastructure layer for Indian real estate. 11-section narrative covering problem, architecture, revenue model, and acquisition potential."
-        url="https://leadluxe-ai.vercel.app/investor-story"
-        canonical="https://leadluxe-ai.vercel.app/investor-story"
+        title="Investor Story — TerraNexus AI Architecture & Acquisition Potential"
+        description="TerraNexus AI is building the verification and transaction infrastructure layer for Indian real estate. 11-section narrative covering problem, architecture, revenue model, and acquisition potential."
+        url="https://terranexus-ai.vercel.app/investor-story"
+        canonical="https://terranexus-ai.vercel.app/investor-story"
       />
       <div className="min-h-screen bg-[#050505]">
         {/* Hero */}
@@ -129,7 +129,7 @@ export function InvestorStory() {
                 {' '}for Indian Real Estate
               </h1>
               <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto mb-8 leading-relaxed">
-                An 11-part narrative on why LeadLuxe AI is positioned to become the definitive 
+                An 11-part narrative on why TerraNexus AI is positioned to become the definitive 
                 intelligence and transaction platform for India's $1T real estate market.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -192,7 +192,7 @@ export function InvestorStory() {
                 <Sparkles className="w-7 h-7 text-luxury-gold-400" />
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4 font-display">
-                LeadLuxe is building the verification and transaction infrastructure layer for Indian real estate.
+                TerraNexus is building the verification and transaction infrastructure layer for Indian real estate.
               </h2>
               <p className="text-sm text-gray-400 max-w-2xl mx-auto mb-8">
                 Combining architectural experience, government-linked data, AI intelligence, and capital-qualified 

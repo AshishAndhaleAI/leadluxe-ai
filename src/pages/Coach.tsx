@@ -134,7 +134,7 @@ export function Coach() {
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-white">AI Deal Coach</h3>
-                <p className="text-xs text-gray-500">Powered by LeadLuxe AI Intelligence</p>
+                <p className="text-xs text-gray-500">Powered by TerraNexus AI Intelligence</p>
               </div>
               <span className="ml-auto flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />

@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Knowledge Graph Seed Data
+// TerraNexus AI — Knowledge Graph Seed Data
 // Pre-populates the graph with specific, detailed real estate
 // data including developer names, project names, site locations,
 // and credible source references.

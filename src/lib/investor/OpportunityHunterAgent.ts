@@ -95,7 +95,7 @@ export function runOpportunityHunter(): HunterRunReport {
         estimatedValue,
         commission,
         discoveryReason,
-        source: 'LeadLuxe Autonomous Hunter — City Market Scan',
+        source: 'TerraNexus Autonomous Hunter — City Market Scan',
         confidenceLevel,
         detectedAt: new Date().toISOString(),
         isNew: true,

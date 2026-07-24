@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Country Landing Page
+// TerraNexus AI — Country Landing Page
 // SEO-optimized page for each country showing property
 // opportunities, market metrics, and city breakdown.
 // ============================================================
@@ -88,7 +88,7 @@ export function CountryLanding() {
       <SEOHelmet
         title={`${country.name} Real Estate & Property Investment`}
         description={seoDesc}
-        url={`https://leadluxe-ai.vercel.app/country/${code.toLowerCase()}`}
+        url={`https://terranexus-ai.vercel.app/country/${code.toLowerCase()}`}
       />
       <BreadcrumbLD items={[
         { name: 'Home', url: '/' },
@@ -310,7 +310,7 @@ export function CountryLanding() {
             <div className="space-y-2">
               <h3 className="text-white font-semibold">AI Intelligence</h3>
               <p>
-                LeadLuxe AI continuously monitors {country.name}'s real estate market, tracking price movements, 
+                TerraNexus AI continuously monitors {country.name}'s real estate market, tracking price movements, 
                 new launches, regulatory changes, and demand patterns. Get personalized opportunities delivered automatically.
               </p>
             </div>

@@ -14,7 +14,7 @@ const GOVERNANCE_RULES = [
   {
     id: 'rule-1',
     title: 'Analysis Only — No Execution',
-    description: 'LeadLuxe AI may analyze, score, and recommend investment opportunities. It may NOT execute any financial transaction, make purchases, or move funds.',
+    description: 'TerraNexus AI may analyze, score, and recommend investment opportunities. It may NOT execute any financial transaction, make purchases, or move funds.',
     icon: Lock,
     severity: 'critical' as const,
   },
@@ -204,7 +204,7 @@ export function AIGovernancePanel() {
             className="space-y-4"
           >
             <div className="p-4 rounded-lg bg-white/[0.03] border border-luxury-border">
-              <h4 className="text-xs font-semibold text-white mb-2">🤖 How LeadLuxe AI Makes Decisions</h4>
+              <h4 className="text-xs font-semibold text-white mb-2">🤖 How TerraNexus AI Makes Decisions</h4>
               <div className="space-y-2 text-xs text-gray-400 leading-relaxed">
                 <p>1. <strong className="text-white">Data Collection</strong> — Public market data is collected from verified sources including government registries, news outlets, and market reports.</p>
                 <p>2. <strong className="text-white">Scoring</strong> — Each opportunity is scored across 8 factors weighted by their historical impact on investment outcomes.</p>
@@ -242,7 +242,7 @@ export function AIGovernancePanel() {
               <div className="flex items-start gap-2">
                 <Info className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <p className="text-xs text-amber-300/80">
-                  LeadLuxe AI uses publicly available data sources and transparent algorithms. 
+                  TerraNexus AI uses publicly available data sources and transparent algorithms. 
                   All recommendations include confidence scores and source attribution. 
                   No investment decisions are made without human approval.
                 </p>

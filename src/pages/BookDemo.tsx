@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Book a Demo (/book-demo)
+// TerraNexus AI — Book a Demo (/book-demo)
 // Scheduling page with contact form and availability
 // ============================================================
 
@@ -80,10 +80,10 @@ export function BookDemo() {
   return (
     <>
       <SEOHelmet
-        title="Book a Live Demo — LeadLuxe AI"
-        description="Schedule a 30-minute walkthrough of the LeadLuxe AI platform. See live market intelligence, verified property data, and the Deal Room system in action."
-        url="https://leadluxe-ai.vercel.app/book-demo"
-        canonical="https://leadluxe-ai.vercel.app/book-demo"
+        title="Book a Live Demo — TerraNexus AI"
+        description="Schedule a 30-minute walkthrough of the TerraNexus AI platform. See live market intelligence, verified property data, and the Deal Room system in action."
+        url="https://terranexus-ai.vercel.app/book-demo"
+        canonical="https://terranexus-ai.vercel.app/book-demo"
       />
       <div className="min-h-screen bg-luxury-black flex items-center justify-center p-4">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
@@ -93,7 +93,7 @@ export function BookDemo() {
               <CalendarIcon className="w-6 h-6 text-luxury-gold-400" />
             </div>
             <h1 className="text-lg font-bold text-white font-display">
-              See How LeadLuxe Finds Verified Capital-Ready Buyers
+              See How TerraNexus Finds Verified Capital-Ready Buyers
             </h1>
             <p className="text-[10px] text-gray-500 mt-1">Book a 20-minute live demo of the AI walkthrough, source verification system, Deal Room, and investor qualification engine.</p>
           </div>

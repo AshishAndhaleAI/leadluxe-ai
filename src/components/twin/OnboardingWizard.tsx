@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Investor Twin Onboarding Wizard
+// TerraNexus AI — Investor Twin Onboarding Wizard
 // 
 // Multi-step creation flow:
 //   1. Select Country

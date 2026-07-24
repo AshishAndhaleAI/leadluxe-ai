@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — NRI Investor Portal (/nri)
+// TerraNexus AI — NRI Investor Portal (/nri)
 // Dedicated route for global Indian investors across
 // UAE, Singapore, UK, USA, Canada, and Australia.
 // ============================================================
@@ -43,9 +43,9 @@ export function NRIPortal() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    const signups = JSON.parse(localStorage.getItem('leadluxe-nri-signups') || '[]');
+    const signups = JSON.parse(localStorage.getItem('terranexus-nri-signups') || '[]');
     signups.unshift({ email, market: selectedMarket, timestamp: new Date().toISOString() });
-    localStorage.setItem('leadluxe-nri-signups', JSON.stringify(signups));
+    localStorage.setItem('terranexus-nri-signups', JSON.stringify(signups));
     setSubmitted(true);
   };
 
@@ -54,8 +54,8 @@ export function NRIPortal() {
       <SEOHelmet
         title="NRI Investors — Verified Indian Real Estate for Global Investors"
         description="Explore source-verified real estate opportunities across 27 Indian cities. Designed for NRI investors in UAE, Singapore, UK, USA, Canada, and Australia. Backed by RERA records and institutional research."
-        url="https://leadluxe-ai.vercel.app/nri"
-        canonical="https://leadluxe-ai.vercel.app/nri"
+        url="https://terranexus-ai.vercel.app/nri"
+        canonical="https://terranexus-ai.vercel.app/nri"
       />
       <div className="min-h-screen bg-[#050505]">
       {/* ─── Hero ───────────────────────────────────────── */}
@@ -196,7 +196,7 @@ export function NRIPortal() {
         </div>
       </section>
 
-      {/* ─── Why NRI Investors Choose LeadLuxe ──────────── */}
+      {/* ─── Why NRI Investors Choose TerraNexus ──────────── */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-white/[0.03]">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl font-bold text-white mb-8 text-center font-display">

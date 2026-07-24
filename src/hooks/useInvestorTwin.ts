@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — useInvestorTwin Hook
+// TerraNexus AI — useInvestorTwin Hook
 // 
 // Central hook for the Investor Twin System. Handles:
 //   - Profile creation and persistence (localStorage)
@@ -71,7 +71,7 @@ export function useInvestorTwin() {
   const [profile, setProfile] = useState<InvestorProfile>(() => {
     if (user) {
       try {
-        const saved = localStorage.getItem(`leadluxe_twin_${user.id}`);
+        const saved = localStorage.getItem(`terranexus_twin_${user.id}`);
         if (saved) return JSON.parse(saved);
       } catch { /* ignore */ }
     }
@@ -157,7 +157,7 @@ export function useInvestorTwin() {
     if (!user) return;
     const merged = { ...profile, ...updated, userId: user.id };
     setProfile(merged);
-    localStorage.setItem(`leadluxe_twin_${user.id}`, JSON.stringify(merged));
+    localStorage.setItem(`terranexus_twin_${user.id}`, JSON.stringify(merged));
 
     trackEvent('twin_profile_updated', {
       userId: user.id,
@@ -179,7 +179,7 @@ export function useInvestorTwin() {
     try {
       const newProfile = { ...initialProfile, userId: user.id };
       setProfile(newProfile);
-      localStorage.setItem(`leadluxe_twin_${user.id}`, JSON.stringify(newProfile));
+      localStorage.setItem(`terranexus_twin_${user.id}`, JSON.stringify(newProfile));
 
       trackEvent('twin_created', {
         userId: user.id,

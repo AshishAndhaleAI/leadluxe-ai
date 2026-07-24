@@ -222,7 +222,7 @@ export function CommissionDashboard() {
           <div>
             <p className="text-xs font-semibold text-white mb-1">Commission Model Summary</p>
             <p className="text-[11px] text-gray-500">
-              LeadLuxe charges a <strong className="text-luxury-gold-400">3% success fee</strong> only when a deal closes.
+              TerraNexus charges a <strong className="text-luxury-gold-400">3% success fee</strong> only when a deal closes.
               No monthly subscription. No upfront payment. If a deal doesn't close, you pay nothing.
               All commission amounts above are estimates based on current opportunity values.
             </p>

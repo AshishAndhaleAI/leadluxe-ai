@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Verification Badges (/verification)
+// TerraNexus AI — Verification Badges (/verification)
 // Explains the trust badges shown across public pages.
 // Government-linked verification, source-attributed data,
 // RERA-integrated intelligence, map-verified coordinates,
@@ -83,9 +83,9 @@ export function VerificationBadges() {
     <>
       <SEOHelmet
         title="Verification — Trust Badges & Data Provenance"
-        description="LeadLuxe AI's trust badges explain how every property data point is verified against government registries, institutional research, and official sources. No fabricated data."
-        url="https://leadluxe-ai.vercel.app/verification"
-        canonical="https://leadluxe-ai.vercel.app/verification"
+        description="TerraNexus AI's trust badges explain how every property data point is verified against government registries, institutional research, and official sources. No fabricated data."
+        url="https://terranexus-ai.vercel.app/verification"
+        canonical="https://terranexus-ai.vercel.app/verification"
       />
       <div className="min-h-screen bg-[#050505]">
         {/* Hero */}
@@ -100,7 +100,7 @@ export function VerificationBadges() {
                 <span className="text-gradient-gold">Verification</span>
               </h1>
               <p className="text-sm text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                Every badge shown on LeadLuxe AI represents a real verification process — 
+                Every badge shown on TerraNexus AI represents a real verification process — 
                 government registry cross-reference, source-attributed data, or institutional 
                 research integration. We never display fabricated data.
               </p>

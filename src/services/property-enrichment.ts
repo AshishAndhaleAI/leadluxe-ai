@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Property Enrichment Service
+// TerraNexus AI — Property Enrichment Service
 // Connects the property database with real addresses, contacts,
 // curated images, and nearby places. Used by DealRoom,
 // PropertyDetail, Opportunities, Signals, and Global Map.

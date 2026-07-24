@@ -9,7 +9,7 @@ Hi [Developer Name],
 
 I came across [Company Name]'s work in [City] and noticed your [specific project/development].
 
-LeadLuxe AI is an intelligence platform that connects verified Indian developers with AI-qualified domestic and NRI investors. We do not charge listing fees — we earn a success fee only when a deal closes.
+TerraNexus AI is an intelligence platform that connects verified Indian developers with AI-qualified domestic and NRI investors. We do not charge listing fees — we earn a success fee only when a deal closes.
 
 Here is what we offer your team:
 
@@ -27,5 +27,5 @@ Would you be open to a 20-minute demo this week? I can show you the platform wit
 
 Best,
 [Your Name]
-LeadLuxe AI
-[Link to book: https://leadluxe-ai.vercel.app/book-demo]
+TerraNexus AI
+[Link to book: https://terranexus-ai.vercel.app/book-demo]

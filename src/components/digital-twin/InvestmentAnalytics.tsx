@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Investment Analytics Panel
+// TerraNexus AI — Investment Analytics Panel
 // Layer 6 of the Digital Twin workspace.
 // Institutional-grade investment research with charts,
 // comparables, AI investment memo, and scenario analysis.

@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Gravity Alert Engine
+// TerraNexus AI — Gravity Alert Engine
 // Autonomous delta tracking, watchlist management, and daily
 // briefing generation for the Investment Gravity Engine.
 //
@@ -15,8 +15,8 @@ import type { GravityAnalysis } from './types';
 // WATCHLIST (stored in localStorage)
 // ============================================================
 
-const WATCHLIST_KEY = 'leadluxe-gravity-watchlist';
-const BRIEFING_SEEN_KEY = 'leadluxe-briefing-last-seen';
+const WATCHLIST_KEY = 'terranexus-gravity-watchlist';
+const BRIEFING_SEEN_KEY = 'terranexus-briefing-last-seen';
 
 export interface WatchlistEntry {
   cityId: string;

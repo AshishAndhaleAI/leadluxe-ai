@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — AI Deal Coach Preferences
+// TerraNexus AI — AI Deal Coach Preferences
 // Customizable coaching templates for recommendation style,
 // response tone, preferred channels, and urgency thresholds.
 //
@@ -43,8 +43,8 @@ export const DEFAULT_PREFERENCES: CoachPreferences = {
   timezone: 'Asia/Kolkata',
 };
 
-const LOCAL_KEY = 'leadluxe-coach-preferences';
-const SYNC_KEY = 'leadluxe-coach-preferences-sync';
+const LOCAL_KEY = 'terranexus-coach-preferences';
+const SYNC_KEY = 'terranexus-coach-preferences-sync';
 
 export function getCoachPreferences(): CoachPreferences {
   try {

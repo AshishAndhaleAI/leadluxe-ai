@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Global Real Estate Data Architecture
+// TerraNexus AI — Global Real Estate Data Architecture
 // Hierarchical: Country → State/Province → City → District
 // ============================================================
 

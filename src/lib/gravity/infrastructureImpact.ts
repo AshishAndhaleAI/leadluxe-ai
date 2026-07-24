@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Infrastructure Impact Analysis
+// TerraNexus AI — Infrastructure Impact Analysis
 // Measures how nearby infrastructure projects affect
 // real estate values and investment gravity.
 //

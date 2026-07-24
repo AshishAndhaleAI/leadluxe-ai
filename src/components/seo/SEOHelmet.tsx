@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — SEO Helmet
+// TerraNexus AI — SEO Helmet
 // Per-page SEO meta tags using react-helmet-async
 // Generates title, description, Open Graph, Twitter cards,
 // and JSON-LD structured data for Google rich results.
@@ -8,9 +8,9 @@
 import { Helmet } from 'react-helmet-async';
 import type { Property } from '../../lib/property-database';
 
-const SITE_NAME = 'LeadLuxe AI — Global Real Estate Intelligence';
-const SITE_URL = 'https://leadluxe-ai.vercel.app';
-const DEFAULT_DESC = 'AI-powered global real estate intelligence platform. Discover high-value property opportunities, track market trends, and close deals across 25+ countries. Commission-only pricing.';
+const SITE_NAME = 'TerraNexus AI — Connecting Capital with Verified Real Estate Intelligence';
+const SITE_URL = 'https://terranexus-ai.vercel.app';
+const DEFAULT_DESC = 'AI-powered real estate intelligence platform providing verified property research, AI Deal Rooms, buyer qualification, market intelligence, and investment reports across India.';
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&h=630&fit=crop';
 
 interface SEOProps {
@@ -32,7 +32,7 @@ export function SEOHelmet({
   noindex = false,
   canonical,
 }: SEOProps) {
-  const fullTitle = title ? `${title} | LeadLuxe AI` : 'LeadLuxe AI — Global Real Estate Intelligence';
+  const fullTitle = title ? `${title} | TerraNexus AI` : 'TerraNexus AI | India\'s AI Real Estate Intelligence Platform';
   const canonicalUrl = canonical || url;
 
   return (
@@ -157,9 +157,9 @@ export function WebSiteLD() {
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'LeadLuxe AI',
+    name: 'TerraNexus AI',
     url: SITE_URL,
-    description: 'AI-powered global real estate intelligence platform for developers and investors.',
+    description: 'AI-powered real estate intelligence platform providing verified property research, AI Deal Rooms, buyer qualification, and market intelligence across India.',
     potentialAction: {
       '@type': 'SearchAction',
       target: {
@@ -186,16 +186,16 @@ export function OrganizationLD() {
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'LeadLuxe AI',
-    description: 'AI-powered global real estate intelligence platform for developers and investors.',
+    name: 'TerraNexus AI',
+    description: 'AI-powered real estate intelligence and transaction infrastructure platform that verifies opportunities, generates investment research, qualifies buyers, and connects developers with investors through secure AI Deal Rooms across India.',
     url: SITE_URL,
     logo: `${SITE_URL}/logo.png`,
     sameAs: [
-      'https://github.com/AshishAndhaleAI/leadluxe-ai',
+      'https://github.com/AshishAndhaleAI/terranexus-ai',
     ],
     offers: {
       '@type': 'Offer',
-      description: 'Commission-only pricing — 3% on closed deals. No subscription fees.',
+      description: 'Commission-only pricing — competitive rates per market. No subscription fees.',
     },
     areaServed: [
       { '@type': 'Country', name: 'India' },

@@ -1,5 +1,5 @@
 // ============================================================
-// LeadLuxe AI — Digital Twin Types
+// TerraNexus AI — Digital Twin Types
 // Institutional-grade property research data structures
 // ============================================================
 
